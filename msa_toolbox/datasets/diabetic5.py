@@ -1,36 +1,51 @@
 import os
 from collections import defaultdict as dd
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from torchvision.datasets.folder import ImageFolder, default_loader
+from torchvision.datasets.folder import ImageFolder
 import msa_toolbox.config as cfg
 
 
 class Diabetic5(ImageFolder):
+    """
+    Diabetic5 Dataset class, a subclass of ImageFolder.
+    This class loads the Diabetic Retinopathy Detection dataset and prunes it to reserve
+        200 images per class for evaluation.
+    """
+
     def __init__(self, train=True, transform=None, target_transform=None):
+        """
+        Initialize the Diabetic5 dataset.
+
+        Args:
+            train (bool): True if training set, False if testing set
+            transform (callable, optional): A function/transform that takes in an 
+                PIL image and returns a transformed version. E.g, ``transforms.RandomCrop``
+            target_transform (callable, optional): A function/transform that takes in the 
+                target and transforms it.
+        """
         root = os.path.join(cfg.DATASET_ROOT, 'diabetic_retinopathy')
         if not os.path.exists(root):
-            raise ValueError('Dataset not found at {}. Please download it from {}.'.format(
-                root, 'https://www.kaggle.com/c/diabetic-retinopathy-detection'
-            ))
+            print(f'A dataset not found at {root}. Please download it from ')
+            raise ValueError(f"Dataset not found at {root}. Please download it from "
+                            f"https://www.kaggle.com/c/diabetic-retinopathy-detection")
+
 
         # Initialize ImageFolder
         super().__init__(root=os.path.join(root, 'training_imgs'), transform=transform,
-                         target_transform=target_transform)
+                        target_transform=target_transform)
         self.root = root
         self.ntest = 200   # Reserve ntest images per class for evaluation
-        self.partition_to_idxs = self.get_partition_to_idxs()
+        self.partition_to_idxs = self.__get_partition_to_idxs()
         self.pruned_idxs = self.partition_to_idxs['train' if train else 'test']
         self.samples = [self.samples[i] for i in self.pruned_idxs]
         self.imgs = self.samples
-        print('=> done loading {} ({}) with {} examples'.format(self.__class__.__name__, 'train' if train else 'test',
-                                                                len(self.samples)))
+        print(f"=> done loading {self.__class__.__name__} " + f"{'train' if train else 'test'} set "
+                f"with {len(self.samples)} examples")
 
-    def get_partition_to_idxs(self):
+    def __get_partition_to_idxs(self):
+        """
+        Create mapping: classidx -> idx and partition the data into train and test sets.
+        """
         partition_to_idxs = {
             'train': [],
             'test': []
@@ -40,10 +55,10 @@ class Diabetic5(ImageFolder):
         prev_state = np.random.get_state()
         np.random.seed(cfg.DS_SEED)
 
-        # ----------------- Create mapping: classidx -> idx
+        # Create mapping: classidx -> idx
         classidx_to_idxs = dd(list)
-        for idx, s in enumerate(self.samples):
-            classidx = s[1]
+        for idx, sample in enumerate(self.samples):
+            classidx = sample[1]
             classidx_to_idxs[classidx].append(idx)
 
         # Shuffle classidx_to_idx
@@ -51,8 +66,10 @@ class Diabetic5(ImageFolder):
             np.random.shuffle(idxs)
 
         for classidx, idxs in classidx_to_idxs.items():
-            partition_to_idxs['test'] += idxs[:self.ntest]  # A constant no. kept aside for evaluation
-            partition_to_idxs['train'] += idxs[self.ntest:]  # Train on remaining
+            # A constant no. kept aside for evaluation
+            partition_to_idxs['test'] += idxs[:self.ntest]
+            # Train on remaining
+            partition_to_idxs['train'] += idxs[self.ntest:]
 
         # Revert randomness to original state
         np.random.set_state(prev_state)

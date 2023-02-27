@@ -9,12 +9,6 @@ from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
 
 
-def unpickle(file):
-    with open(file, 'rb') as fo:
-        dict = pickle.load(fo)
-    return dict
-
-
 class ImageNet(ImageFolder):
     def __init__(self, train=True, transform=None, target_transform=None, download=True):
         if train:
