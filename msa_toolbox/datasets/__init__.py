@@ -18,12 +18,13 @@ from torchvision import datasets
 from torchvision.datasets import ImageFolder
 from . mnist import MNIST, KMNIST, EMNIST, EMNISTLetters, FashionMNIST
 from . caltech256 import Caltech256
-from . cifar import CIFAR10, CIFAR100, SVHN, TinyImagesSubset
+from . cifar import CIFAR10, CIFAR100, TinyImagesSubset
 from . imagenet import ImageNet1k, ImageNet
 from . indoor67 import Indoor67
 from . diabetic5 import Diabetic5
 from . tinyimagenet200 import TinyImageNet200
 from . cubs200 import CUBS200
+from . svhn import SVHN
 
 
 # Create a mapping of dataset -> dataset_type

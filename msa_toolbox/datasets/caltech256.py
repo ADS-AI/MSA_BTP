@@ -1,14 +1,16 @@
-import argparse
+"""
+A module that provides a subclass of the PyTorch ImageFolder class representing the Caltech 256
+dataset. The Caltech 256 dataset has collection of 30,607 images, covering 257 categories. 
+
+Note that the Caltech256 dataset must be downloaded separately and placed in the specified root
+directory before using this module. 
+The dataset is available at http://www.vision.caltech.edu/Image_Datasets/Caltech256/
+"""
+
 import os.path as osp
-import os
 from collections import defaultdict
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from torchvision.datasets.folder import ImageFolder, default_loader
+from torchvision.datasets.folder import ImageFolder
 import msa_toolbox.config as cfg
 
 
@@ -34,13 +36,12 @@ class Caltech256(ImageFolder):
         _cleanup(self):
             Removes examples belonging to class "clutter".
             
-        get_partition_to_idxs(self):
+        __get_partition_to_idxs(self):
             Creates a mapping of classidx to idx for train and test partitions.
 
     """
         
     def __init__(self, train=True, transform=None, target_transform=None):
-    
         """
         Initializes the Caltech256 instance by checking if the dataset is available and then initializing ImageFolder 
         with the specified arguments. It reserves 25 examples per class for evaluation and prunes the `imgs` and `samples` 
@@ -57,16 +58,14 @@ class Caltech256(ImageFolder):
         
         root = osp.join(cfg.DATASET_ROOT, '256_ObjectCategories')
         if not osp.exists(root):
-            raise ValueError('Dataset not found at {}. Please download it from {}.'.format(
-                root, 'http://www.vision.caltech.edu/Image_Datasets/Caltech256/'
-            ))
+            raise ValueError(f'Dataset not found at {root}. Please download it from http://www.vision.caltech.edu/Image_Datasets/Caltech256/')
 
         # Initialize ImageFolder
         super().__init__(root=root, transform=transform, target_transform=target_transform)
 
         # self._cleanup()
         self.ntest = 25  # Reserve these many examples per class for evaluation
-        self.partition_to_idxs = self.get_partition_to_idxs()
+        self.partition_to_idxs = self.__get_partition_to_idxs()
         self.pruned_idxs = self.partition_to_idxs['train' if train else 'test']
 
         # Prune (self.imgs, self.samples to only include examples from the required train/test partition
@@ -84,14 +83,13 @@ class Caltech256(ImageFolder):
         Returns:
             None
         """
-        
         clutter_idx = self.class_to_idx['257.clutter']
         self.samples = [s for s in self.samples if s[1] != clutter_idx]
         del self.class_to_idx['257.clutter']
         self.classes = self.classes[:-1]
         
 
-    def get_partition_to_idxs(self):
+    def __get_partition_to_idxs(self):
         """
         Creates a mapping of classidx to idx for train and test partitions.
         
@@ -126,4 +124,3 @@ class Caltech256(ImageFolder):
         np.random.set_state(prev_state)
 
         return partition_to_idxs
-
