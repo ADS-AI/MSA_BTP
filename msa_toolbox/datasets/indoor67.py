@@ -1,40 +1,54 @@
+"""
+This module provides a class Indoor67 that represents the Indoor67 dataset in PyTorch.
+The dataset contains 67 indoor categories with a total of 15620 images.
+
+Example usage:
+dataset = Indoor67(train=True, transform=train_transform)
+
+Note that the dataset is not downloaded automatically. 
+It must be downloaded manually from the following link: http://web.mit.edu/torralba/www/indoor.html
+"""
+
 import os
-import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from torchvision.datasets.folder import ImageFolder, default_loader
+from torchvision.datasets.folder import ImageFolder
 import msa_toolbox.config as cfg
 
-
 class Indoor67(ImageFolder):
+    """ The Indoor67 dataset class """
+
     def __init__(self, train=True, transform=None, target_transform=None):
+        """
+        Initializes the Indoor67 dataset.
+
+        Args:
+            train (bool): If True, loads the training partition, otherwise loads the test partition.
+            transform (callable, optional): A function/transform that takes in an PIL image and returns a transformed version. Default: None.
+            target_transform (callable, optional): A function/transform that takes in the target and transforms it. Default: None.
+        """
         root = os.path.join(cfg.DATASET_ROOT, 'indoor')
         if not os.path.exists(root):
-            raise ValueError('Dataset not found at {}. Please download it from {}.'.format(
-                root, 'http://web.mit.edu/torralba/www/indoor.html'
-            ))
+            raise ValueError(f"Dataset not found at {root}. Please download it from http://web.mit.edu/torralba/www/indoor.html.")
 
-        # Initialize ImageFolder
-        super().__init__(root=os.path.join(root, 'Images'), transform=transform,
-                        target_transform=target_transform)
+        super().__init__(root=os.path.join(root, 'Images'), transform=transform, target_transform=target_transform)
+
         self.root = root
-        self.partition_to_idxs = self.get_partition_to_idxs()
+        self.partition_to_idxs = self.__get_partition_to_idxs()
         self.pruned_idxs = self.partition_to_idxs['train' if train else 'test']
         self.samples = [self.samples[i] for i in self.pruned_idxs]
         self.imgs = self.samples
-        print('=> done loading {} ({}) with {} examples'.format(self.__class__.__name__, 'train' if train else 'test',
-                                                                len(self.samples)))
+        print(f"=> done loading {self.__class__.__name__} ({'train' if train else 'test'}) with {len(self.samples)} examples")
 
-    def get_partition_to_idxs(self):
+
+    def __get_partition_to_idxs(self) -> dict[str, list]:
+        """
+        Returns:
+            A dictionary mapping partition names to lists of indices. 
+        """
         partition_to_idxs = {
-            'train': [],
+            'train': [],    
             'test': []
         }
 
-        # ----------------- Load list of train images
         test_images = set()
         with open(os.path.join(self.root, 'TestImages.txt')) as f:
             for line in f:

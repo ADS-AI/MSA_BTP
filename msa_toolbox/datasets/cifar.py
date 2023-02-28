@@ -1,12 +1,16 @@
-import sys
+"""
+This module provides custom classes for loading the CIFAR-10 and CIFAR-100 datasets using PyTorch.
+
+Example:
+    To use the `CIFAR10` class, you can create an instance like this:
+    >>> from custom_datasets import CIFAR10
+    >>> dataset = CIFAR10(train=True, download=True)
+"""
+
 import os
-import numpy as np
 from torchvision.datasets.folder import ImageFolder
 from torchvision.datasets import CIFAR10 as Old_CIFAR10
 from torchvision.datasets import CIFAR100 as Old_CIFAR100
-from torchvision.datasets import SVHN as Old_SVHN
-from torchvision.datasets.utils import check_integrity
-import pickle
 import msa_toolbox.config as cfg
 
 
@@ -33,7 +37,7 @@ class CIFAR10(Old_CIFAR10):
         'md5': '5ff9c542aee3614f3951f8cda6e48888',
     }
 
-    def __init__(self, cfg, train=True, transform=None, target_transform=None, download=True):
+    def __init__(self, train=True, transform=None, target_transform=None, download=True):
         
         """
         Initializes the CIFAR10 dataset object.
@@ -84,7 +88,7 @@ class CIFAR100(Old_CIFAR100):
         'md5': '7973b15100ade9c7d40fb424638fde48',
     }
 
-    def __init__(self, cfg, train=True, transform=None, target_transform=None, download=False):
+    def __init__(self, train=True, transform=None, target_transform=None, download=False):
         
         """
         Initializes the CIFAR10 dataset object.
@@ -112,57 +116,6 @@ class CIFAR100(Old_CIFAR100):
 
         Returns:
             (numpy.ndarray): The image at the specified index.
-        """
-        return self.data[index]
-
-
-class SVHN(Old_SVHN):
-    
-    """
-    A dataset class representing the Street View House Numbers (SVHN) dataset.
-    
-    Methods:
-    - __init__(self, cfg, train=True, transform=None, target_transform=None, download=False):
-        Constructor method that initializes the SVHN instance. It takes five arguments:
-    - get_image(self, index):
-        Returns the image data at the given index.
-    """
-    
-    def __init__(self, cfg, train=True, transform=None, target_transform=None, download=False):
-        
-        """
-        Initializes the SVHN dataset object.
-        
-        Args:
-            cfg (object): Configuration object.
-            train (bool): If True, return the training set, otherwise the test set.
-            transform (callable, optional): A transform that takes in an PIL image and returns a transformed version.
-            target_transform (callable, optional): A transform that takes in the target and transforms it.
-            download (bool): If True, downloads the dataset from the internet and places it in root directory.
-        
-        Returns:
-            None
-            
-        """
-        
-        root = os.path.join(cfg.DATASET_ROOT, 'svhn')
-        # split argument should be one of {‘train’, ‘test’, ‘extra’}
-        if isinstance(train, bool):
-            split = 'train' if train else 'test'
-        else:
-            split = train
-        super().__init__(root, split, transform, target_transform, download)
-        self.classes = np.arange(10)
-        
-    def get_image(self, index):
-        """
-        Returns the image at the specified index.
-
-        Args:
-            index (int): The index of the image to return.
-
-        Returns:
-            None
         """
         return self.data[index]
 

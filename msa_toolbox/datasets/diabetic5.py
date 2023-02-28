@@ -1,3 +1,20 @@
+"""
+Diabetic5 Dataset module.
+
+This module provides a dataset class, Diabetic5, which loads the Diabetic Retinopathy Detection
+dataset and prunes it to reserve 200 images per class for evaluation. 
+
+Example:
+    To use this dataset, simply create an instance of the Diabetic5 class:
+    >>> from msa_toolbox.datasets import Diabetic5
+    >>> train_dataset = Diabetic5(train=True)
+
+Note:
+    This dataset requires downloading the Diabetic Retinopathy Detection dataset from 
+    https://www.kaggle.com/c/diabetic-retinopathy-detection
+    The data should be placed in the `DATASET_ROOT/diabetic_retinopathy/training_imgs` directory.
+"""
+
 import os
 from collections import defaultdict as dd
 import numpy as np

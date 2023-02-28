@@ -1,40 +1,26 @@
-from torchvision.datasets import ImageFolder
+"""
+This module provides a PyTorch dataset class for the TinyImageNet200 dataset.
+"""
 import os
-import msa_toolbox.config as cfg
-import numpy as np
-import msa_toolbox.config as cfg
-import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision.datasets import ImageNet as Old_ImageNet
 from torchvision.datasets import ImageFolder
-import torchvision.transforms as transforms
+import msa_toolbox.config as cfg
 
 
 class TinyImageNet200(ImageFolder):
-    """
-    Dataset for TinyImageNet200
-    Note: the directory structure slightly varies from original
-    To get there, run these two commands:
-    - From within tiny-images-200 directory
-        for dr in train/*; do
-            echo $dr;
-            mv $dr/images/* $dr/;
-            rmdir $dr/images;
-        done
-    - From within tiny-images-200/val directory
-         while read -r fname label remainder; do
-            mkdir -p val2/$label;
-            mv images/$fname val2/$label/;
-        done < val_annotations.txt
-
-    """
+    '''A Dataset class for the TinyImageNet200 dataset.'''
 
     def __init__(self, train=True, transform=None, target_transform=None):
+        """
+        Initializes the dataset and loads the data.
+
+        Args:
+            train (bool): If True, loads the training set, else loads the validation set.
+            transform (callable, optional): A function/transform that takes in a PIL image and returns a transformed version.
+            target_transform (callable, optional): A function/transform that takes in the target and transforms it.
+        """
         root = os.path.join(cfg.DATASET_ROOT, 'tiny-imagenet-200')
         if not os.path.exists(root):
-            raise ValueError('Dataset not found at {}. Please download it from {}.'.format(
-                root, 'https://tiny-imagenet.herokuapp.com'
-            ))
+            raise ValueError(f"Dataset not found at {root}. Please download it from https://tiny-imagenet.herokuapp.com.")
 
         # Initialize ImageFolder
         _root = os.path.join(root, 'train' if train else 'val')
@@ -42,15 +28,15 @@ class TinyImageNet200(ImageFolder):
                          target_transform=target_transform)
         self.root = root
 
-        print('=> done loading {} ({}) with {} examples'.format(self.__class__.__name__, 'train' if train else 'test',
-                                                                len(self.samples)))
+        print(f"=> done loading {self.__class__.__name__} ({'train' if train else 'test'}) with {len(self.samples)} examples")
         self._load_meta()
 
 
     def _load_meta(self):
-        """Replace class names (synsets) with more descriptive labels"""
-        # Load mapping
-        synset_to_desc = dict()
+        """
+        Replace class names (synsets) with more descriptive labels
+        """
+        synset_to_desc = {}
         fpath = os.path.join(self.root, 'words.txt')
         with open(fpath, 'r') as rf:
             for line in rf:
