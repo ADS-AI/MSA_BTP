@@ -19,7 +19,7 @@ from torchvision.datasets import ImageFolder
 from . mnist import MNIST, KMNIST, EMNIST, EMNISTLetters, FashionMNIST
 from . caltech256 import Caltech256
 from . cifar import CIFAR10, CIFAR100, TinyImagesSubset
-from . imagenet import ImageNet1k, ImageNet
+from . imagenet import ImageNet1k
 from . indoor67 import Indoor67
 from . diabetic5 import Diabetic5
 from . tinyimagenet200 import TinyImageNet200
