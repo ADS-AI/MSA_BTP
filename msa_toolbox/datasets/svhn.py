@@ -23,7 +23,7 @@ class SVHN(Old_SVHN):
             Returns the image data at the given index.
     """
     
-    def __init__(self, train=True, transform=None, target_transform=None, download=False):
+    def __init__(self, train=True, transform=None, target_transform=None, download=True):
         """
         Initializes the SVHN dataset object.
 
