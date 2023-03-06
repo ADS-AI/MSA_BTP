@@ -12,7 +12,7 @@ from http://image-net.org/download-images.
 import os
 import numpy as np
 from torchvision.datasets import ImageFolder
-import msa_toolbox.config as cfg
+from .. import config as cfg
 
 class ImageNet1k(ImageFolder):
     """
