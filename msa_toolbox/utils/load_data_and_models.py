@@ -32,9 +32,9 @@ def load_dataset(dataset_name, train=True, transform=None, target_transform=None
         return mnist.KMNIST(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'fashion_mnist':
         return mnist.FashionMNIST(train=train, transform=transform, target_transform=target_transform, download=download)
-    elif dataset_name == 'emist':
+    elif dataset_name == 'emnist':
         return mnist.EMNIST(train=train, transform=transform, target_transform=target_transform, download=download)
-    elif dataset_name =='emistleters':
+    elif dataset_name =='emnistletters':
         return mnist.EMNISTLetters(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'svhn':
         return svhn.SVHN(train=train, transform=transform, target_transform=target_transform, download=download)
