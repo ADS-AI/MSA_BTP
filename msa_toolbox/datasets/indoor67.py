@@ -39,7 +39,7 @@ class Indoor67(ImageFolder):
         print(f"=> done loading {self.__class__.__name__} ({'train' if train else 'test'}) with {len(self.samples)} examples")
 
 
-    def __get_partition_to_idxs(self) -> dict[str, list]:
+    def __get_partition_to_idxs(self):
         """
         Returns:
             A dictionary mapping partition names to lists of indices. 

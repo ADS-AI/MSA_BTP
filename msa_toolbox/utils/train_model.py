@@ -15,6 +15,7 @@ def train(model:nn.Module, dataloader:DataLoader, epochs:int, batch_size:int, op
     train_acc = []
     val_loss = []
     val_acc = []
+    model = model.to(device)
     for epoch in range(epochs):
         print('======================> Epoch: {} <======================='.format(epoch))
         # Train the model
