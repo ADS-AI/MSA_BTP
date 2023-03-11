@@ -15,7 +15,7 @@ from torchvision.datasets import MNIST as Old_MNIST
 from torchvision.datasets import EMNIST as Old_EMNIST
 from torchvision.datasets import FashionMNIST as Old_FashionMNIST
 from torchvision.datasets import KMNIST as Old_KMNIST
-import msa_toolbox.config as cfg
+from .. import config as cfg
 
 
 class MNIST(Old_MNIST):

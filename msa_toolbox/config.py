@@ -19,13 +19,13 @@ os.makedirs(DATASET_ROOT, exist_ok=True)
 os.makedirs(DEBUG_ROOT, exist_ok=True)
 os.makedirs(MODEL_DIR, exist_ok=True)
 
-print(CONFIG_PATH)
-print(SRC_ROOT)
-print(PROJECT_ROOT)
-print(CACHE_ROOT)
-print(DATASET_ROOT)
-print(DEBUG_ROOT)
-print(MODEL_DIR)
+# print(CONFIG_PATH)
+# print(SRC_ROOT)
+# print(PROJECT_ROOT)
+# print(CACHE_ROOT)
+# print(DATASET_ROOT)
+# print(DEBUG_ROOT)
+# print(MODEL_DIR)
 
 # -------------- Dataset Stuff
 IMAGENET_MEAN = [0.485, 0.456, 0.406]

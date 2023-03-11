@@ -5,7 +5,7 @@ This module provides a dataset class representing the Street View House Numbers 
 import os
 import numpy as np
 from torchvision.datasets import SVHN as Old_SVHN
-import msa_toolbox.config as cfg
+from .. import config as cfg
 
 
 class SVHN(Old_SVHN):
@@ -23,7 +23,7 @@ class SVHN(Old_SVHN):
             Returns the image data at the given index.
     """
     
-    def __init__(self, train=True, transform=None, target_transform=None, download=False):
+    def __init__(self, train=True, transform=None, target_transform=None, download=True):
         """
         Initializes the SVHN dataset object.
 

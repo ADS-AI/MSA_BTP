@@ -1,3 +1,9 @@
 env/
 build/
 dist/
+msa_toolbox/datasets/__pycache__/
+msa_toolbox/models/__pycache__/
+msa_toolbox/utils/__pycache__/
+msa_toolbox/__pycache__/
+msa_toolbox.egg-info/
+msa_toolbox/data/

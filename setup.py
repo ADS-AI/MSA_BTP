@@ -7,17 +7,18 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = '0.0.7'
+VERSION = '0.0.10'
 DESCRIPTION = 'MSA Toolbox'
 LONG_DESCRIPTION = 'Model Stealing attack'
 
 install_requires = [
     "numpy>=1.18.0",
-    "scipy>=1.4.1",
     "scikit-learn>=0.22.2,<1.2.0",
     "six",
     "setuptools",
     "tqdm",
+    "scipy>=1.7.3",
+    "matplotlib>=3.5.1"
 ]
 
 

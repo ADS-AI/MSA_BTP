@@ -11,7 +11,7 @@ It must be downloaded manually from the following link: http://web.mit.edu/torra
 
 import os
 from torchvision.datasets.folder import ImageFolder
-import msa_toolbox.config as cfg
+from .. import config as cfg
 
 class Indoor67(ImageFolder):
     """ The Indoor67 dataset class """
@@ -39,7 +39,7 @@ class Indoor67(ImageFolder):
         print(f"=> done loading {self.__class__.__name__} ({'train' if train else 'test'}) with {len(self.samples)} examples")
 
 
-    def __get_partition_to_idxs(self) -> dict[str, list]:
+    def __get_partition_to_idxs(self):
         """
         Returns:
             A dictionary mapping partition names to lists of indices. 
