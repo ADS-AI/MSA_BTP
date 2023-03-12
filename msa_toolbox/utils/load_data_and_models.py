@@ -8,6 +8,7 @@ from ..datasets import svhn
 from ..datasets import tinyimagenet200
 from ..datasets import indoor67
 from ..datasets import custom_dataset
+from ..datasets import dataset_to_modelfamily, modelfamily_to_mean_std, modelfamily_to_transforms, modelfamily_to_transforms_sans_normalization
 from ..models import alexnet
 from ..models import resnet
 from ..models import efficientnet
@@ -20,6 +21,13 @@ from typing import Any
 
 def load_dataset(dataset_name, train=True, transform=None, target_transform=None, download=True):
     dataset_name = dataset_name.lower()
+    if transform:
+        model_family = dataset_to_modelfamily[dataset_name] 
+        if train:
+            transform = modelfamily_to_transforms[model_family]['train']
+        else:
+            transform = modelfamily_to_transforms[model_family]['test']
+
     if dataset_name == 'cifar10':
         return cifar.CIFAR10(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'cifar100':
@@ -30,7 +38,7 @@ def load_dataset(dataset_name, train=True, transform=None, target_transform=None
         return mnist.MNIST(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'kmnist':
         return mnist.KMNIST(train=train, transform=transform, target_transform=target_transform, download=download)
-    elif dataset_name == 'fashion_mnist':
+    elif dataset_name == 'fashionmnist':
         return mnist.FashionMNIST(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'emnist':
         return mnist.EMNIST(train=train, transform=transform, target_transform=target_transform, download=download)
@@ -38,17 +46,23 @@ def load_dataset(dataset_name, train=True, transform=None, target_transform=None
         return mnist.EMNISTLetters(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'svhn':
         return svhn.SVHN(train=train, transform=transform, target_transform=target_transform, download=download)
-    elif dataset_name == 'tiny_imagenet':
+    elif dataset_name == 'tinyimagenet200':
         return tinyimagenet200.TinyImageNet200(train=train, transform=transform, target_transform=target_transform)
+    elif dataset_name == 'tinyimagesubset':
+        return cifar.TinyImagesSubset(train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'cubs200':
         return cubs200.CUBS200(train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'diabetic5':
         return diabetic5.Diabetic5(train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'indoor67':
         return indoor67.Indoor67(train=train, transform=transform, target_transform=target_transform)
+    elif dataset_name == 'caltech256':
+        return caltech256.Caltech256(train=train, transform=transform, target_transform=target_transform)
     else:
         raise ValueError('Unknown dataset: {}'.format(dataset_name))
-    
+
+def custom_dataset_loader(root_dir, transform=None, target_transform=None):
+    return custom_dataset.CustomDataset(root_dir=root_dir, transform=transform, target_transform=target_transform)
 
 
 def load_victim_dataset(dataset_name, train=True, transform=None, target_transform=None, download=True):
