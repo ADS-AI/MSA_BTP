@@ -20,14 +20,20 @@ from ..models import mobilenet_v3
 from typing import Any
 
 def load_dataset(dataset_name, train=True, transform=None, target_transform=None, download=True):
+    '''
+    Return the specified dataset along with transform
+    '''
     dataset_name = dataset_name.lower()
     if transform:
-        model_family = dataset_to_modelfamily[dataset_name] 
-        if train:
-            transform = modelfamily_to_transforms[model_family]['train']
+        if type(transform) == bool:
+            model_family = dataset_to_modelfamily[dataset_name] 
+            if train:
+                transform = modelfamily_to_transforms[model_family]['train']
+            else:
+                transform = modelfamily_to_transforms[model_family]['test']
         else:
-            transform = modelfamily_to_transforms[model_family]['test']
-
+            transform = transform
+            
     if dataset_name == 'cifar10':
         return cifar.CIFAR10(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'cifar100':
@@ -61,21 +67,74 @@ def load_dataset(dataset_name, train=True, transform=None, target_transform=None
     else:
         raise ValueError('Unknown dataset: {}'.format(dataset_name))
 
-def custom_dataset_loader(root_dir, transform=None, target_transform=None):
+
+def load_custom_dataset(root_dir, transform=None, target_transform=None):
+    '''
+    Loads a custom dataset from the specified root directory and returns it in a format suitable for machine learning tasks.
+
+    Args:
+        root_dir (str): The root directory of the custom dataset.
+        transform (callable): An optional function/transform to be applied on the input data. Defaults to None.
+        target_transform (callable): An optional function/transform to be applied on the target labels. Defaults to None.
+
+    Returns:
+        The custom dataset loaded from the specified root directory in a format suitable for machine learning tasks.
+    '''
     return custom_dataset.CustomDataset(root_dir=root_dir, transform=transform, target_transform=target_transform)
 
 
 def load_victim_dataset(dataset_name, train=True, transform=None, target_transform=None, download=True):
+    '''
+    Loads the victim dataset specified by 'dataset_name' and returns it in a format suitable for machine learning tasks. 
+
+    Args:
+        dataset_name (str): The name of the victim dataset to load.
+                dataset_name must be one of the following: 
+                'cifar10', 'cifar100', 'imagenet', 'mnist', 'kmnist', 'fashionmnist', 'emnist', 
+                'emnistletters', 'svhn', 'tinyimagenet200', 'tinyimagesubset', 'cubs200', 
+                'diabetic5', 'indoor67', 'caltech256'.
+        train (bool): A flag indicating whether to load the training set (if True) or the test set (if False). Defaults to True.
+        transform (callable): 
+                - True: The victim model's preprocessing transforms will be applied to the data.
+                - False: The victim model's preprocessing transforms will not be applied to the data.
+                - callable: The specified callable will be applied to the data.
+        target_transform (callable): An optional function/transform to be applied on the target labels. Defaults to None.
+        download (bool): A flag indicating whether to download the dataset if it is not already present. Defaults to True.
+    Returns:
+        The loaded victim dataset in a format suitable for machine learning tasks.
+    '''
     return load_dataset(dataset_name, train=train, transform=transform, 
                         target_transform=target_transform, download=download)
 
 
 def load_thief_dataset(dataset_name, train=True, transform=None, target_transform=None, download=True):
+    '''
+    Loads the thief dataset specified by 'dataset_name' and returns it in a format suitable for machine learning tasks. 
+
+    Args:
+        dataset_name (str): The name of the thief dataset to load.
+                dataset_name must be one of the following: 
+                'cifar10', 'cifar100', 'imagenet', 'mnist', 'kmnist', 'fashionmnist', 'emnist', 
+                'emnistletters', 'svhn', 'tinyimagenet200', 'tinyimagesubset', 'cubs200', 
+                'diabetic5', 'indoor67', 'caltech256'.
+        train (bool): A flag indicating whether to load the training set (if True) or the test set (if False). Defaults to True.
+        transform (callable): 
+                - True: The thief model's preprocessing transforms will be applied to the data.
+                - False: The thief model's preprocessing transforms will not be applied to the data.
+                - callable: The specified callable will be applied to the data.
+        target_transform (callable): An optional function/transform to be applied on the target labels. Defaults to None.
+        download (bool): A flag indicating whether to download the dataset if it is not already present. Defaults to True.
+    Returns:
+        The loaded thief dataset in a format suitable for machine learning tasks.
+    '''
     return load_dataset(dataset_name, train=train, transform=transform, 
                         target_transform=target_transform, download=download)
 
 
 def load_models(model_name, num_classes,  weights, progress, **kwargs):
+    '''
+    Return the specified model
+    '''
     model_name = model_name.lower()
     if model_name == 'resnet18':
         return resnet.ResNet18(num_classes, weights, progress, **kwargs)
@@ -136,9 +195,62 @@ def load_models(model_name, num_classes,  weights, progress, **kwargs):
 
 
 def load_thief_model(model_name:str,  num_classes:int ,weights: str = "default",  progress: bool = True, **kwargs: Any):
+    '''
+    Loads a pre-trained thief model specified by 'model_name' and returns it in a format suitable for machine learning tasks.
+
+    Args:
+        model_name (str): The name of the pre-trained thief model to load.
+            - model_name must be one of the following: 
+                'resnet18', 'resnet50', 'vgg11', 'vgg13', 'vgg16', 'vgg19', 
+                'vgg11_bn', 'vgg13_bn', 'vgg16_bn', 'vgg19_bn', 'alexnet', 
+                'efficientnet_b0', 'efficientnet_b1', 'efficientnet_b2', 'efficientnet_b3', 
+                'efficientnet_b4', 'efficientnet_b5', 'efficientnet_b6', 'efficientnet_b7', 
+                'effcientnet_v2_s', 'effcientnet_v2_m', 'effcientnet_v2_l', 'mobilenet_v2', 
+                'mobilenet_v3_small', 'mobilenet_v3_large'.
+        num_classes (int): The number of output classes for the loaded model.
+        weights (str): Specifies which weights to load for the model. If 'default', loads the pre-trained weights. If 'random', initializes the model with random weights. Defaults to 'default'.
+            - weights must be one of the following: 
+                1. 'default' - for any pre-trained models.
+                2. 'imagenet1k_v1' - for any pre-trained models.
+                3. 'imagenet1k_v2' - only for 'efficientnet_b1', 'mobilenet_v2', 'mobilenet_v3_large', 'resnet50'
+                4. 'imagenet1k_features' - only for 'vgg16'
+                
+        progress (bool): A flag indicating whether to display a progress bar while downloading the pre-trained weights. Defaults to True.
+        **kwargs (Any): Additional keyword arguments to be passed to the underlying 'load_models' function.
+
+    Returns:
+        The loaded pre-trained thief model in a format suitable for machine learning tasks.
+    '''
     return load_models(model_name, num_classes=num_classes,  weights=weights, 
                     progress=progress, **kwargs)
 
+
 def load_victim_model(model_name:str, num_classes:int,  weights: str = "default",  progress: bool = True, **kwargs: Any):
+    '''
+    Loads a pre-trained victim model specified by 'model_name' and returns it in a format suitable for machine learning tasks.
+
+    Args:
+        model_name (str): The name of the pre-trained victim model to load.
+            - model_name must be one of the following: 
+                'resnet18', 'resnet50', 'vgg11', 'vgg13', 'vgg16', 'vgg19', 
+                'vgg11_bn', 'vgg13_bn', 'vgg16_bn', 'vgg19_bn', 'alexnet', 
+                'efficientnet_b0', 'efficientnet_b1', 'efficientnet_b2', 'efficientnet_b3', 
+                'efficientnet_b4', 'efficientnet_b5', 'efficientnet_b6', 'efficientnet_b7', 
+                'effcientnet_v2_s', 'effcientnet_v2_m', 'effcientnet_v2_l', 'mobilenet_v2', 
+                'mobilenet_v3_small', 'mobilenet_v3_large'.
+        num_classes (int): The number of output classes for the loaded model.
+        weights (str): Specifies which weights to load for the model. If 'default', loads the pre-trained weights. If 'random', initializes the model with random weights. Defaults to 'default'.
+            - weights must be one of the following: 
+                1. 'default' - for any pre-trained models.
+                2. 'imagenet1k_v1' - for any pre-trained models.
+                3. 'imagenet1k_v2' - only for 'efficientnet_b1', 'mobilenet_v2', 'mobilenet_v3_large', 'resnet50'
+                4. 'imagenet1k_features' - only for 'vgg16'
+                
+        progress (bool): A flag indicating whether to display a progress bar while downloading the pre-trained weights. Defaults to True.
+        **kwargs (Any): Additional keyword arguments to be passed to the underlying 'load_models' function.
+
+    Returns:
+        The loaded pre-trained victim model in a format suitable for machine learning tasks.
+    '''
     return load_models(model_name, num_classes=num_classes,  weights=weights, 
                     progress=progress, **kwargs)
