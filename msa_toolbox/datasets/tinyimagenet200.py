@@ -20,7 +20,7 @@ class TinyImageNet200(ImageFolder):
         """
         root = os.path.join(cfg.DATASET_ROOT, 'tiny-imagenet-200')
         if not os.path.exists(root):
-            raise ValueError(f"Dataset not found at {root}. Please download it from https://tiny-imagenet.herokuapp.com.")
+            raise ValueError(f"Dataset not found at {root}. Please download it from http://cs231n.stanford.edu/tiny-imagenet-200.zip")
 
         # Initialize ImageFolder
         _root = os.path.join(root, 'train' if train else 'val')

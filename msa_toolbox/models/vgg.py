@@ -127,7 +127,7 @@ def VGG16(num_classes, weights: str = "default",  progress: bool = True, **kwarg
         weights = VGG16_Weights.DEFAULT
     elif weights == 'imagenet1k_v1':
         weights = VGG16_Weights.IMAGENET1K_V1
-    elif weights == 'IMAGENET1K_FEATURES':
+    elif weights == 'imagenet1k_features':
         weights = VGG16_Weights.IMAGENET1K_FEATURES
     else:
         weights = None

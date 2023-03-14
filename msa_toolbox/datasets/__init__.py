@@ -32,26 +32,25 @@ from . svhn import SVHN
 # (b) input transform to apply
 dataset_to_modelfamily = { 
     # MNIST
-    'MNIST': 'mnist',
-    'KMNIST': 'mnist',
-    'EMNIST': 'mnist',
-    'EMNISTLetters': 'mnist',
-    'FashionMNIST': 'mnist',
+    'mnist': 'mnist',
+    'kmnist': 'mnist',
+    'emnist': 'mnist',
+    'emnistletters': 'mnist',
+    'fashionmnist': 'mnist',
 
     # Cifar
-    'CIFAR10': 'cifar',
-    'CIFAR100': 'cifar',
-    'SVHN': 'cifar',
-    'TinyImageNet200': 'cifar',
-    'TinyImagesSubset': 'cifar',
+    'cifar10': 'cifar',
+    'cifar100': 'cifar',
+    'svhn': 'cifar',
+    'tinyimagenet200': 'cifar',
+    'tinyimagesubset': 'cifar',
 
     # Imagenet
-    'CUBS200': 'imagenet',
-    'Caltech256': 'imagenet',
-    'Indoor67': 'imagenet',
-    'Diabetic5': 'imagenet',
-    'ImageNet1k': 'imagenet',
-    'ImageFolder': 'imagenet',
+    'cubs200': 'imagenet',
+    'caltech256': 'imagenet',
+    'indoor67': 'imagenet',
+    'diabetic5': 'imagenet',
+    'imagenet': 'imagenet',
 }
 
 modelfamily_to_mean_std = {
@@ -127,13 +126,13 @@ modelfamily_to_transforms_sans_normalization = {
             transforms.Resize(32),
             transforms.Grayscale(num_output_channels=3),
             transforms.ToTensor(),
-            # transforms.Normalize((0.1307,), (0.3081,))
+            transforms.Normalize((0.1307,), (0.3081,))
         ]),
         'test': transforms.Compose([
             transforms.Resize(32),
             transforms.Grayscale(num_output_channels=3),
             transforms.ToTensor(),
-            # transforms.Normalize((0.1307,), (0.3081,))
+            transforms.Normalize((0.1307,), (0.3081,))
         ]),
     },
 

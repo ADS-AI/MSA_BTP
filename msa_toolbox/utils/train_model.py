@@ -10,6 +10,28 @@ from torch.nn.modules.loss import _Loss
 
 def train(model:nn.Module, dataloader:DataLoader, epochs:int, batch_size:int, optimizer:Optimizer, 
             criterion:_Loss, device:str, log_interval=100, all_data=False, verbose=True):
+    '''
+    This function trains a given model on a given 'dataloader' for 'epochs' number of epochs using a 
+    given optimizer and criterion function. The device parameter specifies whether to use GPU or CPU
+    for training.
+
+    Parameters:
+        - model (nn.Module): The neural network model to train.
+        - dataloader (DataLoader): The data loader to use for training and validation.
+        - epochs (int): The number of epochs to train the model for.
+        - batch_size (int): The batch size to use for training.
+        - optimizer (Optimizer): The optimizer to use for training the model.
+        - criterion (_Loss): The loss function to use for training and validation.
+        - device (str): Specifies whether to use GPU or CPU for training the model.
+        - log_interval (int): The number of batches after which to print the training and validation loss and accuracy.
+        - all_data (bool): If set to True, the function returns the training and validation losses and accuracies for all epochs. Otherwise, it returns only the final loss and accuracy values.
+        - verbose (bool): If set to True, the function prints the training and validation loss and accuracy for each batch.
+
+    Returns:
+        The function returns the final training loss, training accuracy, validation loss, and 
+        validation accuracy. If the all_data parameter is set to True, the function returns the
+        training and validation losses and accuracies for all epochs.
+    '''
     # Train the model
     train_loss = []
     train_acc = []
@@ -37,7 +59,22 @@ def train(model:nn.Module, dataloader:DataLoader, epochs:int, batch_size:int, op
 
 def train_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_size:int, optimizer:Optimizer, 
             criterion:_Loss, device:str, log_interval=20, verbose=True):
-    # Train the model
+    '''
+    Trains the specified 'model' on the provided 'dataloader' for one epoch.
+    Args:
+        model (nn.Module): The model to be trained.
+        dataloader (DataLoader): The DataLoader containing the training dataset.
+        epoch (int): The current epoch number.
+        batch_size (int): The batch size used for training.
+        optimizer (Optimizer): The optimizer to use for updating model parameters.
+        criterion (_Loss): The loss function to use for computing the training loss.
+        device (str): The device to run the training on.
+        log_interval (int): The number of batches after which to log the training progress. Defaults to 20.
+        verbose (bool): A flag indicating whether to print the training progress to the console. Defaults to True.
+
+    Returns:
+        A tuple containing the average training loss and accuracy over the entire dataset.
+    '''
     model.train()
     train_loss = 0
     correct = 0
@@ -67,7 +104,21 @@ def train_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_siz
 
 def validate_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_size:int, criterion:_Loss,
                 device:str, log_interval=20, verbose=True):
-    # Validate the model
+    '''
+    Validates the specified 'model' on the provided 'dataloader' for one epoch.
+    Args:
+        model (nn.Module): The model to be validated.
+        dataloader (DataLoader): The DataLoader containing the validation dataset.
+        epoch (int): The current epoch number.
+        batch_size (int): The batch size used for validation.
+        criterion (_Loss): The loss function to use for computing the validation loss.
+        device (str): The device to run the validation on.
+        log_interval (int): The number of batches after which to log the validation progress. Defaults to 20.
+        verbose (bool): A flag indicating whether to print the validation progress to the console. Defaults to True.
+
+    Returns:
+        A tuple containing the average validation loss and accuracy over the entire dataset.
+    '''
     model.eval()
     val_loss = 0
     correct = 0
@@ -84,7 +135,7 @@ def validate_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-            if batch_idx % log_interval == 0:
+            if batch_idx % log_interval == 0 and verbose:
                 print('Validation Epoch {}: [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy: {:.2f}%'.format(
                     epoch, batch_idx * len(inputs), len(dataloader.dataset),
                     100. * batch_idx / len(dataloader), loss.item(),
@@ -96,6 +147,20 @@ def validate_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_
 
 def test(model:nn.Module, dataloader:DataLoader, batch_size:int, criterion:_Loss, device:str, 
             log_interval=20, verbose=True):
+    '''
+    Tests the specified 'model' on the provided 'dataloader'.
+    Args:
+        model (nn.Module): The model to be tested.
+        dataloader (DataLoader): The DataLoader containing the test dataset.
+        batch_size (int): The batch size used for testing.
+        criterion (_Loss): The loss function to use for computing the test loss.
+        device (str): The device to run the testing on.
+        log_interval (int): The number of batches after which to log the testing progress. Defaults to 20.
+        verbose (bool): A flag indicating whether to print the testing progress to the console. Defaults to True.
+
+    Returns:
+        A tuple containing the average test loss and accuracy over the entire dataset.
+    '''
     model.eval()
     test_loss = 0
     correct = 0
