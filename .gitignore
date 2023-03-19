@@ -5,5 +5,10 @@ msa_toolbox/datasets/__pycache__/
 msa_toolbox/models/__pycache__/
 msa_toolbox/utils/__pycache__/
 msa_toolbox/__pycache__/
+msa_toolbox/cfgs/
 msa_toolbox.egg-info/
 msa_toolbox/data/
+testing1.ipynb
+testing2.ipynb
+msa_toolbox/results/
+# msa_toolbox/cfgs/

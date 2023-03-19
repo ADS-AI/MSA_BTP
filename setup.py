@@ -18,7 +18,9 @@ install_requires = [
     "setuptools",
     "tqdm",
     "scipy>=1.7.3",
-    "matplotlib>=3.5.1"
+    "matplotlib>=3.5.1",
+    'yacs',
+    'iopath',
 ]
 
 
