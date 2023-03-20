@@ -10,7 +10,7 @@ from sklearn.utils import shuffle
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 
-def get_accuracy_f1_precision_recall(model: nn.Module, data_loader: DataLoader, device: torch.device) -> tuple:
+def accuracy_f1_precision_recall(model: nn.Module, data_loader: DataLoader, device: torch.device) -> tuple:
     """
     Returns accuracy, f1, precision, recall for the model on the data_loader
     """
