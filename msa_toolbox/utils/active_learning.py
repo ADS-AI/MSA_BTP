@@ -23,10 +23,12 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         cfg.THIEF.DATASET, train=False, transform=True, download=True)
     indices = np.arange(min(len(thief_data), cfg.THIEF.NUM_TRAIN))
     random.shuffle(indices)
+    
     indices = indices[:cfg.THIEF.SUBSET]
     val_indices = indices[:cfg.ACTIVE.VAL]
     labeled_indices = indices[cfg.ACTIVE.VAL:cfg.ACTIVE.VAL+cfg.ACTIVE.INITIAL]
     unlabeled_indices = indices[cfg.ACTIVE.VAL+cfg.ACTIVE.INITIAL:]
+    # print("Length of Dataloaders: ", len(labeled_indices), len(val_indices), len(unlabeled_indices), len(thief_data))
 
     train_loader = get_data_loader(Subset(
         thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
@@ -40,6 +42,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
 
     for cycle in range(cfg.ACTIVE.CYCLES):
         print("\nCycle: ", cycle)
+        print('Length of Datasets: ', len(dataloader['train'].dataset), len(dataloader['val'].dataset), len(dataloader['unlabeled'].dataset))
         thief_model = load_thief_model(
             cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
 
@@ -81,6 +84,8 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         if True:
             new_training_samples = active_learning_technique(
                 cfg, thief_model, dataloader['unlabeled'])
+            if len(new_training_samples) == 0:
+                return
             new_training_samples = unlabeled_indices[new_training_samples]
             # print(len(new_training_samples), len(labeled_indices), len(unlabeled_indices))
             labeled_indices = np.concatenate(
@@ -114,7 +119,8 @@ def load_victim_data_and_model(cfg: CfgNode):
     victim_data = load_victim_dataset(
         cfg.VICTIM.DATASET, train=False, transform=True, download=True)
     num_class = len(victim_data.classes)
-    print(f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
+    print(
+        f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
     victim_data_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
     victim_model = load_victim_model(

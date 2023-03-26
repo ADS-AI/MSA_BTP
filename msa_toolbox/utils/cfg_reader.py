@@ -27,6 +27,7 @@ class CfgNode:
     Arguments:
         - dictionary (dict): The dictionary to convert to an CFG object.
     '''
+
     def __init__(self, dictionary):
         for k, v in dictionary.items():
             if isinstance(v, dict):
@@ -48,4 +49,7 @@ def load_cfg(path):
     '''
     cfg = load_yaml(path)
     cfg = CfgNode(cfg)
+    cfg.ACTIVE.VAL = cfg.ACTIVE.BUDGET // (cfg.ACTIVE.CYCLES * cfg.TRIALS)
+    cfg.ACTIVE.INITIAL = cfg.ACTIVE.BUDGET // (cfg.ACTIVE.CYCLES * cfg.TRIALS)
+    cfg.ACTIVE.ADDENDUM = cfg.ACTIVE.INITIAL
     return cfg
