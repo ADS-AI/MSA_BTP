@@ -36,11 +36,10 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
     dataloader = {'train': train_loader, 'val': val_loader,
                   'unlabeled': unlabeled_loader, 'victim': victim_data_loader}
-    print("Length of Dataloaders: ", len(dataloader['train']), len(
-        dataloader['val']), len(dataloader['unlabeled']), len(dataloader['victim']))
+    # print("Length of Dataloaders: ", len(dataloader['train']), len(dataloader['val']), len(dataloader['unlabeled']), len(dataloader['victim']))
 
     for cycle in range(cfg.ACTIVE.CYCLES):
-        print("Cycle: ", cycle)
+        print("\nCycle: ", cycle)
         thief_model = load_thief_model(
             cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
 
@@ -66,7 +65,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         train(cfg, thief_model, criteria, optimizer,
               dataloader, trial_num, cycle, log_interval=1000)
 
-        print("Loading best checkpoint for Thief model")
+        # print("Loading best checkpoint for Thief model")
         best_model_path = os.path.join(
             cfg.OUT_DIR, f"thief_model_{trial_num+1}_{cycle+1}.pth")
         best_state = torch.load(best_model_path)['state_dict']
@@ -79,33 +78,25 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
                           dataloader['victim'], cfg.DEVICE)
         print("Metrics and Agreement of Thief Model on Victim Dataset:", metrics, agree)
         '''
-        if cycle == cfg.ACTIVE.CYCLES-1:
+        if True:
             new_training_samples = active_learning_technique(
                 cfg, thief_model, dataloader['unlabeled'])
-            print(len(new_training_samples), len(
-                labeled_indices), len(unlabeled_indices))
+            new_training_samples = unlabeled_indices[new_training_samples]
+            # print(len(new_training_samples), len(labeled_indices), len(unlabeled_indices))
             labeled_indices = np.concatenate(
                 [labeled_indices, new_training_samples])
-            print(len(new_training_samples), len(
-                labeled_indices), len(unlabeled_indices))
-
-            arr, cnt = np.unique(labeled_indices, return_counts=True)
-            print(len(cnt[cnt > 1]), arr[cnt > 1])
-            arr, cnt = np.unique(unlabeled_indices, return_counts=True)
-            print(len(cnt[cnt > 1]), arr[cnt > 1])
-
-            # unlabeled_indices = [i for i in unlabeled_indices if i not in new_training_samples]
-            unlabeled_indices = list(
-                set(unlabeled_indices) - set(new_training_samples))
             labeled_indices = list(set(labeled_indices))
-
-            print(len(new_training_samples), len(
-                labeled_indices), len(unlabeled_indices))
-
+            unlabeled_indices = np.array(
+                list(set(unlabeled_indices) - set(new_training_samples)))
+            # print(len(new_training_samples), len(labeled_indices), len(unlabeled_indices))
+            # arr, cnt = np.unique(labeled_indices, return_counts=True)
+            # print(len(cnt[cnt > 1]), arr[cnt > 1])
+            # arr, cnt = np.unique(unlabeled_indices, return_counts=True)
+            # print(len(cnt[cnt > 1]), arr[cnt > 1])
             dataloader['train'] = get_data_loader(Subset(
-                thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
+                thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=4)
             dataloader['unlabeled'] = get_data_loader(Subset(
-                thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
+                thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=4)
 
 
 def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int, victim_model: nn.Module):
@@ -123,18 +114,16 @@ def load_victim_data_and_model(cfg: CfgNode):
     victim_data = load_victim_dataset(
         cfg.VICTIM.DATASET, train=False, transform=True, download=True)
     num_class = len(victim_data.classes)
-    print(
-        f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
-
+    print(f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
     victim_data_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
-
     victim_model = load_victim_model(
         cfg.VICTIM.ARCHITECTURE, num_classes=num_class, weights=cfg.VICTIM.WEIGHTS, progress=False)
-
+    '''
     metrics = accuracy_f1_precision_recall(
         victim_model, victim_data_loader, cfg.DEVICE)
     print("Metrics of Victim Model on Victim Dataset:", metrics)
+    '''
     return (victim_data, num_class), victim_data_loader, victim_model
 
 

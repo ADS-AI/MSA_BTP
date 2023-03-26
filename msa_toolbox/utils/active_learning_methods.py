@@ -13,6 +13,8 @@ def active_learning_technique(cfg: CfgNode, theif_model: nn.Module, unlabeled_lo
         return entropy_technique(cfg, theif_model, unlabeled_loader)
     elif cfg.ACTIVE.METHOD == "kcenter":
         pass
+    elif cfg.ACTIVE.METHOD == "montecarlo":
+        pass
 
 
 def entropy_technique(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader):
@@ -20,7 +22,8 @@ def entropy_technique(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: Da
     theif_model = theif_model.to(cfg.DEVICE)
     uncertainty = torch.tensor([])
     indices = torch.tensor([])
-    print("Calculating Entropy")
+    # print("Calculating Entropy")
+    ind = 0
     with torch.no_grad():
         for i, (images, _) in enumerate(unlabeled_loader):
             images = images.to(cfg.DEVICE)
@@ -31,10 +34,11 @@ def entropy_technique(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: Da
             uncertainty = torch.cat(
                 (uncertainty, entropy.clone().detach()), dim=0)
             indices = torch.cat((indices, torch.tensor(
-                np.arange(i, i + images.shape[0]))), dim=0)
+                np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
 
     arg = np.argsort(uncertainty)
-    print("Done with Entropy calculation")
+    # print(indices[0], indices[-1], len(unlabeled_loader.dataset), len(indices))
     # print(uncertainty.shape, indices.shape, arg.shape)
+    # print("Done with Entropy calculation")
     selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
     return selected_index_list
