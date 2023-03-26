@@ -36,6 +36,8 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
     dataloader = {'train': train_loader, 'val': val_loader,
                   'unlabeled': unlabeled_loader, 'victim': victim_data_loader}
+    print("Length of Dataloaders: ", len(dataloader['train']), len(
+        dataloader['val']), len(dataloader['unlabeled']), len(dataloader['victim']))
 
     for cycle in range(cfg.ACTIVE.CYCLES):
         print("Cycle: ", cycle)
@@ -70,21 +72,36 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         best_state = torch.load(best_model_path)['state_dict']
         thief_model.load_state_dict(best_state)
 
+        '''
         metrics = accuracy_f1_precision_recall(
             thief_model, dataloader['victim'], cfg.DEVICE)
         agree = agreement(thief_model, victim_model,
                           dataloader['victim'], cfg.DEVICE)
         print("Metrics and Agreement of Thief Model on Victim Dataset:", metrics, agree)
-
+        '''
         if cycle == cfg.ACTIVE.CYCLES-1:
             new_training_samples = active_learning_technique(
                 cfg, thief_model, dataloader['unlabeled'])
-            labeled_indices += new_training_samples
-            unlabeled_indices = [
-                i for i in unlabeled_indices if i not in new_training_samples]
+            print(len(new_training_samples), len(
+                labeled_indices), len(unlabeled_indices))
+            labeled_indices = np.concatenate(
+                [labeled_indices, new_training_samples])
+            print(len(new_training_samples), len(
+                labeled_indices), len(unlabeled_indices))
 
+            arr, cnt = np.unique(labeled_indices, return_counts=True)
+            print(len(cnt[cnt > 1]), arr[cnt > 1])
+            arr, cnt = np.unique(unlabeled_indices, return_counts=True)
+            print(len(cnt[cnt > 1]), arr[cnt > 1])
+
+            # unlabeled_indices = [i for i in unlabeled_indices if i not in new_training_samples]
+            unlabeled_indices = list(
+                set(unlabeled_indices) - set(new_training_samples))
             labeled_indices = list(set(labeled_indices))
-            unlabeled_indices = list(set(unlabeled_indices))
+
+            print(len(new_training_samples), len(
+                labeled_indices), len(unlabeled_indices))
+
             dataloader['train'] = get_data_loader(Subset(
                 thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
             dataloader['unlabeled'] = get_data_loader(Subset(
@@ -136,13 +153,12 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
             thief_model, dataloader['train'], epoch, cfg.TRAIN.BATCH_SIZE, optimizer,
             criterion, cfg.DEVICE, log_interval, verbose=False)
 
-        metrics = accuracy_f1_precision_recall(
+        metrics_val = accuracy_f1_precision_recall(
             thief_model, dataloader['val'], cfg.DEVICE)
-        if best_f1 is None or metrics['f1'] > best_f1:
-            # check if directory exists
+        if best_f1 is None or metrics_val['f1'] > best_f1:
             if os.path.isdir(cfg.OUT_DIR) is False:
-                os.mkdir(cfg.OUT_DIR)
-            best_f1 = metrics['f1']
+                os.makedirs(cfg.OUT_DIR, exist_ok=True)
+            best_f1 = metrics_val['f1']
             torch.save({'trail': trail_num, 'cycle': cycle_num, 'epoch': epoch, 'state_dict': thief_model.state_dict(
             )}, f"{cfg.OUT_DIR}/thief_model_{trail_num+1}_{cycle_num+1}.pth")
             no_improvement = 0
@@ -153,8 +169,6 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
         if (epoch+1) % log_interval == 0:
             metrics_train = accuracy_f1_precision_recall(
                 thief_model, dataloader['train'], cfg.DEVICE)
-            metrics_val = accuracy_f1_precision_recall(
-                thief_model, dataloader['val'], cfg.DEVICE)
             metrics_victim = accuracy_f1_precision_recall(
                 thief_model, dataloader['victim'], cfg.DEVICE)
             print(

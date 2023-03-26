@@ -18,16 +18,23 @@ def active_learning_technique(cfg: CfgNode, theif_model: nn.Module, unlabeled_lo
 def entropy_technique(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader):
     theif_model.eval()
     theif_model = theif_model.to(cfg.DEVICE)
-    uncertainty = []
-    indices = []
+    uncertainty = torch.tensor([])
+    indices = torch.tensor([])
+    print("Calculating Entropy")
     with torch.no_grad():
         for i, (images, _) in enumerate(unlabeled_loader):
             images = images.to(cfg.DEVICE)
             outputs = theif_model(images)
             prob = F.softmax(outputs, dim=1)
             entropy = -torch.sum(prob * torch.log(prob), dim=1)
-            uncertainty.append(entropy)
-            indices.append(i)
+            # uncertainty = torch.cat((uncertainty, torch.tensor(entropy)), dim=0)
+            uncertainty = torch.cat(
+                (uncertainty, entropy.clone().detach()), dim=0)
+            indices = torch.cat((indices, torch.tensor(
+                np.arange(i, i + images.shape[0]))), dim=0)
+
     arg = np.argsort(uncertainty)
+    print("Done with Entropy calculation")
+    # print(uncertainty.shape, indices.shape, arg.shape)
     selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
     return selected_index_list
