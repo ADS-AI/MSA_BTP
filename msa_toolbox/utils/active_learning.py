@@ -42,20 +42,6 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         thief_model = load_thief_model(
             cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
 
-        '''
-        metrics = accuracy_f1_precision_recall(
-            thief_model, dataloader['val'], cfg.DEVICE)
-        agree = agreement(thief_model, victim_model,
-                          dataloader['val'], cfg.DEVICE)
-        print("Metrics and Agreement of Thief Model on Validation Dataset:", metrics, agree)
-
-        metrics = accuracy_f1_precision_recall(
-            thief_model, dataloader['victim'], cfg.DEVICE)
-        agree = agreement(thief_model, victim_model,
-                          dataloader['victim'], cfg.DEVICE)
-        print("Metrics and Agreement of Thief Model on Victim Dataset:", metrics, agree)
-        '''
-
         optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, thief_model,
                                   lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
         criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
@@ -70,13 +56,19 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         best_state = torch.load(best_model_path)['state_dict']
         thief_model.load_state_dict(best_state)
 
-        '''
+        # '''
         metrics = accuracy_f1_precision_recall(
             thief_model, dataloader['victim'], cfg.DEVICE)
         agree = agreement(thief_model, victim_model,
                           dataloader['victim'], cfg.DEVICE)
         print("Metrics and Agreement of Thief Model on Victim Dataset:", metrics, agree)
-        '''
+        metrics = accuracy_f1_precision_recall(
+            thief_model, dataloader['val'], cfg.DEVICE)
+        agree = agreement(thief_model, victim_model,
+                          dataloader['val'], cfg.DEVICE)
+        print("Metrics and Agreement of Thief Model on Validation Dataset:", metrics, agree)
+        # '''
+
         if cycle == cfg.ACTIVE.CYCLES-1 or True:
             new_training_samples = active_learning_technique(
                 cfg, thief_model, dataloader['unlabeled'])
@@ -86,7 +78,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
             # print(len(new_training_samples), len(labeled_indices), len(unlabeled_indices))
             labeled_indices = np.concatenate(
                 [labeled_indices, new_training_samples])
-            labeled_indices = list(set(labeled_indices))
+            labeled_indices = np.array(list(set(labeled_indices)))
             unlabeled_indices = np.array(
                 list(set(unlabeled_indices) - set(new_training_samples)))
             # print(len(new_training_samples), len(labeled_indices), len(unlabeled_indices))
@@ -96,7 +88,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
             # print(len(cnt[cnt > 1]), arr[cnt > 1])
             dataloader['train'] = get_data_loader(Subset(
                 thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=4)
-            dataloader['train'] = change_theif_loader_labels(
+            dataloader['train'] = change_thief_loader_labels(
                 cfg, dataloader['train'], victim_model)
             dataloader['unlabeled'] = get_data_loader(Subset(
                 thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=4)
@@ -124,6 +116,15 @@ def load_victim_data_and_model(cfg: CfgNode):
     victim_model = load_victim_model(
         cfg.VICTIM.ARCHITECTURE, num_classes=num_class, weights=cfg.VICTIM.WEIGHTS, progress=False)
 
+    # '''
+    optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
+                              lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
+    criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
+    train_one_epoch(
+        victim_model, victim_data_loader, 0, cfg.TRAIN.BATCH_SIZE, optimizer,
+        criteria, cfg.DEVICE, 100, verbose=False)
+    # '''
+
     metrics = accuracy_f1_precision_recall(
         victim_model, victim_data_loader, cfg.DEVICE)
     print("Metrics of Victim Model on Victim Dataset:", metrics)
@@ -141,14 +142,14 @@ def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Data
         thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
     unlabeled_loader = get_data_loader(Subset(
         thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
-    train_loader = change_theif_loader_labels(cfg, train_loader, victim_model)
-    val_loader = change_theif_loader_labels(cfg, val_loader, victim_model)
+    train_loader = change_thief_loader_labels(cfg, train_loader, victim_model)
+    val_loader = change_thief_loader_labels(cfg, val_loader, victim_model)
     dataloader = {'train': train_loader,
                   'val': val_loader, 'unlabeled': unlabeled_loader}
     return dataloader
 
 
-def change_theif_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_model: nn.Module):
+def change_thief_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_model: nn.Module):
     '''
     Changes the labels of the thief dataset to the labels predicted by the victim model
     '''
