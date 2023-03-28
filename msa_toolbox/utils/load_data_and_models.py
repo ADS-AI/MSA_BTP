@@ -21,7 +21,7 @@ from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
 from typing import Any, Callable, Iterable, TypeVar, Generic, Sequence, List, Optional, Union
 
 
-def load_dataset(dataset_name, train=True, transform=None, target_transform=None, download=False):
+def load_dataset(dataset_name, train=True, transform=None, target_transform=None, download=True):
     '''
     Return the specified dataset along with transform
     '''

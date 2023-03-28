@@ -16,6 +16,8 @@ from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
 from . active_learning_methods import active_learning_technique
 from . train_model import train_one_epoch
+from . load_victim_thief_data_and_model import load_victim_data_and_model, create_thief_loaders, change_thief_loader_labels
+from . active_learning_train import train
 
 
 def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: DataLoader, victim_model: nn.Module):
@@ -100,104 +102,3 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     '''
     for trial in range(cfg.TRIALS):
         one_trial(cfg, trial, num_class, victim_data_loader, victim_model)
-
-
-def load_victim_data_and_model(cfg: CfgNode):
-    '''
-    Loads the victim dataset and model
-    '''
-    victim_data = load_victim_dataset(
-        cfg.VICTIM.DATASET, train=False, transform=True, download=True)
-    num_class = len(victim_data.classes)
-    print(
-        f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
-    victim_data_loader = get_data_loader(
-        victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
-    victim_model = load_victim_model(
-        cfg.VICTIM.ARCHITECTURE, num_classes=num_class, weights=cfg.VICTIM.WEIGHTS, progress=False)
-
-    # '''
-    optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
-                              lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
-    criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
-    train_one_epoch(
-        victim_model, victim_data_loader, 0, cfg.TRAIN.BATCH_SIZE, optimizer,
-        criteria, cfg.DEVICE, 100, verbose=False)
-    # '''
-
-    metrics = accuracy_f1_precision_recall(
-        victim_model, victim_data_loader, cfg.DEVICE)
-    print("Metrics of Victim Model on Victim Dataset:", metrics)
-
-    return (victim_data, num_class), victim_data_loader, victim_model
-
-
-def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Dataset, labeled_indices: np.ndarray, unlabeled_indices: np.ndarray, val_indices: np.ndarray):
-    '''
-    Creates the loaders for the thief model
-    '''
-    train_loader = get_data_loader(Subset(
-        thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
-    val_loader = get_data_loader(Subset(
-        thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
-    unlabeled_loader = get_data_loader(Subset(
-        thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
-    train_loader = change_thief_loader_labels(cfg, train_loader, victim_model)
-    val_loader = change_thief_loader_labels(cfg, val_loader, victim_model)
-    dataloader = {'train': train_loader,
-                  'val': val_loader, 'unlabeled': unlabeled_loader}
-    return dataloader
-
-
-def change_thief_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_model: nn.Module):
-    '''
-    Changes the labels of the thief dataset to the labels predicted by the victim model
-    '''
-    victim_model.eval()
-    with torch.no_grad():
-        for images, labels in data_loader:
-            images, labels = images.to(cfg.DEVICE), labels.to(cfg.DEVICE)
-            outputs = victim_model(images)
-            _, predicted = torch.max(outputs, 1)
-            labels[:] = predicted
-    return data_loader
-
-
-def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
-          dataloader: Dict[str, DataLoader], trail_num: int, cycle_num: int, log_interval=1000):
-    '''
-    Trains the Thief Model on the Victim Dataset
-    '''
-    print("Training Thief Model on Thief Dataset")
-    exit = False
-    curr_loss = None
-    best_f1 = None
-    no_improvement = 0
-    for epoch in range(cfg.TRAIN.EPOCH):
-        train_epoch_loss, train_epoch_acc = train_one_epoch(
-            thief_model, dataloader['train'], epoch, cfg.TRAIN.BATCH_SIZE, optimizer,
-            criterion, cfg.DEVICE, log_interval, verbose=False)
-
-        metrics_val = accuracy_f1_precision_recall(
-            thief_model, dataloader['val'], cfg.DEVICE)
-        if best_f1 is None or metrics_val['f1'] > best_f1:
-            if os.path.isdir(cfg.OUT_DIR) is False:
-                os.makedirs(cfg.OUT_DIR, exist_ok=True)
-            best_f1 = metrics_val['f1']
-            torch.save({'trail': trail_num, 'cycle': cycle_num, 'epoch': epoch, 'state_dict': thief_model.state_dict(
-            )}, f"{cfg.OUT_DIR}/thief_model_{trail_num+1}_{cycle_num+1}.pth")
-            no_improvement = 0
-        else:
-            no_improvement += 1
-            if no_improvement == cfg.TRAIN.PATIENCE:
-                exit = True
-        if (epoch+1) % log_interval == 0:
-            metrics_train = accuracy_f1_precision_recall(
-                thief_model, dataloader['train'], cfg.DEVICE)
-            metrics_victim = accuracy_f1_precision_recall(
-                thief_model, dataloader['victim'], cfg.DEVICE)
-            print(
-                f"Epoch: {epoch+1}, Train Loss: {train_epoch_loss:.4f}, Train Acc: {train_epoch_acc:.4f}, Val Acc: {metrics_val['accuracy']:.4f}, Val F1: {metrics_val['f1']:.4f}, Victim Acc: {metrics_victim['accuracy']:.4f}, Victim F1: {metrics_victim['f1']:.4f}")
-        if exit:
-            break
-    print("Training Completed")
