@@ -28,8 +28,15 @@ def load_victim_data_and_model(cfg: CfgNode):
         f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
     victim_data_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
-    victim_model = load_victim_model(
-        cfg.VICTIM.ARCHITECTURE, num_classes=num_class, weights=cfg.VICTIM.WEIGHTS, progress=False)
+
+    if len(cfg.VICTIM.ARCHITECTURE.split('/')) > 1 or len(cfg.VICTIM.ARCHITECTURE.split('\\'[0])) > 1:
+        victim_model = torch.load(cfg.VICTIM.ARCHITECTURE)
+    else:
+        victim_model = load_victim_model(
+            cfg.VICTIM.ARCHITECTURE, num_classes=num_class, weights=cfg.VICTIM.WEIGHTS, progress=False)
+    if cfg.VICTIM.WEIGHTS is not None and cfg.VICTIM.WEIGHTS != 'None' and (len(cfg.VICTIM.WEIGHTS.split('\\'[0])) > 1 or len(cfg.VICTIM.WEIGHTS.split('/')) > 1):
+        victim_model.load_state_dict(torch.load(cfg.VICTIM.WEIGHTS))
+
     # '''
     optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
                               lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)

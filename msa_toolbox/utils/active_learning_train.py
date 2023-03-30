@@ -34,19 +34,12 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
                 os.makedirs(cfg.OUT_DIR, exist_ok=True)
             best_f1 = metrics_val['f1']
             torch.save({'trail': trail_num, 'cycle': cycle_num, 'epoch': epoch, 'state_dict': thief_model.state_dict(
-            )}, f"{cfg.OUT_DIR}/thief_model_{trail_num+1}_{cycle_num+1}.pth")
+            )}, f"{cfg.OUT_DIR}/thief_model__trial_{trail_num+1}_cycle_{cycle_num+1}.pth")
             no_improvement = 0
         else:
             no_improvement += 1
             if no_improvement == cfg.TRAIN.PATIENCE:
                 exit = True
-        if (epoch+1) % log_interval == 0:
-            metrics_train = accuracy_f1_precision_recall(
-                thief_model, dataloader['train'], cfg.DEVICE)
-            metrics_victim = accuracy_f1_precision_recall(
-                thief_model, dataloader['victim'], cfg.DEVICE)
-            print(
-                f"Epoch: {epoch+1}, Train Loss: {train_epoch_loss:.4f}, Train Acc: {train_epoch_acc:.4f}, Val Acc: {metrics_val['accuracy']:.4f}, Val F1: {metrics_val['f1']:.4f}, Victim Acc: {metrics_victim['accuracy']:.4f}, Victim F1: {metrics_victim['f1']:.4f}")
         if exit:
             break
     print("Training Completed")

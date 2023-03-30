@@ -39,8 +39,8 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
 
     for cycle in range(cfg.ACTIVE.CYCLES):
         print("\nCycle: ", cycle)
-        print('Length of Datasets: ', len(dataloader['train'].dataset), len(
-            dataloader['val'].dataset), len(dataloader['unlabeled'].dataset))
+        print('Length of Datasets: ', 'labeled:', len(dataloader['train'].dataset), 'val:', len(
+            dataloader['val'].dataset), 'unlabeled:', len(dataloader['unlabeled'].dataset))
         thief_model = load_thief_model(
             cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
 
@@ -54,7 +54,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
 
         # print("Loading best checkpoint for Thief model")
         best_model_path = os.path.join(
-            cfg.OUT_DIR, f"thief_model_{trial_num+1}_{cycle+1}.pth")
+            cfg.OUT_DIR, f"thief_model__trial_{trial_num+1}_cycle_{cycle+1}.pth")
         best_state = torch.load(best_model_path)['state_dict']
         thief_model.load_state_dict(best_state)
 
