@@ -27,7 +27,7 @@ def load_victim_data_and_model(cfg: CfgNode):
     print(
         f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
     victim_data_loader = get_data_loader(
-        victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
+        victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
 
     if len(cfg.VICTIM.ARCHITECTURE.split('/')) > 1 or len(cfg.VICTIM.ARCHITECTURE.split('\\'[0])) > 1:
         victim_model = torch.load(cfg.VICTIM.ARCHITECTURE)
@@ -58,11 +58,11 @@ def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Data
     Creates the loaders for the thief model
     '''
     train_loader = get_data_loader(Subset(
-        thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
+        thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
     val_loader = get_data_loader(Subset(
-        thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
+        thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
     unlabeled_loader = get_data_loader(Subset(
-        thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=4)
+        thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
     train_loader = change_thief_loader_labels(cfg, train_loader, victim_model)
     val_loader = change_thief_loader_labels(cfg, val_loader, victim_model)
     dataloader = {'train': train_loader,
@@ -74,7 +74,7 @@ def change_thief_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_mod
     '''
     Changes the labels of the thief dataset to the labels predicted by the victim model
     '''
-    victim_model.to(cfg.DEVICE)
+    victim_model = victim_model.to(cfg.DEVICE)
     victim_model.eval()
     with torch.no_grad():
         new_labels = torch.tensor([])
@@ -82,6 +82,6 @@ def change_thief_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_mod
             image, label = image.to(cfg.DEVICE), label.to(cfg.DEVICE)
             outputs = victim_model(image)
             _, predicted = torch.max(outputs, 1)
-            new_labels = torch.cat((new_labels, predicted), dim=0)
+            new_labels = torch.cat((new_labels, predicted.cpu()), dim=0)
         data_loader.dataset.labels = new_labels
     return data_loader

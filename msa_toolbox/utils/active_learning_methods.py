@@ -32,7 +32,7 @@ def entropy_technique(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: Da
             entropy = -torch.sum(prob * torch.log(prob), dim=1)
             # uncertainty = torch.cat((uncertainty, torch.tensor(entropy)), dim=0)
             uncertainty = torch.cat(
-                (uncertainty, entropy.clone().detach()), dim=0)
+                (uncertainty, entropy.clone().detach().cpu()), dim=0)
             indices = torch.cat((indices, torch.tensor(
                 np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
 

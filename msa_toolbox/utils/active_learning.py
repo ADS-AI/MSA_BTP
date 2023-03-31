@@ -89,11 +89,11 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
             # arr, cnt = np.unique(unlabeled_indices, return_counts=True)
             # print(len(cnt[cnt > 1]), arr[cnt > 1])
             dataloader['train'] = get_data_loader(Subset(
-                thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=4)
+                thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
             dataloader['train'] = change_thief_loader_labels(
                 cfg, dataloader['train'], victim_model)
             dataloader['unlabeled'] = get_data_loader(Subset(
-                thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=4)
+                thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
 
 
 def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int, victim_model: nn.Module):
