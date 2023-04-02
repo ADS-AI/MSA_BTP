@@ -4,13 +4,14 @@ import random
 import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
+from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader, Subset
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from typing import Any, Dict
 from . loss_criterion import get_loss_criterion
 from . optimizer import get_optimizer
-from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_data_loader
+from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_data_loader, load_custom_dataset
 from . load_data_and_models import load_thief_model, load_victim_model
 from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
@@ -21,11 +22,20 @@ def load_victim_data_and_model(cfg: CfgNode):
     '''
     Loads the victim dataset and model
     '''
-    victim_data = load_victim_dataset(
-        cfg.VICTIM.DATASET, train=False, transform=True, download=True)
+    if cfg.VICTIM.DATASET.lower() == 'custom_dataset':
+        transform = transforms.Compose([
+            transforms.Resize((64, 64)),
+            transforms.ToTensor()
+        ])
+        victim_data = load_custom_dataset(
+            root_dir=cfg.VICTIM.DATA_ROOT, transform=transform)
+    else:
+        victim_data = load_victim_dataset(
+            cfg.VICTIM.DATASET, train=False, transform=True, download=True)
     num_class = len(victim_data.classes)
     print(
         f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
+
     victim_data_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
 

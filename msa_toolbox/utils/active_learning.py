@@ -8,9 +8,10 @@ from torch.utils.data import Dataset, DataLoader, Subset
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from typing import Any, Dict
+from torchvision import transforms
 from . loss_criterion import get_loss_criterion
 from . optimizer import get_optimizer
-from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_data_loader
+from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_data_loader, load_custom_dataset
 from . load_data_and_models import load_thief_model, load_victim_model
 from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
@@ -20,9 +21,8 @@ from . load_victim_thief_data_and_model import load_victim_data_and_model, creat
 from . active_learning_train import train
 
 
-def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: DataLoader, victim_model: nn.Module):
-    thief_data = load_thief_dataset(
-        cfg.THIEF.DATASET, train=False, transform=True, download=True)
+def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: DataLoader,
+              victim_model: nn.Module, thief_data: Dataset):
     indices = np.arange(min(len(thief_data), cfg.THIEF.NUM_TRAIN))
     random.shuffle(indices)
 
@@ -100,5 +100,17 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     '''
     Performs active learning on the victim dataset according to the user configuration 
     '''
+    if cfg.THIEF.DATASET.lower() == 'custom_dataset':
+        transform = transforms.Compose([
+            transforms.Resize((64, 64)),
+            transforms.ToTensor()
+        ])
+        thief_data = load_custom_dataset(
+            root_dir=cfg.THIEF.DATA_ROOT, transform=transform)
+    else:
+        thief_data = load_thief_dataset(
+            cfg.THIEF.DATASET, train=False, transform=True, download=True)
+
     for trial in range(cfg.TRIALS):
-        one_trial(cfg, trial, num_class, victim_data_loader, victim_model)
+        one_trial(cfg, trial, num_class, victim_data_loader,
+                  victim_model, thief_data)
