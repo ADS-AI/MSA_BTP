@@ -36,9 +36,12 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
     dataloader['victim'] = victim_data_loader
 
     for cycle in range(cfg.ACTIVE.CYCLES):
-        print("\nCycle: ", cycle)
-        print('Length of Datasets: {labeled=', len(dataloader['train'].dataset), ', val:', len(
-            dataloader['val'].dataset), ', unlabeled:', len(dataloader['unlabeled'].dataset), '}')
+        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
+            f.write("\n\n===============================> Cycle:" +
+                    str(cycle) + " <===============================\n")
+            f.write("\nLength of Datasets: {labeled=" + str(len(dataloader['train'].dataset)) + ', val:' + str(len(
+                dataloader['val'].dataset)) + ', unlabeled:' + str(len(dataloader['unlabeled'].dataset)) + '}' + '\n')
+
         thief_model = load_thief_model(
             cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
 
@@ -58,14 +61,20 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
             thief_model, dataloader['victim'], cfg.DEVICE)
         agree = agreement(thief_model, victim_model,
                           dataloader['victim'], cfg.DEVICE)
-        print("Metrics of Thief Model on Victim Dataset:", metrics)
-        print("Agreement of Thief Model on Victim Dataset:", agree)
+        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
+            f.write("Metrics of Thief Model on Victim Dataset: " +
+                    str(metrics) + "\n")
+            f.write("Agreement of Thief Model on Victim Dataset: " +
+                    str(agree) + "\n")
         metrics = accuracy_f1_precision_recall(
             thief_model, dataloader['val'], cfg.DEVICE)
         agree = agreement(thief_model, victim_model,
                           dataloader['val'], cfg.DEVICE)
-        print("Metrics of Thief Model on Validation Dataset:", metrics)
-        print("Agreement of Thief Model on Validation Dataset:", agree)
+        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
+            f.write("Metrics of Thief Model on Validation Dataset: " +
+                    str(metrics) + "\n")
+            f.write("Agreement of Thief Model on Validation Dataset: " +
+                    str(agree) + "\n")
 
         if cycle == cfg.ACTIVE.CYCLES-1 or True:
             new_training_samples = active_learning_technique(
@@ -88,7 +97,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
 
 def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int, victim_model: nn.Module):
     '''
-    Performs active learning on the victim dataset according to the user configuration 
+    Performs active learning on the victim dataset according to the user configuration
     '''
     if cfg.THIEF.DATASET.lower() == 'custom_dataset':
         transform = transforms.Compose([

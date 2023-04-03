@@ -15,7 +15,7 @@ from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_
 from . load_data_and_models import load_thief_model, load_victim_model
 from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
-from . train_model import train_one_epoch
+from . active_learning_train import train_one_epoch
 
 
 def load_victim_data_and_model(cfg: CfgNode):
@@ -33,8 +33,10 @@ def load_victim_data_and_model(cfg: CfgNode):
         victim_data = load_victim_dataset(
             cfg.VICTIM.DATASET, train=False, transform=True, download=True)
     num_class = len(victim_data.classes)
-    print(
-        f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes")
+
+    with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
+        f.write(
+            f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes\n\n")
 
     victim_data_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
@@ -47,17 +49,20 @@ def load_victim_data_and_model(cfg: CfgNode):
     if cfg.VICTIM.WEIGHTS is not None and cfg.VICTIM.WEIGHTS != 'None' and (len(cfg.VICTIM.WEIGHTS.split('\\'[0])) > 1 or len(cfg.VICTIM.WEIGHTS.split('/')) > 1):
         victim_model.load_state_dict(torch.load(cfg.VICTIM.WEIGHTS))
 
-    # '''
     optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
                               lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
-    train_one_epoch(
-        victim_model, victim_data_loader, 0, cfg.TRAIN.BATCH_SIZE, optimizer,
-        criteria, cfg.DEVICE, 100, verbose=False)
-    # '''
+
+    train_one_epoch(cfg, victim_model, victim_data_loader,
+                    0, optimizer, criteria)
+
     metrics = accuracy_f1_precision_recall(
         victim_model, victim_data_loader, cfg.DEVICE)
-    print("Metrics of Victim Model on Victim Dataset:", metrics)
+
+    with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
+        f.write(
+            f"\nMetrics of Victim Model on Victim Dataset: {metrics}\n")
+
     return (victim_data, num_class), victim_data_loader, victim_model
 
 
