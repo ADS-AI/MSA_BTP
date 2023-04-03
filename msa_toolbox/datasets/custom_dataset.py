@@ -8,6 +8,7 @@ PyTorch's ImageFolder class. This class is used to load the image dataset from a
 import os
 from torchvision.datasets.folder import ImageFolder
 
+
 class CustomDataset(ImageFolder):
     """
     A custom dataset class that inherits from PyTorch's ImageFolder class.
@@ -19,11 +20,14 @@ class CustomDataset(ImageFolder):
     Raises:
         ValueError: If the root directory path of the dataset does not exist.
     """
+
     def __init__(self, root_dir: str, transform=None, target_transform=None):
         if not os.path.exists(root_dir):
-            raise ValueError(f"Dataset not found at {root_dir}. Please enter a valid path with the dataset.")
+            raise ValueError(
+                f"Dataset not found at {root_dir}. Please enter a valid path with the dataset.")
         super().__init__(root_dir, transform, target_transform)
-
+        self.idx_to_class = {v: k for k, v in self.class_to_idx.items()}
+        self.labels = self.targets
 
     def __getitem__(self, index: int):
         """

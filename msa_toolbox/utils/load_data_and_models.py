@@ -16,8 +16,10 @@ from ..models import vgg
 from ..models import efficientnet_v2
 from ..models import mobilenet_v2
 from ..models import mobilenet_v3
+from torch.utils.data import Dataset, DataLoader, Subset
+from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
+from typing import Any, Callable, Iterable, TypeVar, Generic, Sequence, List, Optional, Union
 
-from typing import Any
 
 def load_dataset(dataset_name, train=True, transform=None, target_transform=None, download=True):
     '''
@@ -26,14 +28,14 @@ def load_dataset(dataset_name, train=True, transform=None, target_transform=None
     dataset_name = dataset_name.lower()
     if transform:
         if type(transform) == bool:
-            model_family = dataset_to_modelfamily[dataset_name] 
+            model_family = dataset_to_modelfamily[dataset_name]
             if train:
                 transform = modelfamily_to_transforms[model_family]['train']
             else:
                 transform = modelfamily_to_transforms[model_family]['test']
         else:
             transform = transform
-            
+
     if dataset_name == 'cifar10':
         return cifar.CIFAR10(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'cifar100':
@@ -48,7 +50,7 @@ def load_dataset(dataset_name, train=True, transform=None, target_transform=None
         return mnist.FashionMNIST(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'emnist':
         return mnist.EMNIST(train=train, transform=transform, target_transform=target_transform, download=download)
-    elif dataset_name =='emnistletters':
+    elif dataset_name == 'emnistletters':
         return mnist.EMNISTLetters(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'svhn':
         return svhn.SVHN(train=train, transform=transform, target_transform=target_transform, download=download)
@@ -103,7 +105,7 @@ def load_victim_dataset(dataset_name, train=True, transform=None, target_transfo
     Returns:
         The loaded victim dataset in a format suitable for machine learning tasks.
     '''
-    return load_dataset(dataset_name, train=train, transform=transform, 
+    return load_dataset(dataset_name, train=train, transform=transform,
                         target_transform=target_transform, download=download)
 
 
@@ -127,8 +129,19 @@ def load_thief_dataset(dataset_name, train=True, transform=None, target_transfor
     Returns:
         The loaded thief dataset in a format suitable for machine learning tasks.
     '''
-    return load_dataset(dataset_name, train=train, transform=transform, 
+    return load_dataset(dataset_name, train=train, transform=transform,
                         target_transform=target_transform, download=download)
+
+
+def get_data_loader(dataset, batch_size: int = 128, shuffle: bool = False, sampler=None, batch_sampler=None,
+                    num_workers: int = 2, collate_fn=None, pin_memory: bool = False, drop_last: bool = False,
+                    prefetch_factor: int = 2, persistent_workers: bool = False, pin_memory_device: str = ""):
+    '''
+    Returns a data loader for the specified dataset.
+    '''
+    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler, batch_sampler=batch_sampler,
+                      num_workers=num_workers, collate_fn=collate_fn, pin_memory=pin_memory, drop_last=drop_last,
+                      prefetch_factor=prefetch_factor, persistent_workers=persistent_workers, pin_memory_device=pin_memory_device)
 
 
 def load_models(model_name, num_classes,  weights, progress, **kwargs):
@@ -140,7 +153,6 @@ def load_models(model_name, num_classes,  weights, progress, **kwargs):
         return resnet.ResNet18(num_classes, weights, progress, **kwargs)
     elif model_name == 'resnet50':
         return resnet.ResNet50(num_classes, weights, progress, **kwargs)
-    
     elif model_name == 'vgg11':
         return vgg.VGG11(num_classes, weights, progress, **kwargs)
     elif model_name == 'vgg13':
@@ -149,7 +161,6 @@ def load_models(model_name, num_classes,  weights, progress, **kwargs):
         return vgg.VGG16(num_classes, weights, progress, **kwargs)
     elif model_name == 'vgg19':
         return vgg.VGG19(num_classes, weights, progress, **kwargs)
-    
     elif model_name == 'vgg11_bn':
         return vgg.VGG11_BN(num_classes, weights, progress, **kwargs)
     elif model_name == 'vgg13_bn':
@@ -158,10 +169,8 @@ def load_models(model_name, num_classes,  weights, progress, **kwargs):
         return vgg.VGG16_BN(num_classes, weights, progress, **kwargs)
     elif model_name == 'vgg19_bn':
         return vgg.VGG19_BN(num_classes, weights, progress, **kwargs)
-    
     elif model_name == 'alexnet':
         return alexnet.AlexNet(num_classes, weights, progress, **kwargs)
-    
     elif model_name == 'efficientnet_b0':
         return efficientnet.EfficientNet_B0(num_classes, weights, progress, **kwargs)
     elif model_name == 'efficientnet_b1':
@@ -178,14 +187,12 @@ def load_models(model_name, num_classes,  weights, progress, **kwargs):
         return efficientnet.EfficientNet_B6(num_classes, weights, progress, **kwargs)
     elif model_name == 'efficientnet_b7':
         return efficientnet.EfficientNet_B7(num_classes, weights, progress, **kwargs)
-    
     elif model_name == 'effcientnet_v2_s':
         return efficientnet_v2.EfficientNet_V2_S(num_classes, weights, progress, **kwargs)
     elif model_name == 'effcientnet_v2_m':
         return efficientnet_v2.EfficientNet_V2_M(num_classes, weights, progress, **kwargs)
     elif model_name == 'effcientnet_v2_l':
         return efficientnet_v2.EfficientNet_V2_L(num_classes, weights, progress, **kwargs)
-    
     elif model_name == 'mobilenet_v2':
         return mobilenet_v2.MobileNet_V2(num_classes, weights, progress, **kwargs)
     elif model_name == 'mobilenet_v3_small':
@@ -194,7 +201,7 @@ def load_models(model_name, num_classes,  weights, progress, **kwargs):
         return mobilenet_v3.MobileNet_V3_Large(num_classes, weights, progress, **kwargs)
 
 
-def load_thief_model(model_name:str,  num_classes:int ,weights: str = "default",  progress: bool = True, **kwargs: Any):
+def load_thief_model(model_name: str,  num_classes: int, weights: str = "default",  progress: bool = True, **kwargs: Any):
     '''
     Loads a pre-trained thief model specified by 'model_name' and returns it in a format suitable for machine learning tasks.
 
@@ -214,18 +221,18 @@ def load_thief_model(model_name:str,  num_classes:int ,weights: str = "default",
                 2. 'imagenet1k_v1' - for any pre-trained models.
                 3. 'imagenet1k_v2' - only for 'efficientnet_b1', 'mobilenet_v2', 'mobilenet_v3_large', 'resnet50'
                 4. 'imagenet1k_features' - only for 'vgg16'
-                
+                5. None - for no weights.
         progress (bool): A flag indicating whether to display a progress bar while downloading the pre-trained weights. Defaults to True.
         **kwargs (Any): Additional keyword arguments to be passed to the underlying 'load_models' function.
 
     Returns:
         The loaded pre-trained thief model in a format suitable for machine learning tasks.
     '''
-    return load_models(model_name, num_classes=num_classes,  weights=weights, 
-                    progress=progress, **kwargs)
+    return load_models(model_name, num_classes=num_classes,  weights=weights,
+                       progress=progress, **kwargs)
 
 
-def load_victim_model(model_name:str, num_classes:int,  weights: str = "default",  progress: bool = True, **kwargs: Any):
+def load_victim_model(model_name: str, num_classes: int,  weights: str = "default",  progress: bool = True, **kwargs: Any):
     '''
     Loads a pre-trained victim model specified by 'model_name' and returns it in a format suitable for machine learning tasks.
 
@@ -245,12 +252,12 @@ def load_victim_model(model_name:str, num_classes:int,  weights: str = "default"
                 2. 'imagenet1k_v1' - for any pre-trained models.
                 3. 'imagenet1k_v2' - only for 'efficientnet_b1', 'mobilenet_v2', 'mobilenet_v3_large', 'resnet50'
                 4. 'imagenet1k_features' - only for 'vgg16'
-                
+                5. None - for no weights.
         progress (bool): A flag indicating whether to display a progress bar while downloading the pre-trained weights. Defaults to True.
         **kwargs (Any): Additional keyword arguments to be passed to the underlying 'load_models' function.
 
     Returns:
         The loaded pre-trained victim model in a format suitable for machine learning tasks.
     '''
-    return load_models(model_name, num_classes=num_classes,  weights=weights, 
-                    progress=progress, **kwargs)
+    return load_models(model_name, num_classes=num_classes,  weights=weights,
+                       progress=progress, **kwargs)

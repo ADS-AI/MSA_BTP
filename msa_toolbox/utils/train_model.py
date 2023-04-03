@@ -8,16 +8,16 @@ from torch.optim import Optimizer
 from torch.nn.modules.loss import _Loss
 
 
-def train(model:nn.Module, dataloader:DataLoader, epochs:int, batch_size:int, optimizer:Optimizer, 
-            criterion:_Loss, device:str, log_interval=100, all_data=False, verbose=True):
+def train(model: nn.Module, train_loader: DataLoader, val_loader: DataLoader, epochs: int, batch_size: int, optimizer: Optimizer,
+          criterion: _Loss, device: str, log_interval=100, all_data=False, verbose=True):
     '''
-    This function trains a given model on a given 'dataloader' for 'epochs' number of epochs using a 
+    This function trains a given model on a given 'train_loader' for 'epochs' number of epochs using a 
     given optimizer and criterion function. The device parameter specifies whether to use GPU or CPU
     for training.
 
     Parameters:
         - model (nn.Module): The neural network model to train.
-        - dataloader (DataLoader): The data loader to use for training and validation.
+        - train_loader (DataLoader): The data loader to use for training and validation.
         - epochs (int): The number of epochs to train the model for.
         - batch_size (int): The batch size to use for training.
         - optimizer (Optimizer): The optimizer to use for training the model.
@@ -41,15 +41,17 @@ def train(model:nn.Module, dataloader:DataLoader, epochs:int, batch_size:int, op
     for epoch in range(epochs):
         print('======================> Epoch: {} <======================='.format(epoch))
         # Train the model
-        train_epoch_loss, train_epoch_acc = train_one_epoch(model, dataloader, epoch, batch_size, optimizer, 
+        train_epoch_loss, train_epoch_acc = train_one_epoch(model, train_loader, epoch, batch_size, optimizer,
                                                             criterion, device, log_interval, verbose)
-        print('Training Loss: {:.4f}\tTraining Accuracy: {:.2f}%'.format(train_epoch_loss, train_epoch_acc))
+        print('Training Loss: {:.4f}\tTraining Accuracy: {:.2f}%'.format(
+            train_epoch_loss, train_epoch_acc))
         train_loss.append(train_epoch_loss)
         train_acc.append(train_epoch_acc)
         # Validate the model
-        val_epoch_loss, val_epoch_acc = validate_one_epoch(model, dataloader, epoch, batch_size, criterion,
-                                                            device, log_interval, verbose)
-        print('Validation Loss: {:.4f}\tValidation Accuracy: {:.2f}%'.format(val_epoch_loss, val_epoch_acc))
+        val_epoch_loss, val_epoch_acc = validate_one_epoch(model, val_loader, epoch, batch_size, criterion,
+                                                           device, log_interval, verbose)
+        print('Validation Loss: {:.4f}\tValidation Accuracy: {:.2f}%'.format(
+            val_epoch_loss, val_epoch_acc))
         val_loss.append(val_epoch_loss)
         val_acc.append(val_epoch_acc)
     if all_data:
@@ -57,8 +59,8 @@ def train(model:nn.Module, dataloader:DataLoader, epochs:int, batch_size:int, op
     return train_loss[-1], train_acc[-1], val_loss[-1], val_acc[-1]
 
 
-def train_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_size:int, optimizer:Optimizer, 
-            criterion:_Loss, device:str, log_interval=20, verbose=True):
+def train_one_epoch(model: nn.Module, dataloader: DataLoader, epoch: int, batch_size: int, optimizer: Optimizer,
+                    criterion: _Loss, device: str, log_interval=20, verbose=True):
     '''
     Trains the specified 'model' on the provided 'dataloader' for one epoch.
     Args:
@@ -75,11 +77,12 @@ def train_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_siz
     Returns:
         A tuple containing the average training loss and accuracy over the entire dataset.
     '''
-    model.train()
     train_loss = 0
     correct = 0
     total = 0
     batch_idx = 1
+    model.train()
+    model = model.to(device)
     for inputs, targets in tqdm(dataloader):
         inputs, targets = inputs.to(device), targets.to(device)
         optimizer.zero_grad()
@@ -102,8 +105,8 @@ def train_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_siz
     return train_loss / len(dataloader.dataset), 100. * correct / total
 
 
-def validate_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_size:int, criterion:_Loss,
-                device:str, log_interval=20, verbose=True):
+def validate_one_epoch(model: nn.Module, dataloader: DataLoader, epoch: int, batch_size: int, criterion: _Loss,
+                       device: str, log_interval=20, verbose=True):
     '''
     Validates the specified 'model' on the provided 'dataloader' for one epoch.
     Args:
@@ -145,13 +148,13 @@ def validate_one_epoch(model:nn.Module, dataloader:DataLoader, epoch:int, batch_
     return val_loss / len(dataloader.dataset), 100. * correct / total
 
 
-def test(model:nn.Module, dataloader:DataLoader, batch_size:int, criterion:_Loss, device:str, 
-            log_interval=20, verbose=True):
+def test(model: nn.Module, test_loader: DataLoader, batch_size: int, criterion: _Loss, device: str,
+         log_interval=20, verbose=True):
     '''
     Tests the specified 'model' on the provided 'dataloader'.
     Args:
         model (nn.Module): The model to be tested.
-        dataloader (DataLoader): The DataLoader containing the test dataset.
+        test_loader (DataLoader): The DataLoader containing the test dataset.
         batch_size (int): The batch size used for testing.
         criterion (_Loss): The loss function to use for computing the test loss.
         device (str): The device to run the testing on.
@@ -167,7 +170,7 @@ def test(model:nn.Module, dataloader:DataLoader, batch_size:int, criterion:_Loss
     total = 0
     batch_idx = 1
     with torch.no_grad():
-        for inputs, targets in tqdm(dataloader):
+        for inputs, targets in tqdm(test_loader):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = model(inputs)
             loss = criterion(outputs, targets)
@@ -179,9 +182,9 @@ def test(model:nn.Module, dataloader:DataLoader, batch_size:int, criterion:_Loss
 
             if batch_idx % log_interval == 0:
                 print('Test Epoch: [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy: {:.2f}%'.format(
-                    batch_idx * len(inputs), len(dataloader.dataset),
-                    100. * batch_idx / len(dataloader), loss.item(),
+                    batch_idx * len(inputs), len(test_loader.dataset),
+                    100. * batch_idx / len(test_loader), loss.item(),
                     100. * correct / total))
             batch_idx += 1
 
-    return test_loss / len(dataloader.dataset), 100. * correct / total
+    return test_loss / len(test_loader.dataset), 100. * correct / total
