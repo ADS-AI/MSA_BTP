@@ -17,7 +17,8 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
     '''
     Trains the Thief Model on the Thief Dataset
     '''
-    print("Training Thief Model on Thief Dataset")
+    print(
+        f"Training Thief Model on Thief Dataset with {cfg.TRAIN.EPOCH} epochs")
     exit = False
     curr_loss = None
     best_f1 = None
@@ -29,6 +30,7 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
 
         metrics_val = accuracy_f1_precision_recall(
             thief_model, dataloader['val'], cfg.DEVICE)
+        
         if best_f1 is None or metrics_val['f1'] > best_f1:
             if os.path.isdir(cfg.OUT_DIR) is False:
                 os.makedirs(cfg.OUT_DIR, exist_ok=True)

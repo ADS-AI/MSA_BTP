@@ -144,7 +144,6 @@ def validate_one_epoch(model: nn.Module, dataloader: DataLoader, epoch: int, bat
                     100. * batch_idx / len(dataloader), loss.item(),
                     100. * correct / total))
             batch_idx += 1
-
     return val_loss / len(dataloader.dataset), 100. * correct / total
 
 
@@ -186,5 +185,4 @@ def test(model: nn.Module, test_loader: DataLoader, batch_size: int, criterion: 
                     100. * batch_idx / len(test_loader), loss.item(),
                     100. * correct / total))
             batch_idx += 1
-
     return test_loss / len(test_loader.dataset), 100. * correct / total

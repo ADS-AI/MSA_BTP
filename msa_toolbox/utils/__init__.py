@@ -1,5 +1,3 @@
-# from . import load_data_and_models
-# from . import train_model
 from . train_model import train, test
 from . load_data_and_models import load_victim_dataset, load_thief_dataset, load_custom_dataset
 from . load_data_and_models import load_victim_model, load_thief_model
