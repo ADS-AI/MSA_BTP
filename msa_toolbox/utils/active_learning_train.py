@@ -15,7 +15,7 @@ from . train_model import train_one_epoch
 def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
           dataloader: Dict[str, DataLoader], trail_num: int, cycle_num: int, log_interval=1000):
     '''
-    Trains the Thief Model on the Victim Dataset
+    Trains the Thief Model on the Thief Dataset
     '''
     print("Training Thief Model on Thief Dataset")
     exit = False
