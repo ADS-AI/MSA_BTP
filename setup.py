@@ -42,6 +42,11 @@ setup(
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: Microsoft :: Windows",
     ],
+    entry_points={
+        "console_scripts": [
+            "msa-gui = msa_toolbox.ui.gui:demo2.launch",
+        ]
+    },
     extras_require={
         "pytorch": ["torch", "torchvision"],
         "pytorch_image": ["torch", "torchvision", "kornia", "Pillow", "ffmpeg-python", "opencv-python"],
