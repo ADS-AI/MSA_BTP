@@ -3,6 +3,7 @@ import gradio as gr
 import yaml
 import os
 import time
+from threading import Thread
 # from msa_toolbox.main import app
 from .. main import app
 
@@ -12,19 +13,19 @@ lis = os.listdir(config_dir)
 
 def count():
     while True:
-        time.sleep(0.5)
         s = ''
-        with open("C:/Users/khush/Desktop/ADS_MSA_BTP/Utils/Logs", 'r') as f:
+        with open("C:/Users/khush/Desktop/ADS_MSA_BTP/Utils/Logs/log.txt", 'r') as f:
             s = f.read()
-        print(s)
         yield s
 
 
 def start_training(config_name):
     config_path = config_dir+config_name
+    print(config_path, config_dir)
     print(os.listdir(config_dir))
     if config_name in os.listdir(config_dir):
-        app(config_path)
+        thread = Thread(target=app, args=(config_path,))
+        thread.start()
         return 'Model Trained'
     else:
         return 'config file not found'
@@ -147,8 +148,8 @@ with gr.Blocks() as demo:
         with gr.Column():
             inputs = gr.Textbox(lines=1, label="Config",
                                 info="Name of the Config file")
-            # output_tran = gr.Textbox(
-            # lines=15, label="Progress", info="Progress of the Training")
+            output_tran = gr.Textbox(
+            lines=15, label="Progress", info="Progress of the Training")
             train_button = gr.Button("Start Training")
     # with gr.Tab("View Results"):
     #     prog_out = gr.Textbox(label="Output Box")
@@ -158,7 +159,7 @@ with gr.Blocks() as demo:
     # import pdb;pdb.set_trace()
     text_button[0].click(make_cfg, inputs=input[0], outputs=text_output)
     config_button.click(x, inputs=None, outputs=output)
-    train_button.click(start_training, inputs=inputs, outputs=None)
+    train_button.click(start_training, inputs=inputs, outputs=output_tran)
     # prog_button.click(count, inputs=None, outputs=prog_out)
 
 
