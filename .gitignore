@@ -15,4 +15,5 @@ testing3.ipynb
 testing4.ipynb
 testing5.ipynb
 msa_toolbox/results/
-msa_toolbox/ui/configs/
+# msa_toolbox/ui/configs/
+msa_toolbox/ui/__pycache__/
