@@ -2,6 +2,7 @@ env/
 build/
 dist/
 data/
+Utils/
 flagged/
 msa_toolbox/datasets/__pycache__/
 msa_toolbox/models/__pycache__/

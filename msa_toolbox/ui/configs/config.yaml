@@ -1,10 +1,12 @@
 VICTIM:
-  ARCHITECTURE: "resnet18"
-  DATASET: "mnist"
-  WEIGHTS: "default"
-THIEF:
   ARCHITECTURE: "resnet50"
   DATASET: "svhn"
+  DATA_ROOT: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img"
+  WEIGHTS: "default"
+THIEF:
+  ARCHITECTURE: "resnet18"
+  DATASET: "mnist"
+  DATA_ROOT: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img"
   SUBSET: 20000
   NUM_TRAIN: 100000
   WEIGHTS: "default"
@@ -17,12 +19,12 @@ TRAIN:
   LOSS_CRITERION: "cross_entropy_loss"
   BATCH_SIZE: 128
   WEIGHT_DECAY: 0.0001
-  EPOCH: 2
+  EPOCH: 4
   PATIENCE: 5
   LR: 0.001
 TRIALS: 1
 DS_SEED: 123
 NUM_WORKERS: 2
-DEVICE: "cpu"
-LOG_DEST: "C:/Users/khush/Desktop/ADS_MSA_BTP/Utils/Logs"
-OUT_DIR: "C:/Users/khush/Desktop/ADS_MSA_BTP/Utils/SavedModels/Testing"
+DEVICE: "cuda"
+LOG_DEST: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/Log3"
+OUT_DIR: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/SavedModels"

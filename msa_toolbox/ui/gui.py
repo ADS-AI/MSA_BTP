@@ -14,7 +14,7 @@ lis = os.listdir(config_dir)
 def count():
     while True:
         s = ''
-        with open("C:/Users/khush/Desktop/ADS_MSA_BTP/Utils/Logs/log.txt", 'r') as f:
+        with open("/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/Logs/log.txt", 'r') as f:
             s = f.read()
         yield s
 
@@ -164,7 +164,7 @@ with gr.Blocks() as demo:
 
 
 demo1 = gr.Interface(count, inputs=None,
-                     outputs=gr.Textbox(label="Output Box"))
+                     outputs=gr.Textbox(label="Output Box",max_lines=1000))
 
 demo2 = gr.TabbedInterface([demo, demo1], ['Setup Config', 'View Progress'])
 demo2.queue()
