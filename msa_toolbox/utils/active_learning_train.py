@@ -56,7 +56,6 @@ def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, epoc
     train_loss = 0
     correct = 0
     total = 0
-    batch_idx = 1
     model.train()
     model = model.to(cfg.DEVICE)
     f = open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a', encoding="utf-8")
@@ -75,7 +74,6 @@ def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, epoc
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-            batch_idx += 1
             f.write(str(pbar) + '\n')
     f.close()
     return train_loss / len(dataloader.dataset), 100. * correct / total

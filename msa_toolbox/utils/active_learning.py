@@ -66,6 +66,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
                     str(metrics) + "\n")
             f.write("Agreement of Thief Model on Victim Dataset: " +
                     str(agree) + "\n")
+            
         metrics = accuracy_f1_precision_recall(
             thief_model, dataloader['val'], cfg.DEVICE)
         agree = agreement(thief_model, victim_model,
@@ -89,8 +90,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
                 list(set(unlabeled_indices) - set(new_training_samples)))
             dataloader['train'] = get_data_loader(Subset(
                 thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
-            dataloader['train'] = change_thief_loader_labels(
-                cfg, dataloader['train'], victim_model)
+            # dataloader['train'] = change_thief_loader_labels(cfg, dataloader['train'], victim_model)
             dataloader['unlabeled'] = get_data_loader(Subset(
                 thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
 
@@ -110,6 +110,16 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
         thief_data = load_thief_dataset(
             cfg.THIEF.DATASET, train=False, transform=True, download=True)
 
+    thief_data_loader = get_data_loader(thief_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
+    new_labels = change_thief_loader_labels(cfg, thief_data_loader, victim_model)
+    
+    thief_data.labels = new_labels
+    thief_data.targets = new_labels
+    thief_data.classes = victim_data_loader.dataset.classes
+    if cfg.THIEF.DATASET.lower() == 'custom_dataset':
+        samples = np.array(thief_data.samples, dtype=object)
+        samples[:,1] = new_labels
+        thief_data.samples = samples.tolist()
+    
     for trial in range(cfg.TRIALS):
-        one_trial(cfg, trial, num_class, victim_data_loader,
-                  victim_model, thief_data)
+        one_trial(cfg, trial, num_class, victim_data_loader, victim_model, thief_data)

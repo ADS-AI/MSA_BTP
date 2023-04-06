@@ -78,8 +78,6 @@ def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Data
         thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
     unlabeled_loader = get_data_loader(Subset(
         thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
-    train_loader = change_thief_loader_labels(cfg, train_loader, victim_model)
-    val_loader = change_thief_loader_labels(cfg, val_loader, victim_model)
     dataloader = {'train': train_loader,
                   'val': val_loader, 'unlabeled': unlabeled_loader}
     return dataloader
@@ -97,6 +95,5 @@ def change_thief_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_mod
             image, label = image.to(cfg.DEVICE), label.to(cfg.DEVICE)
             outputs = victim_model(image)
             _, predicted = torch.max(outputs, 1)
-            new_labels = torch.cat((new_labels, predicted.cpu()), dim=0)
-        data_loader.dataset.labels = new_labels
-    return data_loader
+            new_labels = torch.cat((new_labels, predicted.cpu()), dim=0)        
+    return new_labels
