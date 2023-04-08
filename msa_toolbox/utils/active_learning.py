@@ -118,7 +118,7 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     thief_data.classes = victim_data_loader.dataset.classes
     if cfg.THIEF.DATASET.lower() == 'custom_dataset':
         samples = np.array(thief_data.samples, dtype=object)
-        samples[:,1] = new_labels
+        samples[:,1] = torch.tensor(new_labels, dtype=torch.int64)
         thief_data.samples = samples.tolist()
     
     for trial in range(cfg.TRIALS):
