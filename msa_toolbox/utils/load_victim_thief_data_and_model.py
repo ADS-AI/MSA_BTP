@@ -36,7 +36,7 @@ def load_victim_data_and_model(cfg: CfgNode):
 
     with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
         f.write(
-            f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes\n\n")
+            f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes\n")
 
     victim_data_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
@@ -46,22 +46,23 @@ def load_victim_data_and_model(cfg: CfgNode):
     else:
         victim_model = load_victim_model(
             cfg.VICTIM.ARCHITECTURE, num_classes=num_class, weights=cfg.VICTIM.WEIGHTS, progress=False)
+
     if cfg.VICTIM.WEIGHTS is not None and cfg.VICTIM.WEIGHTS != 'None' and (len(cfg.VICTIM.WEIGHTS.split('\\'[0])) > 1 or len(cfg.VICTIM.WEIGHTS.split('/')) > 1):
         victim_model.load_state_dict(torch.load(cfg.VICTIM.WEIGHTS))
+    else:
+        optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
+                                lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
+        criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
 
-    optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
-                              lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
-    criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
-
-    train_one_epoch(cfg, victim_model, victim_data_loader,
-                    0, optimizer, criteria)
+        train_one_epoch(cfg, victim_model, victim_data_loader,
+                        0, optimizer, criteria, verbose=False)
 
     metrics = accuracy_f1_precision_recall(
         victim_model, victim_data_loader, cfg.DEVICE)
 
     with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
         f.write(
-            f"\nMetrics of Victim Model on Victim Dataset: {metrics}\n")
+            f"Metrics of Victim Model on Victim Dataset: {metrics}\n")
 
     return (victim_data, num_class), victim_data_loader, victim_model
 

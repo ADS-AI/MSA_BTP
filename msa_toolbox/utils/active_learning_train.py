@@ -28,6 +28,8 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
     for epoch in range(cfg.TRAIN.EPOCH):
         with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
             f.write(f"Epoch {epoch+1} started\n")
+        with open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a') as f:
+            f.write(f"Epoch:{epoch+1}\n")
         train_epoch_loss, train_epoch_acc = train_one_epoch(
             cfg, thief_model, dataloader['train'], epoch, optimizer, criterion)
 
@@ -52,13 +54,13 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
 
 
 def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, epoch: int, optimizer: Optimizer,
-                    criterion: _Loss):
+                    criterion: _Loss, verbose: bool = True):
     train_loss = 0
     correct = 0
     total = 0
     model.train()
     model = model.to(cfg.DEVICE)
-    f = open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a', encoding="utf-8")
+    f = open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a', encoding="utf-8")
 
     with tqdm(dataloader, file=sys.stdout, leave=False) as pbar:
         for inputs, targets in pbar:
@@ -73,7 +75,8 @@ def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, epoc
             _, predicted = torch.max(outputs.data, 1)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
-
-            f.write(str(pbar) + '\n')
+    
+            if verbose:
+                f.write(str(pbar) + '\n')
     f.close()
     return train_loss / len(dataloader.dataset), 100. * correct / total

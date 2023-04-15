@@ -3,6 +3,7 @@ import torch
 import random
 import torch.nn as nn
 import numpy as np
+import json
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, Subset
 from torch.nn.modules.loss import _Loss
@@ -38,9 +39,11 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
     for cycle in range(cfg.ACTIVE.CYCLES):
         with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
             f.write("\n\n===============================> Cycle:" +
-                    str(cycle) + " <===============================\n")
+                    str(cycle+1) + " <===============================\n")
             f.write("\nLength of Datasets: {labeled=" + str(len(dataloader['train'].dataset)) + ', val:' + str(len(
                 dataloader['val'].dataset)) + ', unlabeled:' + str(len(dataloader['unlabeled'].dataset)) + '}' + '\n')
+        with open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a') as f:
+            f.write("Cycle:" +str(cycle+1) + "\n")
 
         thief_model = load_thief_model(
             cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
@@ -57,25 +60,32 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         best_state = torch.load(best_model_path)['state_dict']
         thief_model.load_state_dict(best_state)
 
-        metrics = accuracy_f1_precision_recall(
+        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
+            f.write("Calculating Metrics and Agreement on Victim and Thief Datasets\n")
+        metrics_victim = accuracy_f1_precision_recall(
             thief_model, dataloader['victim'], cfg.DEVICE)
-        agree = agreement(thief_model, victim_model,
+        agree_victim = agreement(thief_model, victim_model,
                           dataloader['victim'], cfg.DEVICE)
+        metrics_thief = accuracy_f1_precision_recall(
+            thief_model, dataloader['val'], cfg.DEVICE)
+        agree_thief = agreement(thief_model, victim_model,
+                          dataloader['val'], cfg.DEVICE)
+        with open(os.path.join(cfg.LOG_DEST, 'log_metrics.json'), 'r') as f:
+            old_metrics = json.load(f)
+            old_metrics['Cycle_'+str(cycle+1)] = {'metrics_victim': metrics_victim, 'agreement_victim': agree_victim, 'metrics_thief': metrics_thief, 'agreement_thief': agree_thief}
+        with open(os.path.join(cfg.LOG_DEST, 'log_metrics.json'), 'w') as f:
+            json.dump(old_metrics, f)
+            
         with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
             f.write("Metrics of Thief Model on Victim Dataset: " +
-                    str(metrics) + "\n")
+                    str(metrics_victim) + "\n")
             f.write("Agreement of Thief Model on Victim Dataset: " +
-                    str(agree) + "\n")
-            
-        metrics = accuracy_f1_precision_recall(
-            thief_model, dataloader['val'], cfg.DEVICE)
-        agree = agreement(thief_model, victim_model,
-                          dataloader['val'], cfg.DEVICE)
+                    str(agree_victim) + "\n")
         with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
             f.write("Metrics of Thief Model on Validation Dataset: " +
-                    str(metrics) + "\n")
+                    str(metrics_thief) + "\n")
             f.write("Agreement of Thief Model on Validation Dataset: " +
-                    str(agree) + "\n")
+                    str(agree_thief) + "\n")
 
         if cycle == cfg.ACTIVE.CYCLES-1 or True:
             new_training_samples = active_learning_technique(

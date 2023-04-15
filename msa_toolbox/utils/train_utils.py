@@ -39,7 +39,7 @@ def data_distribution(data_loader: DataLoader) -> list:
     """
     Returns the distribution of the data_loader
     """
-    print("Number of sample in Dataset: ", len(data_loader.dataset))
+    # print("Number of sample in Dataset: ", len(data_loader.dataset))
     # print(np.unique(data.labels, return_counts=True))
     distribution = {}
     all_labels = []
