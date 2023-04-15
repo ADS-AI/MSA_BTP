@@ -1,6 +1,9 @@
 env/
 build/
 dist/
+data/
+Utils/
+flagged/
 msa_toolbox/datasets/__pycache__/
 msa_toolbox/models/__pycache__/
 msa_toolbox/utils/__pycache__/
@@ -13,4 +16,7 @@ testing2.ipynb
 testing3.ipynb
 testing4.ipynb
 testing5.ipynb
+testing6.ipynb
 msa_toolbox/results/
+# msa_toolbox/ui/configs/
+msa_toolbox/ui/__pycache__/

@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = '0.0.14'
+VERSION = '0.0.15'
 DESCRIPTION = 'MSA Toolbox'
 LONG_DESCRIPTION = 'Model Stealing attack'
 
@@ -42,6 +42,11 @@ setup(
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: Microsoft :: Windows",
     ],
+    entry_points={
+        "console_scripts": [
+            "msa-gui = msa_toolbox.ui.gui:demo2.launch",
+        ]
+    },
     extras_require={
         "pytorch": ["torch", "torchvision"],
         "pytorch_image": ["torch", "torchvision", "kornia", "Pillow", "ffmpeg-python", "opencv-python"],
