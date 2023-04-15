@@ -34,9 +34,8 @@ def load_victim_data_and_model(cfg: CfgNode):
             cfg.VICTIM.DATASET, train=False, transform=True, download=True)
     num_class = len(victim_data.classes)
 
-    with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-        f.write(
-            f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes\n")
+    log_victim_data(cfg.LOG_DEST, victim_data, num_class)
+    log_victim_data(cfg.INTERNAL_LOG_PATH, victim_data, num_class)
 
     victim_data_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
@@ -60,9 +59,8 @@ def load_victim_data_and_model(cfg: CfgNode):
     metrics = accuracy_f1_precision_recall(
         victim_model, victim_data_loader, cfg.DEVICE)
 
-    with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-        f.write(
-            f"Metrics of Victim Model on Victim Dataset: {metrics}\n")
+    log_victim_metrics(cfg.LOG_DEST, metrics)
+    log_victim_metrics(cfg.INTERNAL_LOG_PATH, metrics)
 
     return (victim_data, num_class), victim_data_loader, victim_model
 
@@ -98,3 +96,14 @@ def change_thief_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_mod
             _, predicted = torch.max(outputs, 1)
             new_labels = torch.cat((new_labels, predicted.cpu()), dim=0)        
     return new_labels
+
+
+
+def log_victim_data(path: str, victim_data: Dataset, num_class: int):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes\n")
+
+
+def log_victim_metrics(path: str, metrics: Dict[str, float]):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"Metrics of Victim Model on Victim Dataset: {metrics}\n")

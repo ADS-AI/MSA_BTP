@@ -20,30 +20,47 @@ def app(cfg_path):
     '''
     # Config file
     cfg = load_cfg(cfg_path)
-
-    log_dest = os.path.join(cfg.LOG_DEST, 'log.txt')
-    with open(log_dest, 'w') as f:
-        f.write('======================================> Starting Active Learning <======================================\n\n')
-        
-    log_dest = os.path.join(cfg.LOG_DEST, 'log_tqdm.txt')
-    with open(log_dest, 'w') as f:
-        f.write('======================================>  Active Learning TQDM <======================================\n')
-
-    log_dest = os.path.join(cfg.LOG_DEST, 'log_metrics.json')
-    metrics = {}
-    with open(log_dest, 'w') as f:
-        json.dump(metrics, f)
+    log_start_active_learning(cfg.LOG_DEST)
+    log_start_active_learning(cfg.INTERNAL_LOG_PATH)
 
     # Load victim data and model
     (victim_data, num_class), victim_data_loader, victim_model = load_victim_data_and_model(cfg)
 
-    log_dest = os.path.join(cfg.LOG_DEST, 'log.txt')
+    log_victim_data_model(cfg.LOG_DEST, victim_data, victim_model)
+    log_victim_data_model(cfg.INTERNAL_LOG_PATH, victim_data, victim_model)
+    
+    # Start Active Learning
+    active_learning(cfg, victim_data_loader, num_class, victim_model)
+
+    log_finish_active_learning(cfg.LOG_DEST)
+    log_finish_active_learning(cfg.INTERNAL_LOG_PATH)
+
+
+def log_victim_data_model(path: str, victim_data, victim_model: nn.Module):
+    log_dest = os.path.join(path, 'log.txt')
     with open(log_dest, 'a') as f:
         f.write('\n======================================> Victim Data and Model Loaded <======================================\n')
         f.write(f"Victim Data: {victim_data}\n")
         f.write(f"\nVictim Model: {type(victim_model)}\n")
+        
 
-    active_learning(cfg, victim_data_loader, num_class, victim_model)
+def log_start_active_learning(path: str):
+    log_dest = os.path.join(path, 'log.txt')
+    with open(log_dest, 'w') as f:
+        f.write('======================================> Starting Active Learning <======================================\n\n')
+        
+    log_dest = os.path.join(path, 'log_tqdm.txt')
+    with open(log_dest, 'w') as f:
+        f.write('======================================>  Active Learning TQDM <======================================\n')
+    log_dest = os.path.join(path, 'log_metrics.json')
+    metrics = {}
+    with open(log_dest, 'w') as f:
+        json.dump(metrics, f)  
+
+def log_finish_active_learning(path: str):
+    log_dest = os.path.join(path, 'log.txt')
+    with open(log_dest, 'a') as f:
+        f.write('\n======================================> Active Learning Finished <======================================\n\n') 
 
 
 if __name__ == "__main__":

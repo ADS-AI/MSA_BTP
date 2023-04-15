@@ -37,13 +37,8 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
     dataloader['victim'] = victim_data_loader
 
     for cycle in range(cfg.ACTIVE.CYCLES):
-        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-            f.write("\n\n===============================> Cycle:" +
-                    str(cycle+1) + " <===============================\n")
-            f.write("\nLength of Datasets: {labeled=" + str(len(dataloader['train'].dataset)) + ', val:' + str(len(
-                dataloader['val'].dataset)) + ', unlabeled:' + str(len(dataloader['unlabeled'].dataset)) + '}' + '\n')
-        with open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a') as f:
-            f.write("Cycle:" +str(cycle+1) + "\n")
+        log_new_cycle(cfg.LOG_DEST, cycle, dataloader)
+        log_new_cycle(cfg.INTERNAL_LOG_PATH, cycle, dataloader)
 
         thief_model = load_thief_model(
             cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
@@ -60,8 +55,9 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         best_state = torch.load(best_model_path)['state_dict']
         thief_model.load_state_dict(best_state)
 
-        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-            f.write("Calculating Metrics and Agreement on Victim and Thief Datasets\n")
+        log_calculating_metrics(cfg.LOG_DEST)
+        log_calculating_metrics(cfg.INTERNAL_LOG_PATH)
+        
         metrics_victim = accuracy_f1_precision_recall(
             thief_model, dataloader['victim'], cfg.DEVICE)
         agree_victim = agreement(thief_model, victim_model,
@@ -70,22 +66,9 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
             thief_model, dataloader['val'], cfg.DEVICE)
         agree_thief = agreement(thief_model, victim_model,
                           dataloader['val'], cfg.DEVICE)
-        with open(os.path.join(cfg.LOG_DEST, 'log_metrics.json'), 'r') as f:
-            old_metrics = json.load(f)
-            old_metrics['Cycle_'+str(cycle+1)] = {'metrics_victim': metrics_victim, 'agreement_victim': agree_victim, 'metrics_thief': metrics_thief, 'agreement_thief': agree_thief}
-        with open(os.path.join(cfg.LOG_DEST, 'log_metrics.json'), 'w') as f:
-            json.dump(old_metrics, f)
-            
-        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-            f.write("Metrics of Thief Model on Victim Dataset: " +
-                    str(metrics_victim) + "\n")
-            f.write("Agreement of Thief Model on Victim Dataset: " +
-                    str(agree_victim) + "\n")
-        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-            f.write("Metrics of Thief Model on Validation Dataset: " +
-                    str(metrics_thief) + "\n")
-            f.write("Agreement of Thief Model on Validation Dataset: " +
-                    str(agree_thief) + "\n")
+    
+        log_metrics(cfg.LOG_DEST, cycle, metrics_victim, agree_victim, metrics_thief, agree_thief)
+        log_metrics(cfg.INTERNAL_LOG_PATH, cycle, metrics_victim, agree_victim, metrics_thief, agree_thief)
 
         if cycle == cfg.ACTIVE.CYCLES-1 or True:
             new_training_samples = active_learning_technique(
@@ -100,7 +83,6 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
                 list(set(unlabeled_indices) - set(new_training_samples)))
             dataloader['train'] = get_data_loader(Subset(
                 thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
-            # dataloader['train'] = change_thief_loader_labels(cfg, dataloader['train'], victim_model)
             dataloader['unlabeled'] = get_data_loader(Subset(
                 thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
 
@@ -133,3 +115,37 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     
     for trial in range(cfg.TRIALS):
         one_trial(cfg, trial, num_class, victim_data_loader, victim_model, thief_data)
+        
+
+def log_metrics(path:str, cycle:int, metrics_victim:Dict[str, float], agree_victim:float, metrics_thief:Dict[str, float], agree_thief:float):
+    with open(os.path.join(path, 'log_metrics.json'), 'r') as f:
+        old_metrics = json.load(f)
+        old_metrics['Cycle_'+str(cycle+1)] = {'metrics_victim': metrics_victim, 'agreement_victim': agree_victim, 'metrics_thief': metrics_thief, 'agreement_thief': agree_thief}
+    with open(os.path.join(path, 'log_metrics.json'), 'w') as f:
+        json.dump(old_metrics, f)
+        
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("Metrics of Thief Model on Victim Dataset: " +
+                str(metrics_victim) + "\n")
+        f.write("Agreement of Thief Model on Victim Dataset: " +
+                str(agree_victim) + "\n")
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("Metrics of Thief Model on Validation Dataset: " +
+                str(metrics_thief) + "\n")
+        f.write("Agreement of Thief Model on Validation Dataset: " +
+            str(agree_thief) + "\n")
+
+
+def log_new_cycle(path:str, cycle:int, dataloader:Dict[str, DataLoader]):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("\n\n===============================> Cycle:" +
+                str(cycle+1) + " <===============================\n")
+        f.write("\nLength of Datasets: {labeled=" + str(len(dataloader['train'].dataset)) + ', val:' + str(len(
+            dataloader['val'].dataset)) + ', unlabeled:' + str(len(dataloader['unlabeled'].dataset)) + '}' + '\n')
+    with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
+        f.write("Cycle:" +str(cycle+1) + "\n")
+
+def log_calculating_metrics(path:str):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("Calculating Metrics and Agreement on Victim and Thief Datasets\n")
+    

@@ -49,6 +49,7 @@ def load_cfg(path):
     '''
     cfg = load_yaml(path)
     cfg = CfgNode(cfg)
+    cfg.INTERNAL_LOG_PATH = './msa_toolbox/ui_flask/logs/'
     cfg.ACTIVE.VAL = cfg.ACTIVE.BUDGET // (2 * cfg.ACTIVE.CYCLES)
     rest_samples = cfg.ACTIVE.BUDGET - cfg.ACTIVE.VAL
     cfg.ACTIVE.INITIAL = rest_samples // cfg.ACTIVE.CYCLES

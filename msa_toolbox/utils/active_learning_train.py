@@ -18,18 +18,17 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
     '''
     Trains the Thief Model on the Thief Dataset
     '''
-    with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-        f.write(
-            f"Training Thief Model on Thief Dataset with {cfg.TRAIN.EPOCH} epochs\n")
+    log_training(cfg.LOG_DEST, cfg.TRAIN.EPOCH)
+    log_training(cfg.INTERNAL_LOG_PATH, cfg.TRAIN.EPOCH)
+    
     exit = False
     curr_loss = None
     best_f1 = None
     no_improvement = 0
     for epoch in range(cfg.TRAIN.EPOCH):
-        with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-            f.write(f"Epoch {epoch+1} started\n")
-        with open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a') as f:
-            f.write(f"Epoch:{epoch+1}\n")
+        log_epoch(cfg.LOG_DEST, epoch)
+        log_epoch(cfg.INTERNAL_LOG_PATH, epoch)
+        
         train_epoch_loss, train_epoch_acc = train_one_epoch(
             cfg, thief_model, dataloader['train'], epoch, optimizer, criterion)
 
@@ -49,8 +48,8 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
                 exit = True
         if exit:
             break
-    with open(os.path.join(cfg.LOG_DEST, 'log.txt'), 'a') as f:
-        f.write("Training Completed\n\n")
+    log_finish_training(cfg.LOG_DEST)
+    log_finish_training(cfg.INTERNAL_LOG_PATH)
 
 
 def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, epoch: int, optimizer: Optimizer,
@@ -60,7 +59,8 @@ def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, epoc
     total = 0
     model.train()
     model = model.to(cfg.DEVICE)
-    f = open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a', encoding="utf-8")
+    f1 = open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a', encoding="utf-8")
+    f2 = open(os.path.join(cfg.INTERNAL_LOG_PATH, 'log_tqdm.txt'), 'a', encoding="utf-8")
 
     with tqdm(dataloader, file=sys.stdout, leave=False) as pbar:
         for inputs, targets in pbar:
@@ -77,6 +77,24 @@ def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, epoc
             correct += predicted.eq(targets).sum().item()
     
             if verbose:
-                f.write(str(pbar) + '\n')
-    f.close()
+                f1.write(str(pbar) + '\n')
+                f2.write(str(pbar) + '\n')
+    f1.close()
+    f2.close()
     return train_loss / len(dataloader.dataset), 100. * correct / total
+
+
+def log_training(path: str, total_epoch:int):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"Training Thief Model on Thief Dataset with {total_epoch} epochs\n")
+        
+
+def log_finish_training(path:str):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("Training Completed\n\n")
+    
+def log_epoch(path:str, epoch:int):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"Epoch {epoch+1} started\n")
+    with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
+        f.write(f"Epoch:{epoch+1}\n")

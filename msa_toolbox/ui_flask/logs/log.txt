@@ -1,0 +1,107 @@
+======================================> Starting Active Learning <======================================
+
+Loaded Victim Datset of size 10000 with 10 classes
+Metrics of Victim Model on Victim Dataset: {'accuracy': 0.98, 'f1': 0.9801333006068658, 'precision': 0.980677309938458, 'recall': 0.9802562008551708}
+
+======================================> Victim Data and Model Loaded <======================================
+Victim Data: Dataset MNIST
+    Number of datapoints: 10000
+    Root location: /home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/mnist
+    Split: Test
+    StandardTransform
+Transform: Compose(
+               Resize(size=32, interpolation=bilinear, max_size=None, antialias=warn)
+               Grayscale(num_output_channels=3)
+               ToTensor()
+               Normalize(mean=(0.1307,), std=(0.3081,))
+           )
+
+Victim Model: <class 'torchvision.models.resnet.ResNet'>
+
+
+===============================> Cycle:1 <===============================
+
+Length of Datasets: {labeled=1800, val:1000, unlabeled:7200}
+Training Thief Model on Thief Dataset with 4 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.9654, 'f1': 0.9652776785393945, 'precision': 0.9658348686023353, 'recall': 0.9654254974158878}
+Agreement of Thief Model on Victim Dataset: 0.9621
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.953, 'f1': 0.9532143804915106, 'precision': 0.9531800444895879, 'recall': 0.953970011303959}
+Agreement of Thief Model on Validation Dataset: 0.953
+
+
+===============================> Cycle:2 <===============================
+
+Length of Datasets: {labeled=3600, val:1000, unlabeled:5400}
+Training Thief Model on Thief Dataset with 4 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.9777, 'f1': 0.9779654325928131, 'precision': 0.9786270161873786, 'recall': 0.9779154223008641}
+Agreement of Thief Model on Victim Dataset: 0.9806
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.974, 'f1': 0.9742423727199359, 'precision': 0.9742119037870542, 'recall': 0.9747320138593618}
+Agreement of Thief Model on Validation Dataset: 0.974
+
+
+===============================> Cycle:3 <===============================
+
+Length of Datasets: {labeled=5400, val:1000, unlabeled:3600}
+Training Thief Model on Thief Dataset with 4 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.9833, 'f1': 0.9832320366485539, 'precision': 0.9832599053894999, 'recall': 0.983337757804913}
+Agreement of Thief Model on Victim Dataset: 0.9781
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.969, 'f1': 0.9694719040030421, 'precision': 0.9689423839951055, 'recall': 0.9705738255914561}
+Agreement of Thief Model on Validation Dataset: 0.969
+
+
+===============================> Cycle:4 <===============================
+
+Length of Datasets: {labeled=7200, val:1000, unlabeled:1800}
+Training Thief Model on Thief Dataset with 4 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.9652, 'f1': 0.9651069487476611, 'precision': 0.9665875227257541, 'recall': 0.9646392129536802}
+Agreement of Thief Model on Victim Dataset: 0.9557
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.956, 'f1': 0.9565022877222912, 'precision': 0.9588411841140712, 'recall': 0.9568552036051692}
+Agreement of Thief Model on Validation Dataset: 0.956
+
+
+===============================> Cycle:5 <===============================
+
+Length of Datasets: {labeled=9000, val:1000, unlabeled:0}
+Training Thief Model on Thief Dataset with 4 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.9778, 'f1': 0.9777267196736329, 'precision': 0.9783926624654656, 'recall': 0.9776567999818491}
+Agreement of Thief Model on Victim Dataset: 0.9766
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.966, 'f1': 0.9664699081764276, 'precision': 0.9661513698858583, 'recall': 0.9674164166685488}
+Agreement of Thief Model on Validation Dataset: 0.966
+
+======================================> Active Learning Finished <======================================
+
