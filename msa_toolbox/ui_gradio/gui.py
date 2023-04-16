@@ -7,7 +7,7 @@ from threading import Thread
 # from msa_toolbox.main import app
 from .. main import app
 
-config_dir = './msa_toolbox/ui/configs/'
+config_dir = './msa_toolbox/ui_gradio/configs/'
 lis = os.listdir(config_dir)
 
 
@@ -75,7 +75,7 @@ def x():
 
 
 with gr.Blocks() as demo:
-    gr.Markdown("Gui for MSA-TOOLBOX")
+    gr.Markdown("G_gradio for MSA-TOOLBOX")
     with gr.Tab("Generate Config"):
         input = [
             gr.Textbox(lines=1, label="Config Name",
