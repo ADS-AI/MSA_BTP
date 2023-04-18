@@ -14,7 +14,7 @@ lis = os.listdir(config_dir)
 def count():
     while True:
         s = ''
-        with open("/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/Logs/log.txt", 'r') as f:
+        with open("/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/ui_flask/logs/log.txt", 'r') as f:
             s = f.read()
         yield s
 
@@ -26,7 +26,7 @@ def start_training(config_name):
     if config_name in os.listdir(config_dir):
         thread = Thread(target=app, args=(config_path,))
         thread.start()
-        return 'Model Trained'
+        return 'Stealing Model...'
     else:
         return 'config file not found'
     # return config_path
@@ -164,7 +164,7 @@ with gr.Blocks() as demo:
 
 
 demo1 = gr.Interface(count, inputs=None,
-                     outputs=gr.Textbox(label="Output Box",max_lines=1000))
+                     outputs=gr.Textbox(label="Output Box",max_lines=10000))
 
 demo2 = gr.TabbedInterface([demo, demo1], ['Setup Config', 'View Progress'])
 demo2.queue()
