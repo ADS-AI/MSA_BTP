@@ -5,6 +5,7 @@ ResNet-50 and ResNet-18 models respectively.
 
 from typing import Any
 import torch.nn as nn
+import torch
 from torchvision.models import resnet50, resnet18,  ResNet50_Weights, ResNet18_Weights
 
 
@@ -30,8 +31,10 @@ def ResNet50(num_classes, weights: str ='default',  progress: bool = True, **kwa
         weights = ResNet50_Weights.IMAGENET1K_V2
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="ResNet50_Weights.IMAGENET1K_V1")    
     model = resnet50(weights=weights, progress=progress, **kwargs)
     model.fc = nn.Linear(model.fc.in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -55,6 +58,8 @@ def ResNet18(num_classes, weights: str = 'default',  progress: bool = True, **kw
         weights = ResNet18_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="ResNet18_Weights.IMAGENET1K_V1")    
     model = resnet18(weights=weights, progress=progress, **kwargs)
     model.fc = nn.Linear(model.fc.in_features, num_classes)
+    model.transforms = weights.transforms()
     return model

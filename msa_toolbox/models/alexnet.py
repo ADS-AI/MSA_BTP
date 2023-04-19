@@ -4,6 +4,7 @@ AlexNet is a convolutional neural network designed for image classification task
 '''
 
 from typing import Any
+import torch
 import torch.nn as nn
 from torchvision.models import alexnet, AlexNet_Weights
 
@@ -28,6 +29,8 @@ def AlexNet(num_classes, weights: str = 'default', progress: bool = True, **kwar
         weights = AlexNet_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="AlexNet_Weights.IMAGENET1K_V1")
     model = alexnet(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model

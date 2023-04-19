@@ -3,6 +3,7 @@ This module provides one function, MobileNet_V2 which return instance of the Mob
 '''
 
 from typing import Any
+import torch
 import torch.nn as nn
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 
@@ -29,6 +30,8 @@ def MobileNet_V2(num_classes, weights: str = "default",  progress: bool = True, 
         weights = MobileNet_V2_Weights.IMAGENET1K_V2
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="MobileNet_V2_Weights.IMAGENET1K_V1")    
     model = mobilenet_v2(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model

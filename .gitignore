@@ -19,4 +19,5 @@ testing5.ipynb
 testing6.ipynb
 msa_toolbox/results/
 # msa_toolbox/ui/configs/
-msa_toolbox/ui/__pycache__/
+msa_toolbox/ui_gradio/__pycache__/
+msa_toolbox/ui_flask/__pycache__/

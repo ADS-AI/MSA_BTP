@@ -91,16 +91,18 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     '''
     Performs active learning on the victim dataset according to the user configuration
     '''
+    model = load_thief_model(cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
+
     if cfg.THIEF.DATASET.lower() == 'custom_dataset':
         transform = transforms.Compose([
             transforms.Resize((64, 64)),
             transforms.ToTensor()
         ])
         thief_data = load_custom_dataset(
-            root_dir=cfg.THIEF.DATA_ROOT, transform=transform)
+            root_dir=cfg.THIEF.DATA_ROOT, transform=model.transforms)
     else:
         thief_data = load_thief_dataset(
-            cfg.THIEF.DATASET, train=False, transform=True, download=True)
+            cfg.THIEF.DATASET, train=False, transform=model.transforms, download=True)
 
     thief_data_loader = get_data_loader(thief_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
     new_labels = change_thief_loader_labels(cfg, thief_data_loader, victim_model)
@@ -116,6 +118,7 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     for trial in range(cfg.TRIALS):
         one_trial(cfg, trial, num_class, victim_data_loader, victim_model, thief_data)
         
+
 
 def log_metrics(path:str, cycle:int, metrics_victim:Dict[str, float], agree_victim:float, metrics_thief:Dict[str, float], agree_thief:float):
     with open(os.path.join(path, 'log_metrics.json'), 'r') as f:

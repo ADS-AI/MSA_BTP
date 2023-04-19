@@ -6,6 +6,7 @@ the instances of the corresponding EfficientNet model.
 
 from typing import  Any
 import torch.nn as nn
+import torch
 from torchvision.models import efficientnet_b0, efficientnet_b1, efficientnet_b2, efficientnet_b3, efficientnet_b4, efficientnet_b5, efficientnet_b6, efficientnet_b7
 from torchvision.models.efficientnet import EfficientNet_B0_Weights, EfficientNet_B1_Weights, EfficientNet_B2_Weights, EfficientNet_B3_Weights, EfficientNet_B4_Weights, EfficientNet_B5_Weights, EfficientNet_B6_Weights, EfficientNet_B7_Weights
 
@@ -30,8 +31,10 @@ def EfficientNet_B0(num_classes, weights: str = 'default', progress: bool = True
         weights = EfficientNet_B0_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_B0_Weights.IMAGENET1K_V1")    
     model = efficientnet_b0(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -57,8 +60,10 @@ def EfficientNet_B1(num_classes, weights: str = 'default', progress: bool = True
         weights = EfficientNet_B1_Weights.IMAGENET1K_V2
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_B1_Weights.IMAGENET1K_V1")
     model = efficientnet_b1(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model 
 
 
@@ -82,8 +87,10 @@ def EfficientNet_B2(num_classes, weights: str = 'default', progress: bool = True
         weights = EfficientNet_B2_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_B2_Weights.IMAGENET1K_V1")    
     model = efficientnet_b2(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -107,8 +114,10 @@ def EfficientNet_B3(num_classes, weights: str = 'default', progress: bool = True
         weights = EfficientNet_B3_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_B3_Weights.IMAGENET1K_V1")    
     model = efficientnet_b3(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 def EfficientNet_B4(num_classes, weights: str = 'default', progress: bool = True, **kwargs: Any):
@@ -131,8 +140,10 @@ def EfficientNet_B4(num_classes, weights: str = 'default', progress: bool = True
         weights = EfficientNet_B4_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_B4_Weights.IMAGENET1K_V1")    
     model = efficientnet_b4(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -156,8 +167,10 @@ def EfficientNet_B5(num_classes, weights: str = 'default', progress: bool = True
         weights = EfficientNet_B5_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_B5_Weights.IMAGENET1K_V1")    
     model = efficientnet_b5(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -181,8 +194,10 @@ def EfficientNet_B6(num_classes, weights: str = 'default', progress: bool = True
         weights = EfficientNet_B6_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_B6_Weights.IMAGENET1K_V1")    
     model = efficientnet_b6(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -206,6 +221,8 @@ def EfficientNet_B7(num_classes, weights: str = 'default', progress: bool = True
         weights = EfficientNet_B7_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_B7_Weights.IMAGENET1K_V1")    
     model = efficientnet_b7(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
