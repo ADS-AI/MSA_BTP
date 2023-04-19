@@ -22,7 +22,7 @@ class ImageNet1k(ImageFolder):
     """
     test_frac = 0.2
 
-    def __init__(self, train=True, transform=None, target_transform=None):
+    def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
         Initializes the ImageNet1k dataset.
         Args:
@@ -34,7 +34,7 @@ class ImageNet1k(ImageFolder):
         Returns:
             None
         """
-        root = os.path.join(cfg.DATASET_ROOT, 'ILSVRC2012')
+        root = os.path.join(root, 'ILSVRC2012')
         if not os.path.exists(root):
             raise ValueError(f'Dataset not found at {root}. Please download it from http://image-net.org/download-images')
 

@@ -99,10 +99,10 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
             transforms.ToTensor()
         ])
         thief_data = load_custom_dataset(
-            root_dir=cfg.THIEF.DATA_ROOT, transform=model.transforms)
+            root_dir=cfg.THIEF.DATASET_ROOT, transform=model.transforms)
     else:
         thief_data = load_thief_dataset(
-            cfg.THIEF.DATASET, train=False, transform=model.transforms, download=True)
+            cfg.THIEF.DATASET, cfg, train=False, transform=model.transforms, download=True)
 
     thief_data_loader = get_data_loader(thief_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
     new_labels = change_thief_loader_labels(cfg, thief_data_loader, victim_model)
@@ -110,7 +110,8 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     thief_data.labels = new_labels
     thief_data.targets = new_labels
     thief_data.classes = victim_data_loader.dataset.classes
-    if cfg.THIEF.DATASET.lower() == 'custom_dataset':
+    data_name = cfg.THIEF.DATASET.lower()
+    if data_name == 'custom_dataset' or data_name == 'caltech256' or data_name == 'cubs200' or data_name == 'diabetic5' or data_name == 'imagenet' or data_name == 'indoor67' or data_name == 'tinyimagesubset' or data_name == 'tinyimagenet200':
         samples = np.array(thief_data.samples, dtype=object)
         samples[:,1] = torch.tensor(new_labels, dtype=torch.int64)
         thief_data.samples = samples.tolist()

@@ -16,7 +16,7 @@ from .. import config as cfg
 class Indoor67(ImageFolder):
     """ The Indoor67 dataset class """
 
-    def __init__(self, train=True, transform=None, target_transform=None):
+    def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
         Initializes the Indoor67 dataset.
 
@@ -25,7 +25,7 @@ class Indoor67(ImageFolder):
             transform (callable, optional): A function/transform that takes in an PIL image and returns a transformed version. Default: None.
             target_transform (callable, optional): A function/transform that takes in the target and transforms it. Default: None.
         """
-        root = os.path.join(cfg.DATASET_ROOT, 'indoor')
+        root = os.path.join(root, 'indoor')
         if not os.path.exists(root):
             raise ValueError(f"Dataset not found at {root}. Please download it from http://web.mit.edu/torralba/www/indoor.html.")
 

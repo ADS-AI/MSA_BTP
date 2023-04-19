@@ -9,7 +9,7 @@ from .. import config as cfg
 class TinyImageNet200(ImageFolder):
     '''A Dataset class for the TinyImageNet200 dataset.'''
 
-    def __init__(self, train=True, transform=None, target_transform=None):
+    def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
         Initializes the dataset and loads the data.
 
@@ -18,7 +18,7 @@ class TinyImageNet200(ImageFolder):
             transform (callable, optional): A function/transform that takes in a PIL image and returns a transformed version.
             target_transform (callable, optional): A function/transform that takes in the target and transforms it.
         """
-        root = os.path.join(cfg.DATASET_ROOT, 'tiny-imagenet-200')
+        root = os.path.join(root, 'tiny-imagenet-200')
         if not os.path.exists(root):
             raise ValueError(f"Dataset not found at {root}. Please download it from http://cs231n.stanford.edu/tiny-imagenet-200.zip")
 

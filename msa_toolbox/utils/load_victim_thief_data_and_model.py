@@ -43,7 +43,7 @@ def load_victim_data_and_model(cfg: CfgNode):
 
     # Load victim model weights if present, else train the victim model (just to measure performance)
     if cfg.VICTIM.WEIGHTS is not None and cfg.VICTIM.WEIGHTS != 'None' and (len(cfg.VICTIM.WEIGHTS.split('\\'[0])) > 1 or len(cfg.VICTIM.WEIGHTS.split('/')) > 1):
-        victim_model.load_state_dict(torch.load(cfg.VICTIM.WEIGHTS))
+        victim_model.load_state_dict(torch.load(cfg.VICTIM.WEIGHTS)['state_dict'])
     else:
         optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
                                 lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
@@ -74,11 +74,11 @@ def load_victim_data(cfg: CfgNode, victim_model: nn.Module):
         ])
         transform = transform if victim_model is None else victim_model.transforms
         victim_data = load_custom_dataset(
-            root_dir=cfg.VICTIM.DATA_ROOT, transform=transform)
+            root_dir=cfg.VICTIM.DATASET_ROOT, transform=transform)
     else:
         transform = True if victim_model is None else victim_model.transforms
         victim_data = load_victim_dataset(
-            cfg.VICTIM.DATASET, train=False, transform=transform, download=True)
+            cfg.VICTIM.DATASET, cfg, train=False, transform=transform, download=True)
     num_class = len(victim_data.classes)
     return victim_data, num_class
 

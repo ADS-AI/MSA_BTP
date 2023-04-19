@@ -133,8 +133,8 @@ class TinyImagesSubset(ImageFolder):
     
     """
 
-    def __init__(self, train=True, transform=None, target_transform=None):
-        root = os.path.join(cfg.DATASET_ROOT, 'tiny-images-subset')
+    def __init__(self, root, train=True, transform=None, target_transform=None):
+        root = os.path.join(root, 'tiny-images-subset')
         if not os.path.exists(root):
             raise ValueError('Dataset not found at {}. Please download it from {}.'.format(
                 root, 'https://github.com/Silent-Zebra/tiny-images-subset'

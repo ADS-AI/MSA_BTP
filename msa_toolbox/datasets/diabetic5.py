@@ -29,7 +29,7 @@ class Diabetic5(ImageFolder):
         200 images per class for evaluation.
     """
 
-    def __init__(self, train=True, transform=None, target_transform=None):
+    def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
         Initialize the Diabetic5 dataset.
 
@@ -40,7 +40,7 @@ class Diabetic5(ImageFolder):
             target_transform (callable, optional): A function/transform that takes in the 
                 target and transforms it.
         """
-        root = os.path.join(cfg.DATASET_ROOT, 'diabetic_retinopathy')
+        root = os.path.join(root, 'diabetic_retinopathy')
         if not os.path.exists(root):
             print(f'A dataset not found at {root}. Please download it from ')
             raise ValueError(f"Dataset not found at {root}. Please download it from "

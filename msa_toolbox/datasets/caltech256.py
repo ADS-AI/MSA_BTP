@@ -41,7 +41,7 @@ class Caltech256(ImageFolder):
 
     """
         
-    def __init__(self, train=True, transform=None, target_transform=None):
+    def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
         Initializes the Caltech256 instance by checking if the dataset is available and then initializing ImageFolder 
         with the specified arguments. It reserves 25 examples per class for evaluation and prunes the `imgs` and `samples` 
@@ -55,8 +55,7 @@ class Caltech256(ImageFolder):
         Returns:
             None
         """
-        
-        root = osp.join(cfg.DATASET_ROOT, '256_ObjectCategories')
+        root = osp.join(root, '256_ObjectCategories')
         if not osp.exists(root):
             raise ValueError(f'Dataset not found at {root}. Please download it from http://www.vision.caltech.edu/Image_Datasets/Caltech256/')
 
