@@ -56,8 +56,7 @@ class Diabetic5(ImageFolder):
         self.pruned_idxs = self.partition_to_idxs['train' if train else 'test']
         self.samples = [self.samples[i] for i in self.pruned_idxs]
         self.imgs = self.samples
-        print(f"=> done loading {self.__class__.__name__} " + f"{'train' if train else 'test'} set "
-                f"with {len(self.samples)} examples")
+        # print(f"=> done loading {self.__class__.__name__} " + f"{'train' if train else 'test'} set "f"with {len(self.samples)} examples")
 
     def __get_partition_to_idxs(self):
         """

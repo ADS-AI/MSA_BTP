@@ -44,6 +44,9 @@ def load_victim_data_and_model(cfg: CfgNode):
     # Load victim model weights if present, else train the victim model (just to measure performance)
     if cfg.VICTIM.WEIGHTS is not None and cfg.VICTIM.WEIGHTS != 'None' and (len(cfg.VICTIM.WEIGHTS.split('\\'[0])) > 1 or len(cfg.VICTIM.WEIGHTS.split('/')) > 1):
         victim_model.load_state_dict(torch.load(cfg.VICTIM.WEIGHTS)['state_dict'])
+        log_weights(cfg.LOG_DEST, cfg.VICTIM.WEIGHTS)
+        log_weights(cfg.INTERNAL_LOG_PATH, cfg.VICTIM.WEIGHTS)
+
     else:
         optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
                                 lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
@@ -124,3 +127,7 @@ def log_victim_data(path: str, victim_data: Dataset, num_class: int):
 def log_victim_metrics(path: str, metrics: Dict[str, float]):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
         f.write(f"Metrics of Victim Model on Victim Dataset: {metrics}\n")
+        
+def log_weights(path: str, weights: str):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"Loaded Victim Model weights from '{weights}'\n")

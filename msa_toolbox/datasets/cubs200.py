@@ -57,8 +57,7 @@ class CUBS200(ImageFolder):
 
         self.samples = [self.samples[i] for i in self.pruned_idxs]
         self.imgs = self.samples
-
-        print(f"=> done loading {self.__class__.__name__} " f"({'train' if train else 'test'}) with {len(self.samples)} examples")
+        # print(f"=> done loading {self.__class__.__name__} " f"({'train' if train else 'test'}) with {len(self.samples)} examples")
 
 
     def get_partition_to_idxs(self):

@@ -23,7 +23,7 @@ from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
 from typing import Any, Callable, Iterable, TypeVar, Generic, Sequence, List, Optional, Union
 
 
-def load_dataset(dataset_name, cfg:CfgNode, train=True, transform=None, target_transform=None, download=True):
+def load_dataset(dataset_name, data_root:str, train=True, transform=None, target_transform=None, download=True):
     '''
     Return the specified dataset along with transform
     '''
@@ -43,7 +43,7 @@ def load_dataset(dataset_name, cfg:CfgNode, train=True, transform=None, target_t
     elif dataset_name == 'cifar100':
         return cifar.CIFAR100(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'imagenet':
-        return imagenet.ImageNet1k(root=cfg.DATASET_ROOT, train=train, transform=transform, target_transform=target_transform)
+        return imagenet.ImageNet1k(root=data_root, train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'mnist':
         return mnist.MNIST(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'kmnist':
@@ -57,17 +57,17 @@ def load_dataset(dataset_name, cfg:CfgNode, train=True, transform=None, target_t
     elif dataset_name == 'svhn':
         return svhn.SVHN(train=train, transform=transform, target_transform=target_transform, download=download)
     elif dataset_name == 'tinyimagenet200':
-        return tinyimagenet200.TinyImageNet200(root=cfg.DATASET_ROOT, train=train, transform=transform, target_transform=target_transform)
+        return tinyimagenet200.TinyImageNet200(root=data_root, train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'tinyimagesubset':
-        return cifar.TinyImagesSubset(root=cfg.DATASET_ROOT, train=train, transform=transform, target_transform=target_transform)
+        return cifar.TinyImagesSubset(root=data_root, train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'cubs200':
-        return cubs200.CUBS200(root=cfg.DATASET_ROOT, train=train, transform=transform, target_transform=target_transform)
+        return cubs200.CUBS200(root=data_root, train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'diabetic5':
-        return diabetic5.Diabetic5(root=cfg.DATASET_ROOT, train=train, transform=transform, target_transform=target_transform)
+        return diabetic5.Diabetic5(root=data_root, train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'indoor67':
-        return indoor67.Indoor67(root=cfg.DATASET_ROOT, train=train, transform=transform, target_transform=target_transform)
+        return indoor67.Indoor67(root=data_root, train=train, transform=transform, target_transform=target_transform)
     elif dataset_name == 'caltech256':
-        return caltech256.Caltech256(root=cfg.DATASET_ROOT, train=train, transform=transform, target_transform=target_transform)
+        return caltech256.Caltech256(root=data_root, train=train, transform=transform, target_transform=target_transform)
     else:
         raise ValueError('Unknown dataset: {}'.format(dataset_name))
 
@@ -107,7 +107,7 @@ def load_victim_dataset(dataset_name, cfg:CfgNode, train=True, transform=None, t
     Returns:
         The loaded victim dataset in a format suitable for machine learning tasks.
     '''
-    return load_dataset(dataset_name, cfg, train=train, transform=transform,
+    return load_dataset(dataset_name, cfg.VICTIM.DATASET_ROOT, train=train, transform=transform,
                         target_transform=target_transform, download=download)
 
 
@@ -131,7 +131,7 @@ def load_thief_dataset(dataset_name, cfg:CfgNode,  train=True, transform=None, t
     Returns:
         The loaded thief dataset in a format suitable for machine learning tasks.
     '''
-    return load_dataset(dataset_name, cfg, train=train, transform=transform,
+    return load_dataset(dataset_name, cfg.THIEF.DATASET_ROOT, train=train, transform=transform,
                         target_transform=target_transform, download=download)
 
 
