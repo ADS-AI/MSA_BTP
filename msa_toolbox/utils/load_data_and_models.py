@@ -87,7 +87,7 @@ def load_custom_dataset(root_dir, transform=None, target_transform=None):
     return custom_dataset.CustomDataset(root_dir=root_dir, transform=transform, target_transform=target_transform)
 
 
-def load_victim_dataset(dataset_name, cfg:CfgNode, train=True, transform=None, target_transform=None, download=False):
+def load_victim_dataset(dataset_name, cfg:CfgNode, train=True, transform=None, target_transform=None, download=True):
     '''
     Loads the victim dataset specified by 'dataset_name' and returns it in a format suitable for machine learning tasks. 
 
@@ -111,7 +111,7 @@ def load_victim_dataset(dataset_name, cfg:CfgNode, train=True, transform=None, t
                         target_transform=target_transform, download=download)
 
 
-def load_thief_dataset(dataset_name, cfg:CfgNode,  train=True, transform=None, target_transform=None, download=False):
+def load_thief_dataset(dataset_name, cfg:CfgNode,  train=True, transform=None, target_transform=None, download=True):
     '''
     Loads the thief dataset specified by 'dataset_name' and returns it in a format suitable for machine learning tasks. 
 

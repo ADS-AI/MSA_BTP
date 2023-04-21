@@ -30,7 +30,7 @@ class CIFAR10(Old_CIFAR10):
         Returns the image data at the given index.
     """
     
-    base_folder = 'cifar-10-batches-pyx`'
+    base_folder = 'cifar-10-batches-py'
     meta = {
         'filename': 'batches.meta',
         'key': 'label_names',
