@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Python Package GUI</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href={{url_for('static', filename='style1.css')}}>
+</head>
+<body >
+    <nav class="sidebar">
+        <div style="text-align: center; padding: 10px; background-color: #f1f1f1;">
+            <!--<img src={{url_for('static', filename='logo.png')}} alt="logo" style="width: 100px; height: 100px;"> -->
+        <h1>MSA ToolBox</h1>
+        <div>
+        <ul>
+          <!-- <li></li> -->
+          <li {% if active == 'home' %}class="active"{% endif %}><a href="/create_config">Configs</a></li>
+          <li {% if active == 'Tranning' %}class="active"{% endif %}><a href="/tranning">Training</a></li>
+          <!-- {% if fg %}
+          <li {% if active == 'Progress' %}class="active"{% endif %}><a href="/progress">Progress</a></li>
+          {% endif %} -->
+        </ul>
+      </nav>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div id='popup' class="alert alert-success" style="text-align: center; font-size:30px;">Config file created </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+<section class='get-in-touch'>
+<h1 class="title">New Configuration</h1>
+<form class="contact-form row" method="POST" action="/create_config">
+    
+<div class="form-field col-lg-12">
+    <lable class="lable" >Configuration File Name</lable>
+    <input type="text" class="input-text js-input" id="config_name" name="config_name" placeholder="Enter name of the configuration file" required>   
+</div>
+
+<div class="form-field col-lg-6">
+    <lable class="lable"> Batch Size</lable>
+    <input type="number" class="input-text js-input" id="batch_size" name="batch_size" placeholder=" Batch size" required>   
+</div>
+
+<div class="form-field col-lg-6">
+    <lable class="lable">Budget</lable>
+    <input type="number" class="input-text js-input" id="budget" name="budget" placeholder="Enter budget" required>   
+</div>
+
+<div class="form-field col-lg-6">
+    <lable class="lable">Victim Architecture</lable>
+    <select class="input-text js-input" id="V_arch" name="V_arch" required>
+        {% for arc in options['archi'] %}
+        <option value="{{ arc }}">{{ arc }}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="form-field col-lg-6">
+    <lable class="lable">Thief Architecture</lable>
+    <select class="input-text js-input" id="T_arch" name="T_arch" required>
+        {% for arc in options['archi'] %}
+        <option value="{{ arc }}">{{ arc }}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="form-field col-lg-6" >
+    <lable class="lable">Victim Dataset</lable>
+    <select class="input-text js-input" id="V_data" name="V_data" required>
+        {% for data in options['datasets'] %}
+        <option >{{ data }}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="form-field col-lg-6" >
+    <lable class="lable">Thief Dataset</lable>
+    <select class="input-text js-input" id="T_data" name="T_data" required>
+        {% for data in options['datasets'] %}
+        <option >{{ data }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-field col-lg-4" >
+    <lable class="lable">Methods</lable>
+    <select class="input-text js-input" id="method" name="method" required>
+        {% for method in options['methods'] %}
+        <option >{{ method }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-field col-lg-4" >
+    <lable class="lable">Optimizer</lable>
+    <select class="input-text js-input" id="optim" name="optim" required>
+        {% for optimizer in options['optimizers'] %}
+        <option >{{ optimizer }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-field col-lg-4" >
+    <lable class="lable">Criteria</lable>
+    <select class="input-text js-input" id="criteria" name="criteria" required>
+        {% for criteria in options['criterias'] %}
+        <option >{{ criteria }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-field col-lg-4" >
+    <lable class="lable">Device</lable>
+    <select class="input-text js-input" id="device" name="device" required>
+        <option >cpu</option>
+        <option >cuda</option>
+        
+    </select>
+</div>
+<div class="form-field col-lg-4">
+    <lable class="lable"> Cycles</lable>
+    <input type="number" class="input-text js-input" id="Cycles" name="Cycles" min ="1" max = "10" placeholder=" Number of Cycles" required>   
+</div>
+
+<div class="form-field col-lg-4">
+    <lable class="lable">Epochs</lable>
+    <input type="number" class="input-text js-input" id="Epochs" min ="1" max = "10" name="Epochs" placeholder="Epochs" required>   
+</div>
+
+<div class="form-field col-lg-12">
+    <lable class="lable">log1 Directory</lable>
+    <input type="text" class="input-text js-input" id="log_dir" name="log_dir" placeholder="Logs directory path" required>   
+</div>
+
+<div class="form-field col-lg-12">
+    <lable class="lable">Output Directory</lable>
+    <input type="text" class="input-text js-input" id="out_dir" name="out_dir" placeholder="Output directory path" required>   
+</div>
+
+<div class="form-field col-lg-6">
+    <lable class="lable">Victim Data Directory</lable>
+    <input type="text" class="input-text js-input" id="v_data_root" name="v_data_root" placeholder="Victim Data Directory ( If Avaialable !!! )">   
+
+</div><div class="form-field col-lg-6">
+    <lable class="lable">Thief Data Directory</lable>
+    <input type="text" class="input-text js-input" id="t_data_root" name="t_data_root" placeholder="Thief Data Directory ( If Avaialable !!! )">   
+</div>
+
+<div class="form-field col-lg-12">
+<button type="submit" class="col-lg-12 submit-btn">Submit</button>
+</div>
+</form>
+</section>
+<script>
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+    }
+    
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+    }
+    setTimeout(function() {
+        document.getElementById('popup').remove();
+    }, 5000);
+    </script>
+</body>
+</html>

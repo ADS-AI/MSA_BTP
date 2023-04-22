@@ -26,5 +26,5 @@ TRIALS: 1
 DS_SEED: 123
 NUM_WORKERS: 2
 DEVICE: "cuda"
-LOG_DEST: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/Log2"
-OUT_DIR: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/SavedModels"
+LOG_DEST: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/Logs2"
+OUT_DIR: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/SavedModels2"

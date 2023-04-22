@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Graphs and File Output</title>
+	<!-- Include Chart.js library -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<!-- Include custom CSS -->
+	<link rel="stylesheet" href={{url_for('static', filename='style.css')}}>
+    
+</head>
+<body>
+	
+	<canvas id="graph1" width="400" height="400"></canvas>
+    <canvas id="graph2" width="400" height="400"></canvas>
+    <canvas id="graph3" width="400" height="400"></canvas>
+    <canvas id="graph4" width="400" height="400"></canvas>
+    <div>
+        <h1>File Viewer</h1>
+        <p>File contents will be displayed here</p>
+        <pre id='file-viewer' style='height: 200px; overflow-y: scroll; font-size: 15px;'></pre>
+      </div>
+
+	<!-- Include custom JavaScript -->
+	<script>
+		// First Graph
+		var ctx1 = document.getElementById('graph1').getContext('2d');
+        var chartData1 = {
+            labels: [],
+            datasets: [{
+                label: 'Thief Accuracy',
+                data: [],
+                borderColor: 'red',
+                fill: false
+            }, {
+                label: 'Victim Accuracy',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        var myChart1 = new Chart(ctx1, {
+            type: 'line',
+            data: chartData1,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        function updateChart1() {
+            fetch('/chart').then(response => response.json()).then(data => {
+                chartData1.labels = data.labels;
+                chartData1.datasets[0].data = data.accuracy_thief;
+                chartData1.datasets[1].data = data.accuracy_victim;
+                myChart1.update();
+            });
+        }
+        setInterval(updateChart1, 5000);
+
+		// Second Graph
+
+		var ctx2 = document.getElementById('graph2').getContext('2d');
+        var chartData2 = {
+            labels: [],
+            datasets: [{
+                label: 'Line 1',
+                data: [],
+                borderColor: 'red',
+                fill: false
+            }, {
+                label: 'Line 2',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        var myChart2 = new Chart(ctx2, {
+            type: 'line',
+            data: chartData2,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        function updateChart2() {
+            fetch('/chart').then(response => response.json()).then(data => {
+                chartData2.labels = data.labels;
+                chartData2.datasets[0].data = data.precision_thief;
+                chartData2.datasets[1].data = data.precision_victim;
+                myChart2.update();
+            });
+        }
+        setInterval(updateChart2, 5000);
+
+		// Third Graph
+		var ctx3 = document.getElementById('graph3').getContext('2d');
+        var chartData3 = {
+            labels: [],
+            datasets: [{
+                label: 'Line 1',
+                data: [],
+                borderColor: 'red',
+                fill: false
+            }, {
+                label: 'Line 2',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        var myChart3 = new Chart(ctx3, {
+            type: 'line',
+            data: chartData3,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        function updateChart3() {
+            fetch('/chart').then(response => response.json()).then(data => {
+                chartData3.labels = data.labels;
+                chartData3.datasets[0].data = data.f1_victim;
+                chartData3.datasets[1].data = data.f1_thief;
+                myChart3.update();
+            });
+        }
+        setInterval(updateChart3, 5000);
+
+		// Fourth Graph
+		var ctx4 = document.getElementById('graph4').getContext('2d');
+        var chartData4 = {
+            labels: [],
+            datasets: [{
+                label: 'Line 1',
+                data: [],
+                borderColor: 'red',
+                fill: false
+            }, {
+                label: 'Line 2',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        var myChart4 = new Chart(ctx4, {
+            type: 'line',
+            data: chartData4,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        function updateChart4() {
+            fetch('/chart').then(response => response.json()).then(data => {
+                chartData4.labels = data.labels;
+                chartData4.datasets[0].data = data.agreement_victim;
+                chartData4.datasets[1].data = data.agreement_thief;
+                myChart4.update();
+            });
+        }
+        setInterval(updateChart4, 5000);
+		
+
+		$(document).ready(function(){
+			setInterval(function(){
+				$("#file-viewer").load("/file_contents");
+        $('#file-viewer').scrollTop($('#file-viewer')[0].scrollHeight);
+			}, 5000);
+		});
+	</script>
+</body>
+</html>

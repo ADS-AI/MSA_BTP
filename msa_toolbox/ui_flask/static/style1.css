@@ -1,0 +1,160 @@
+
+body{
+    /* background-color: rgb(38, 42, 104); */
+    background-image: url("https://wallpaper-house.com/data/out/7/wallpaper2you_176924.jpg")
+    /* background-attachment: scroll; */
+}
+
+
+body::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #F5F5F5;
+}
+
+body::-webkit-scrollbar
+{
+	width: 12px;
+	background-color: #F5F5F5;
+}
+
+body::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #555;
+}
+
+.get-in-touch {
+    max-width: 800px;
+    margin: 50px auto;
+    position: relative;
+    border: 1px solid #5543ca;
+    padding: 50px 50px 50px 50px;
+    background-color: #fff;
+  
+  }
+  .get-in-touch .title {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 3.2em;
+    line-height: 48px;
+    padding-bottom: 48px;
+       color: #5543ca;
+      background: #5543ca;
+      background: -moz-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
+      background: -webkit-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
+      background: linear-gradient(to right,#f4524d  0%,#5543ca  100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+  }
+  
+  .contact-form .form-field {
+    position: relative;
+    margin: 15px 0;
+  }
+  .contact-form .input-text {
+    display: block;
+    width: 100%;
+    height: 36px;
+    border-width: 0 0 2px 0;
+    border-color: #5543ca;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 400;
+  }
+  .contact-form .input-text:focus {
+    outline: none;
+  }
+  .contact-form .input-text:focus + .label,
+  .contact-form .input-text.not-empty + .label {
+    -webkit-transform: translateY(-24px);
+            transform: translateY(-24px);
+  }
+  .contact-form .label {
+    position: absolute;
+    left: 20px;
+    bottom: 11px;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 400;
+    color: #5543ca;
+    cursor: text;
+    transition: -webkit-transform .2s ease-in-out;
+    transition: transform .2s ease-in-out;
+    transition: transform .2s ease-in-out, 
+    -webkit-transform .2s ease-in-out;
+  }
+  .contact-form .submit-btn {
+    display: inline-block;
+    background-color: #000;
+    background-image: linear-gradient(125deg,#a72879,#064497);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 16px;
+    padding: 8px 16px;
+    border: none;
+    margin-top: 40px;
+    /* width:; */
+    height: 50px;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: stretch;
+  }
+  
+  .sidebar {
+    background-color: #fff;
+    margin-top: auto;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 200px;
+    z-index: 1;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    margin-top: 0px;
+    padding: 0;
+  }
+  
+  .sidebar li {
+    /* border-bottom: 1px solid #555; */
+    box-shadow: 0px 10px 8px #888888;
+    /* display: block; */
+    margin-bottom: 5px;
+    width: relative;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 1.5em;
+    line-height: 10px;
+    padding-bottom: 10px;
+       color: #5543ca;
+      background: #5543ca;
+      background: -moz-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
+      background: -webkit-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
+      background: linear-gradient(to right,#f4524d  0%,#5543ca  100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+  }
+  
+  .sidebar li a {
+    display: block;
+    color: rgb(20, 1, 1);
+    padding: 16px;
+    text-decoration: none;
+  }
+  
+  .sidebar li.active {
+    background-color: #4CAF50;
+  }
+  
+  .sidebar li:hover:not(.active) {
+    background-color: #555;
+  }
+  
