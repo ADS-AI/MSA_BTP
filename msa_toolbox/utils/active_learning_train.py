@@ -13,7 +13,7 @@ from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
 
 
-def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
+def train(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
           dataloader: Dict[str, DataLoader], trail_num: int, cycle_num: int, log_interval=1000):
     '''
     Trains the Thief Model on the Thief Dataset
@@ -30,10 +30,10 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
         log_epoch(cfg.INTERNAL_LOG_PATH, epoch)
         
         train_epoch_loss, train_epoch_acc = train_one_epoch(
-            cfg, thief_model, dataloader['train'], epoch, optimizer, criterion)
+            cfg, thief_model, victim_model, dataloader['train'], epoch, optimizer, criterion)
 
         metrics_val = accuracy_f1_precision_recall(
-            thief_model, dataloader['val'], cfg.DEVICE)
+            thief_model, victim_model, dataloader['val'], cfg.DEVICE, is_thief_set=True)
 
         if best_f1 is None or metrics_val['f1'] > best_f1:
             if os.path.isdir(cfg.OUT_DIR) is False:
@@ -52,21 +52,30 @@ def train(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Opt
     log_finish_training(cfg.INTERNAL_LOG_PATH)
 
 
-def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, epoch: int, optimizer: Optimizer,
+
+def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, dataloader: DataLoader, epoch: int, optimizer: Optimizer,
                     criterion: _Loss, verbose: bool = True):
     train_loss = 0
     correct = 0
     total = 0
-    model.train()
-    model = model.to(cfg.DEVICE)
+    thief_model.train()
+    thief_model = thief_model.to(cfg.DEVICE)
+    if victim_model is not None:
+        victim_model.eval()
+        victim_model = victim_model.to(cfg.DEVICE)
+        
     f1 = open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a', encoding="utf-8")
     f2 = open(os.path.join(cfg.INTERNAL_LOG_PATH, 'log_tqdm.txt'), 'a', encoding="utf-8")
 
     with tqdm(dataloader, file=sys.stdout, leave=False) as pbar:
         for inputs, targets in pbar:
             inputs, targets = inputs.to(cfg.DEVICE), targets.to(cfg.DEVICE)
+            if victim_model is not None:
+                targets = victim_model(inputs)
+                _, targets = torch.max(targets.data, 1)
+            
             optimizer.zero_grad()
-            outputs = model(inputs)
+            outputs = thief_model(inputs)
             loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()

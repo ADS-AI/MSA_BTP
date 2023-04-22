@@ -51,13 +51,12 @@ def load_victim_data_and_model(cfg: CfgNode):
         optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, victim_model,
                                 lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
         criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
-
-        train_one_epoch(cfg, victim_model, victim_data_loader,
-                        0, optimizer, criteria, verbose=False)
-
+        for i in range(min(10, cfg.TRAIN.EPOCH)):
+            train_one_epoch(cfg, victim_model, None, victim_data_loader,0, optimizer, criteria, verbose=False)
+        
     # Measure performance of victim model on victim dataset
     metrics = accuracy_f1_precision_recall(
-        victim_model, victim_data_loader, cfg.DEVICE)
+        victim_model, None, victim_data_loader, cfg.DEVICE, is_thief_set=False)
 
     log_victim_metrics(cfg.LOG_DEST, metrics)
     log_victim_metrics(cfg.INTERNAL_LOG_PATH, metrics)

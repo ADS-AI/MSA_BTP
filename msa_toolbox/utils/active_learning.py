@@ -47,7 +47,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
                                   lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
         criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
 
-        train(cfg, thief_model, criteria, optimizer,
+        train(cfg, thief_model, victim_model, criteria, optimizer,
               dataloader, trial_num, cycle, log_interval=1000)
 
         best_model_path = os.path.join(
@@ -59,11 +59,11 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         log_calculating_metrics(cfg.INTERNAL_LOG_PATH)
         
         metrics_victim = accuracy_f1_precision_recall(
-            thief_model, dataloader['victim'], cfg.DEVICE)
+            thief_model, victim_model, dataloader['victim'], cfg.DEVICE, is_thief_set=False)
         agree_victim = agreement(thief_model, victim_model,
                           dataloader['victim'], cfg.DEVICE)
         metrics_thief = accuracy_f1_precision_recall(
-            thief_model, dataloader['val'], cfg.DEVICE)
+            thief_model, victim_model, dataloader['val'], cfg.DEVICE, is_thief_set=True)
         agree_thief = agreement(thief_model, victim_model,
                           dataloader['val'], cfg.DEVICE)
     
@@ -104,6 +104,10 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
         thief_data = load_thief_dataset(
             cfg.THIEF.DATASET, cfg, train=False, transform=model.transforms, download=True)
 
+    log_thief_data_model(cfg.LOG_DEST, thief_data, model, cfg.THIEF.ARCHITECTURE)
+    log_thief_data_model(cfg.INTERNAL_LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE)
+
+    '''
     thief_data_loader = get_data_loader(thief_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
     new_labels = change_thief_loader_labels(cfg, thief_data_loader, victim_model)
     
@@ -113,9 +117,11 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     data_name = cfg.THIEF.DATASET.lower()
     if data_name == 'custom_dataset' or data_name == 'caltech256' or data_name == 'cubs200' or data_name == 'diabetic5' or data_name == 'imagenet' or data_name == 'indoor67' or data_name == 'tinyimagesubset' or data_name == 'tinyimagenet200':
         samples = np.array(thief_data.samples, dtype=object)
+        print(samples[:,1])
         samples[:,1] = torch.tensor(new_labels, dtype=torch.int64)
+        print(samples[:,1])
         thief_data.samples = samples.tolist()
-    
+    '''
     for trial in range(cfg.TRIALS):
         one_trial(cfg, trial, num_class, victim_data_loader, victim_model, thief_data)
         
@@ -152,4 +158,12 @@ def log_new_cycle(path:str, cycle:int, dataloader:Dict[str, DataLoader]):
 def log_calculating_metrics(path:str):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
         f.write("Calculating Metrics and Agreement on Victim and Thief Datasets\n")
+
+def log_thief_data_model(path: str, thief_data, thief_model, thief_model_name:str):
+    log_dest = os.path.join(path, 'log.txt')
+    with open(log_dest, 'a') as f:
+        f.write('\n======================================> Thief Data and Model Loaded <======================================\n')
+        f.write(f"Thief Data: {thief_data}\n")
+        f.write(f"\nThief Model: {type(thief_model)}: {thief_model_name}\n")
+
     

@@ -18,6 +18,7 @@ def app(cfg_path):
     '''
     Main function to run the application
     '''
+    
     # Config file
     cfg = load_cfg(cfg_path)
     log_start_active_learning(cfg.LOG_DEST)
@@ -26,8 +27,8 @@ def app(cfg_path):
     # Load victim data and model
     (victim_data, num_class), victim_data_loader, victim_model = load_victim_data_and_model(cfg)
 
-    log_victim_data_model(cfg.LOG_DEST, victim_data, victim_model)
-    log_victim_data_model(cfg.INTERNAL_LOG_PATH, victim_data, victim_model)
+    log_victim_data_model(cfg.LOG_DEST, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE)
+    log_victim_data_model(cfg.INTERNAL_LOG_PATH, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE)
     
     # Start Active Learning
     active_learning(cfg, victim_data_loader, num_class, victim_model)
@@ -36,12 +37,12 @@ def app(cfg_path):
     log_finish_active_learning(cfg.INTERNAL_LOG_PATH)
 
 
-def log_victim_data_model(path: str, victim_data, victim_model: nn.Module):
+def log_victim_data_model(path: str, victim_data, victim_model, victim_model_name: str = None):
     log_dest = os.path.join(path, 'log.txt')
     with open(log_dest, 'a') as f:
         f.write('\n======================================> Victim Data and Model Loaded <======================================\n')
         f.write(f"Victim Data: {victim_data}\n")
-        f.write(f"\nVictim Model: {type(victim_model)}\n")
+        f.write(f"\nVictim Model: {type(victim_model)}: {victim_model_name}\n")
         
 
 def log_start_active_learning(path: str):
