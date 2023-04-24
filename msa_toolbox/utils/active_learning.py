@@ -102,7 +102,7 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
             root_dir=cfg.THIEF.DATASET_ROOT, transform=model.transforms)
     else:
         thief_data = load_thief_dataset(
-            cfg.THIEF.DATASET, cfg, train=False, transform=model.transforms, download=True)
+            cfg.THIEF.DATASET, cfg, train=True, transform=model.transforms, download=True)
 
     log_thief_data_model(cfg.LOG_DEST, thief_data, model, cfg.THIEF.ARCHITECTURE)
     log_thief_data_model(cfg.INTERNAL_LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE)

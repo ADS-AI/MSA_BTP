@@ -62,7 +62,7 @@ class Caltech256(ImageFolder):
         # Initialize ImageFolder
         super().__init__(root=root, transform=transform, target_transform=target_transform)
 
-        # self._cleanup()
+        self._cleanup()
         self.ntest = 25  # Reserve these many examples per class for evaluation
         self.partition_to_idxs = self.__get_partition_to_idxs()
         self.pruned_idxs = self.partition_to_idxs['train' if train else 'test']
