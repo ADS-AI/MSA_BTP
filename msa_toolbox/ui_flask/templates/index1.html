@@ -11,18 +11,17 @@
 </head>
 <body >
     <nav class="sidebar">
-        <div style="text-align: center; padding: 10px; background-color: #f1f1f1;">
-            <!--<img src={{url_for('static', filename='logo.png')}} alt="logo" style="width: 100px; height: 100px;"> -->
-        <h1>MSA ToolBox</h1>
+        <div style="text-align: center; padding: 0px; background-image: linear-gradient(125deg,#8b075b,#042c60); ">
+            <img src={{url_for('static', filename='logo1.jpeg')}} alt="logo" style="width: 100%; height: 100%;"> 
+        <!--<h1>MSA ToolBox</h1>-->
+        </div>
         <div>
         <ul>
-          <!-- <li></li> -->
+          <hr> 
           <li {% if active == 'home' %}class="active"{% endif %}><a href="/create_config">Configs</a></li>
-          <li {% if active == 'Tranning' %}class="active"{% endif %}><a href="/tranning">Training</a></li>
-          <!-- {% if fg %}
-          <li {% if active == 'Progress' %}class="active"{% endif %}><a href="/progress">Progress</a></li>
-          {% endif %} -->
+          <li {% if active == 'training' %}class="active"{% endif %}><a href="/training">Training</a></li>
         </ul>
+        </div>
       </nav>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -40,15 +39,6 @@
     <input type="text" class="input-text js-input" id="config_name" name="config_name" placeholder="Enter name of the configuration file" required>   
 </div>
 
-<div class="form-field col-lg-6">
-    <lable class="lable"> Batch Size</lable>
-    <input type="number" class="input-text js-input" id="batch_size" name="batch_size" placeholder=" Batch size" required>   
-</div>
-
-<div class="form-field col-lg-6">
-    <lable class="lable">Budget</lable>
-    <input type="number" class="input-text js-input" id="budget" name="budget" placeholder="Enter budget" required>   
-</div>
 
 <div class="form-field col-lg-6">
     <lable class="lable">Victim Architecture</lable>
@@ -58,14 +48,13 @@
         {% endfor %}
     </select>
 </div>
+
 <div class="form-field col-lg-6">
-    <lable class="lable">Thief Architecture</lable>
-    <select class="input-text js-input" id="T_arch" name="T_arch" required>
-        {% for arc in options['archi'] %}
-        <option value="{{ arc }}">{{ arc }}</option>
-        {% endfor %}
-    </select>
+    <lable class="lable">Victim Model Path</lable>
+    <input type="text" class="input-text js-input" id="v_weights" name="v_weights" placeholder="Victim Model weights Path">   
+
 </div>
+
 <div class="form-field col-lg-6" >
     <lable class="lable">Victim Dataset</lable>
     <select class="input-text js-input" id="V_data" name="V_data" required>
@@ -74,6 +63,24 @@
         {% endfor %}
     </select>
 </div>
+
+<div class="form-field col-lg-6">
+    <lable class="lable">Victim Data Directory</lable>
+    <input type="text" class="input-text js-input" id="v_data_root" name="v_data_root" placeholder="Victim Data Directory ( If Avaialable !!! )">   
+
+</div>
+
+
+
+<div class="form-field col-lg-6">
+    <lable class="lable">Thief Architecture</lable>
+    <select class="input-text js-input" id="T_arch" name="T_arch" required>
+        {% for arc in options['archi'] %}
+        <option value="{{ arc }}">{{ arc }}</option>
+        {% endfor %}
+    </select>
+</div>
+
 <div class="form-field col-lg-6" >
     <lable class="lable">Thief Dataset</lable>
     <select class="input-text js-input" id="T_data" name="T_data" required>
@@ -81,6 +88,21 @@
         <option >{{ data }}</option>
         {% endfor %}
     </select>
+</div>
+
+<div class="form-field col-lg-12">
+    <lable class="lable">Thief Data Directory</lable>
+    <input type="text" class="input-text js-input" id="t_data_root" name="t_data_root" placeholder="Thief Data Directory ( If Avaialable !!! )">   
+</div>
+
+<div class="form-field col-lg-6">
+    <lable class="lable"> Batch Size</lable>
+    <input type="number" class="input-text js-input" id="batch_size" name="batch_size" placeholder=" Batch size" required>   
+</div>
+
+<div class="form-field col-lg-6">
+    <lable class="lable">Budget</lable>
+    <input type="number" class="input-text js-input" id="budget" name="budget" placeholder="Enter budget" required>   
 </div>
 
 <div class="form-field col-lg-4" >
@@ -102,7 +124,7 @@
 </div>
 
 <div class="form-field col-lg-4" >
-    <lable class="lable">Criteria</lable>
+    <lable class="lable">Loss function</lable>
     <select class="input-text js-input" id="criteria" name="criteria" required>
         {% for criteria in options['criterias'] %}
         <option >{{ criteria }}</option>
@@ -136,15 +158,6 @@
 <div class="form-field col-lg-12">
     <lable class="lable">Output Directory</lable>
     <input type="text" class="input-text js-input" id="out_dir" name="out_dir" placeholder="Output directory path" required>   
-</div>
-
-<div class="form-field col-lg-6">
-    <lable class="lable">Victim Data Directory</lable>
-    <input type="text" class="input-text js-input" id="v_data_root" name="v_data_root" placeholder="Victim Data Directory ( If Avaialable !!! )">   
-
-</div><div class="form-field col-lg-6">
-    <lable class="lable">Thief Data Directory</lable>
-    <input type="text" class="input-text js-input" id="t_data_root" name="t_data_root" placeholder="Thief Data Directory ( If Avaialable !!! )">   
 </div>
 
 <div class="form-field col-lg-12">

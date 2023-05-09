@@ -11,18 +11,17 @@
 </head>
 <body >
     <nav class="sidebar">
-        <div style="text-align: center; padding: 10px; background-color: #f1f1f1;">
-            <!--<img src={{url_for('static', filename='logo.png')}} alt="logo" style="width: 100px; height: 100px;"> -->
-        <h1>MSA ToolBox</h1>
+        <div style="text-align: center; padding: 0px; background-image: linear-gradient(125deg,#8b075b,#042c60); ">
+            <img src={{url_for('static', filename='logo1.jpeg')}} alt="logo" style="width: 100%; height: 100%;"> 
+        <!--<h1>MSA ToolBox</h1>-->
+        </div>
         <div>
         <ul>
-          <li></li>
+          <hr> 
           <li {% if active == 'home' %}class="active"{% endif %}><a href="/create_config">Configs</a></li>
-          <li {% if active == 'Tranning' %}class="active"{% endif %}><a href="/tranning">Training</a></li>
-          <!-- {% if fg %}
-          <li {% if active == 'Progress' %}class="active"{% endif %}><a href="/progress">Progress</a></li>
-          {% endif %} -->
+          <li {% if active == 'training' %}class="active"{% endif %}><a href="/training">Training</a></li>
         </ul>
+        </div>
       </nav>
     <!--{% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -35,7 +34,7 @@
 {%if configs %}
     <section class='get-in-touch'>
         <h1 class="title">Choose Config file</h1>
-        <form class="contact-form row" method="POST" action="/tranning">
+        <form class="contact-form row" method="POST" action="/training">
         
             <div class="form-field col-lg-12" >
                 <lable class="lable">Configuration Files</lable>

@@ -1,1 +1,66 @@
-{}
+{
+    "Cycle_1": {
+        "metrics_victim": {
+            "accuracy": 0.8593269821757836,
+            "f1": 0.8475509972960008,
+            "precision": 0.8510622442861973,
+            "recall": 0.8519650871266957
+        },
+        "agreement_victim": 0.8601336816226183,
+        "metrics_thief": {
+            "accuracy": 0.8684,
+            "f1": 0.8631122638614148,
+            "precision": 0.8612293821493313,
+            "recall": 0.865627074201463
+        },
+        "agreement_thief": 0.8684
+    },
+    "Cycle_2": {
+        "metrics_victim": {
+            "accuracy": 0.8867163491087892,
+            "f1": 0.8781930286933713,
+            "precision": 0.8772982813000206,
+            "recall": 0.8815035214917918
+        },
+        "agreement_victim": 0.88759987707437,
+        "metrics_thief": {
+            "accuracy": 0.8792,
+            "f1": 0.8766034284491413,
+            "precision": 0.8726816271386078,
+            "recall": 0.8810446871203587
+        },
+        "agreement_thief": 0.8792
+    },
+    "Cycle_3": {
+        "metrics_victim": {
+            "accuracy": 0.89660110633,
+            "f1": 0.8961482801274738,
+            "precision": 0.8978259374463628,
+            "recall": 0.8956463367211892
+        },
+        "agreement_victim": 0.8932221880762139,
+        "metrics_thief": {
+            "accuracy": 0.8816,
+            "f1": 0.8800126869786493,
+            "precision": 0.8788788032727234,
+            "recall": 0.8821612789610853
+        },
+        "agreement_thief": 0.8816
+    },
+    "Cycle_4": {
+        "metrics_victim": {
+            "accuracy": 0.909479471419791,
+            "f1": 0.9095746243437711,
+            "precision": 0.90009068716605954,
+            "recall": 0.9097356213996578
+        },
+        "agreement_victim": 0.9042245851259988,
+        "metrics_thief": {
+            "accuracy": 0.8956,
+            "f1": 0.8923603854809896,
+            "precision": 0.8908564096785394,
+            "recall": 0.8943659541846272
+        },
+        "agreement_thief": 0.8956
+    }
+}

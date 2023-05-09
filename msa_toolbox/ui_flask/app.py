@@ -23,7 +23,7 @@ archi = ['resnet18','resnet50','vgg11','vgg13','vgg16','vgg19','vgg11_bn','vgg13
              'efficientnet_b2','efficientnet_b3','efficientnet_b4','efficientnet_b5','efficientnet_b6','efficientnet_b7','efficientnet_v2_s','efficientnet_v2_m','efficientnet_v2_l',
              'mobilenet_v2','mobilenet_v3_large','mobilenet_v3_small']
 
-methods = ['entropy']
+methods = ['random','entropy']
 
 optimizers = ['adam','sgd','rmsprop','adagrad','adadelta','adamax']
 
@@ -53,7 +53,7 @@ def get_file_progress():
     
 
 
-@app.route('/tranning', methods=['GET','POST'])
+@app.route('/training', methods=['GET','POST'])
 def tranning():
     global fg
     if request.method == 'POST':
@@ -63,12 +63,12 @@ def tranning():
     else:
         configs = os.listdir('msa_toolbox/ui_flask/configs')
     if fg==1:
-        return render_template('progress.html',configs=configs,fg=fg)
-    return render_template('index.html', configs=configs)
+        return render_template('progress.html',configs=configs,fg=fg,active = 'traning')
+    return render_template('index.html', configs=configs,active = 'traning')
 
 @app.route('/')
 def index():
-    return render_template('index1.html',options=options)
+    return render_template('index1.html',options=options,active = 'home')
 
 
 @app.route('/create_config', methods=['GET','POST'])
