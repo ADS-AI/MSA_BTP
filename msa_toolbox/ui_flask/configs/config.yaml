@@ -1,11 +1,11 @@
 VICTIM:
-  ARCHITECTURE: "resnet50"
-  DATASET: "mnist"
+  ARCHITECTURE: "resnet18"
+  DATASET: "svhn"
   DATA_ROOT: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img"
   WEIGHTS: "default"
 THIEF:
-  ARCHITECTURE: "resnet18"
-  DATASET: "mnist"
+  ARCHITECTURE: "resnet50"
+  DATASET: "svhn"
   DATA_ROOT: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img"
   SUBSET: 20000
   NUM_TRAIN: 100000

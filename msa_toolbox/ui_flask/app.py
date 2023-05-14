@@ -23,7 +23,7 @@ archi = ['resnet18','resnet50','vgg11','vgg13','vgg16','vgg19','vgg11_bn','vgg13
              'efficientnet_b2','efficientnet_b3','efficientnet_b4','efficientnet_b5','efficientnet_b6','efficientnet_b7','efficientnet_v2_s','efficientnet_v2_m','efficientnet_v2_l',
              'mobilenet_v2','mobilenet_v3_large','mobilenet_v3_small']
 
-methods = ['entropy']
+methods = ['random','entropy']
 
 optimizers = ['adam','sgd','rmsprop','adagrad','adadelta','adamax']
 

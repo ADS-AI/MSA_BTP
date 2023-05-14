@@ -18,8 +18,13 @@ def app(cfg_path):
     '''
     Main function to run the application
     '''
+<<<<<<< HEAD
     # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     # os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+=======
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+>>>>>>> ee08ce6e273449f2f61ea5420e1a0f209bb0b878
 
     # Config file
     cfg = load_cfg(cfg_path)
