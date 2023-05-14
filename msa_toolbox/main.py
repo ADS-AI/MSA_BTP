@@ -18,7 +18,9 @@ def app(cfg_path):
     '''
     Main function to run the application
     '''
-    
+    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
     # Config file
     cfg = load_cfg(cfg_path)
     log_start_active_learning(cfg.LOG_DEST)

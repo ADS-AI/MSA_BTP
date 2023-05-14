@@ -70,7 +70,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         log_metrics(cfg.LOG_DEST, cycle, metrics_victim, agree_victim, metrics_thief, agree_thief)
         log_metrics(cfg.INTERNAL_LOG_PATH, cycle, metrics_victim, agree_victim, metrics_thief, agree_thief)
 
-        if cycle == cfg.ACTIVE.CYCLES-1 or True:
+        if cycle != cfg.ACTIVE.CYCLES-1:
             new_training_samples = active_learning_technique(
                 cfg, thief_model, dataloader['unlabeled'])
             if len(new_training_samples) == 0:

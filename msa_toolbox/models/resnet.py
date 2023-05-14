@@ -40,7 +40,7 @@ def ResNet50(num_classes, weights: str ='default',  progress: bool = True, **kwa
         transforms.Grayscale(num_output_channels=3), 
         weights.transforms()
     ])
-    model.transforms = transform
+    model.transforms = weights.transforms()
     return model
 
 
@@ -71,7 +71,7 @@ def ResNet18(num_classes, weights: str = 'default',  progress: bool = True, **kw
         transforms.Grayscale(num_output_channels=3), 
         weights.transforms()
     ])
-    model.transforms = transform
+    model.transforms = weights.transforms()
     return model
 
 
@@ -102,7 +102,7 @@ def ResNet34(num_classes, weights: str = 'default',  progress: bool = True, **kw
         transforms.Grayscale(num_output_channels=3), 
         weights.transforms()
     ])
-    model.transforms = transform
+    model.transforms = weights.transforms()
     return model
 
 def ResNet101(num_classes, weights: str = 'default',  progress: bool = True, **kwargs: Any):
@@ -132,7 +132,7 @@ def ResNet101(num_classes, weights: str = 'default',  progress: bool = True, **k
         transforms.Grayscale(num_output_channels=3), 
         weights.transforms()
     ])
-    model.transforms = transform
+    model.transforms = weights.transforms()
     return model
 
 
@@ -163,5 +163,5 @@ def ResNet152(num_classes, weights: str = 'default',  progress: bool = True, **k
         transforms.Grayscale(num_output_channels=3), 
         weights.transforms()
     ])
-    model.transforms = transform
+    model.transforms = weights.transforms()
     return model

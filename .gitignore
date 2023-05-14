@@ -19,9 +19,13 @@ testing5.ipynb
 testing6.ipynb
 testing_checkpoint&transform.ipynb
 testing1.py
-nohup1.out
 testing2.py
+testing3.py
+testing4.py
+nohup1.out
 nohup2.out
+nohup3.out
+nohup4.out
 msa_toolbox/results/
 # msa_toolbox/ui/configs/
 msa_toolbox/ui_gradio/__pycache__/

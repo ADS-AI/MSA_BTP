@@ -14,7 +14,7 @@ lis = os.listdir(config_dir)
 def count():
     while True:
         s = ''
-        with open("/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/ui_flask/logs/log.txt", 'r') as f:
+        with open("./msa_toolbox/ui_flask/logs/log.txt", 'r') as f:
             s = f.read()
         yield s
 

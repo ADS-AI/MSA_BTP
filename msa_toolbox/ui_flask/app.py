@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request , flash ,jsonify
-from flask_socketio import SocketIO, emit
+# from flask_socketio import SocketIO, emit
 import yaml
 import os
 import random
@@ -53,7 +53,7 @@ def get_file_progress():
     
 
 
-@app.route('/tranning', methods=['GET','POST'])
+@app.route('/training', methods=['GET','POST'])
 def tranning():
     global fg
     if request.method == 'POST':
@@ -63,12 +63,12 @@ def tranning():
     else:
         configs = os.listdir('msa_toolbox/ui_flask/configs')
     if fg==1:
-        return render_template('progress.html',configs=configs,fg=fg)
-    return render_template('index.html', configs=configs)
+        return render_template('progress.html',configs=configs,fg=fg,active = 'traning')
+    return render_template('index.html', configs=configs,active = 'traning')
 
 @app.route('/')
 def index():
-    return render_template('index1.html',options=options)
+    return render_template('index1.html',options=options,active = 'home')
 
 
 @app.route('/create_config', methods=['GET','POST'])
