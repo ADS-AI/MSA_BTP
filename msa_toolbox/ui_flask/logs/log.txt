@@ -1,3 +1,125 @@
 ======================================> Starting Active Learning <======================================
 
-Loaded Victim Datset of size 26032 with 10 classes
+Loaded Victim Datset of size 6400 with 256 classes
+Loaded Victim Model weights from '/raid/home/akshitj/research/MSA_BTP/Utils/Stealing_Task_1/caltech256-resnet34/checkpoint_new.pth'
+Metrics of Victim Model on Victim Dataset: {'accuracy': 0.784375, 'f1': 0.7828617715695259, 'precision': 0.7949897557823686, 'recall': 0.784375}
+
+======================================> Victim Data and Model Loaded <======================================
+Victim Data: Dataset Caltech256
+    Number of datapoints: 6400
+    Root location: /raid/home/akshitj/research/MSA_BTP/Utils/data/256_ObjectCategories
+    StandardTransform
+Transform: ImageClassification(
+               crop_size=[224]
+               resize_size=[256]
+               mean=[0.485, 0.456, 0.406]
+               std=[0.229, 0.224, 0.225]
+               interpolation=InterpolationMode.BILINEAR
+           )
+
+Victim Model: <class 'torchvision.models.resnet.ResNet'>: resnet34
+
+======================================> Thief Data and Model Loaded <======================================
+Thief Data: Dataset ImageNet1k
+    Number of datapoints: 1281167
+    Root location: /raid/home/akshitj/research/datasets/Imagenet_full/Imagenet_2010_train/full_data
+    StandardTransform
+Transform: ImageClassification(
+               crop_size=[224]
+               resize_size=[256]
+               mean=[0.485, 0.456, 0.406]
+               std=[0.229, 0.224, 0.225]
+               interpolation=InterpolationMode.BILINEAR
+           )
+
+Thief Model: <class 'torchvision.models.resnet.ResNet'>: resnet50
+
+
+===============================> Cycle:1 <===============================
+
+Length of Datasets: {labeled=1350, val:3000, unlabeled:1276817}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Epoch 50 started
+Epoch 51 started
+Epoch 52 started
+Epoch 53 started
+Epoch 54 started
+Epoch 55 started
+Epoch 56 started
+Epoch 57 started
+Epoch 58 started
+Epoch 59 started
+Epoch 60 started
+Epoch 61 started
+Epoch 62 started
+Epoch 63 started
+Epoch 64 started
+Epoch 65 started
+Epoch 66 started
+Epoch 67 started
+Epoch 68 started
+Epoch 69 started
+Epoch 70 started
+Epoch 71 started
+Epoch 72 started
+Epoch 73 started
+Epoch 74 started
+Epoch 75 started
+Epoch 76 started
+Epoch 77 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.26703125, 'f1': 0.21846467056083635, 'precision': 0.2601515035310201, 'recall': 0.26703125}
+Agreement of Thief Model on Victim Dataset: 0.26765625
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.306, 'f1': 0.1438258346537985, 'precision': 0.16744227703187275, 'recall': 0.15879652118130785}
+Agreement of Thief Model on Validation Dataset: 0.306

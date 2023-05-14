@@ -37,7 +37,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
     dataloader['victim'] = victim_data_loader
 
     for cycle in range(cfg.ACTIVE.CYCLES):
-        log_new_cycle(cfg.LOG_DEST, cycle, dataloader)
+        log_new_cycle(cfg.LOG_PATH, cycle, dataloader)
         log_new_cycle(cfg.INTERNAL_LOG_PATH, cycle, dataloader)
 
         thief_model = load_thief_model(
@@ -51,11 +51,11 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
               dataloader, trial_num, cycle, log_interval=1000)
 
         best_model_path = os.path.join(
-            cfg.OUT_DIR, f"thief_model__trial_{trial_num+1}_cycle_{cycle+1}.pth")
+            cfg.OUT_DIR_MODEL, f"thief_model__trial_{trial_num+1}_cycle_{cycle+1}.pth")
         best_state = torch.load(best_model_path)['state_dict']
         thief_model.load_state_dict(best_state)
 
-        log_calculating_metrics(cfg.LOG_DEST)
+        log_calculating_metrics(cfg.LOG_PATH)
         log_calculating_metrics(cfg.INTERNAL_LOG_PATH)
         
         metrics_victim = accuracy_f1_precision_recall(
@@ -67,7 +67,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         agree_thief = agreement(thief_model, victim_model,
                           dataloader['val'], cfg.DEVICE)
     
-        log_metrics(cfg.LOG_DEST, cycle, metrics_victim, agree_victim, metrics_thief, agree_thief)
+        log_metrics(cfg.LOG_PATH, cycle, metrics_victim, agree_victim, metrics_thief, agree_thief)
         log_metrics(cfg.INTERNAL_LOG_PATH, cycle, metrics_victim, agree_victim, metrics_thief, agree_thief)
 
         if cycle != cfg.ACTIVE.CYCLES-1:
@@ -104,7 +104,7 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
         thief_data = load_thief_dataset(
             cfg.THIEF.DATASET, cfg, train=True, transform=model.transforms, download=True)
 
-    log_thief_data_model(cfg.LOG_DEST, thief_data, model, cfg.THIEF.ARCHITECTURE)
+    log_thief_data_model(cfg.LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE)
     log_thief_data_model(cfg.INTERNAL_LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE)
 
     '''

@@ -23,19 +23,19 @@ def app(cfg_path):
 
     # Config file
     cfg = load_cfg(cfg_path)
-    log_start_active_learning(cfg.LOG_DEST)
+    log_start_active_learning(cfg.LOG_PATH)
     log_start_active_learning(cfg.INTERNAL_LOG_PATH)
 
     # Load victim data and model
     (victim_data, num_class), victim_data_loader, victim_model = load_victim_data_and_model(cfg)
 
-    log_victim_data_model(cfg.LOG_DEST, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE)
+    log_victim_data_model(cfg.LOG_PATH, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE)
     log_victim_data_model(cfg.INTERNAL_LOG_PATH, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE)
     
     # Start Active Learning
     active_learning(cfg, victim_data_loader, num_class, victim_model)
 
-    log_finish_active_learning(cfg.LOG_DEST)
+    log_finish_active_learning(cfg.LOG_PATH)
     log_finish_active_learning(cfg.INTERNAL_LOG_PATH)
 
 

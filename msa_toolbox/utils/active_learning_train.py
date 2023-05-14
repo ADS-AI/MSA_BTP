@@ -18,7 +18,7 @@ def train(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criteri
     '''
     Trains the Thief Model on the Thief Dataset
     '''
-    log_training(cfg.LOG_DEST, cfg.TRAIN.EPOCH)
+    log_training(cfg.LOG_PATH, cfg.TRAIN.EPOCH)
     log_training(cfg.INTERNAL_LOG_PATH, cfg.TRAIN.EPOCH)
     
     exit = False
@@ -26,7 +26,7 @@ def train(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criteri
     best_f1 = None
     no_improvement = 0
     for epoch in range(cfg.TRAIN.EPOCH):
-        log_epoch(cfg.LOG_DEST, epoch)
+        log_epoch(cfg.LOG_PATH, epoch)
         log_epoch(cfg.INTERNAL_LOG_PATH, epoch)
         
         train_epoch_loss, train_epoch_acc = train_one_epoch(
@@ -36,11 +36,11 @@ def train(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criteri
             thief_model, victim_model, dataloader['val'], cfg.DEVICE, is_thief_set=True)
 
         if best_f1 is None or metrics_val['f1'] > best_f1:
-            if os.path.isdir(cfg.OUT_DIR) is False:
-                os.makedirs(cfg.OUT_DIR, exist_ok=True)
+            if os.path.isdir(cfg.OUT_DIR_MODEL) is False:
+                os.makedirs(cfg.OUT_DIR_MODEL, exist_ok=True)
             best_f1 = metrics_val['f1']
             torch.save({'trail': trail_num, 'cycle': cycle_num, 'epoch': epoch, 'state_dict': thief_model.state_dict(
-            )}, f"{cfg.OUT_DIR}/thief_model__trial_{trail_num+1}_cycle_{cycle_num+1}.pth")
+            )}, f"{cfg.OUT_DIR_MODEL}/thief_model__trial_{trail_num+1}_cycle_{cycle_num+1}.pth")
             no_improvement = 0
         else:
             no_improvement += 1
@@ -48,7 +48,7 @@ def train(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criteri
                 exit = True
         if exit:
             break
-    log_finish_training(cfg.LOG_DEST)
+    log_finish_training(cfg.LOG_PATH)
     log_finish_training(cfg.INTERNAL_LOG_PATH)
 
 
@@ -64,7 +64,7 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Modul
         victim_model.eval()
         victim_model = victim_model.to(cfg.DEVICE)
         
-    f1 = open(os.path.join(cfg.LOG_DEST, 'log_tqdm.txt'), 'a', encoding="utf-8")
+    f1 = open(os.path.join(cfg.LOG_PATH, 'log_tqdm.txt'), 'a', encoding="utf-8")
     f2 = open(os.path.join(cfg.INTERNAL_LOG_PATH, 'log_tqdm.txt'), 'a', encoding="utf-8")
 
     with tqdm(dataloader, file=sys.stdout, leave=False) as pbar:

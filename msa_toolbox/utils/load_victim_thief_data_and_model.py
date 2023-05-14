@@ -34,7 +34,7 @@ def load_victim_data_and_model(cfg: CfgNode):
     # Load Victim Dataset
     victim_data, num_class = load_victim_data(cfg, victim_model)
 
-    log_victim_data(cfg.LOG_DEST, victim_data, num_class)
+    log_victim_data(cfg.LOG_PATH, victim_data, num_class)
     log_victim_data(cfg.INTERNAL_LOG_PATH, victim_data, num_class)
 
     # Load Victim Data Loader
@@ -44,7 +44,7 @@ def load_victim_data_and_model(cfg: CfgNode):
     # Load victim model weights if present, else train the victim model (just to measure performance)
     if cfg.VICTIM.WEIGHTS is not None and cfg.VICTIM.WEIGHTS != 'None' and (len(cfg.VICTIM.WEIGHTS.split('\\'[0])) > 1 or len(cfg.VICTIM.WEIGHTS.split('/')) > 1):
         victim_model.load_state_dict(torch.load(cfg.VICTIM.WEIGHTS)['state_dict'])
-        log_weights(cfg.LOG_DEST, cfg.VICTIM.WEIGHTS)
+        log_weights(cfg.LOG_PATH, cfg.VICTIM.WEIGHTS)
         log_weights(cfg.INTERNAL_LOG_PATH, cfg.VICTIM.WEIGHTS)
 
     else:
@@ -58,7 +58,7 @@ def load_victim_data_and_model(cfg: CfgNode):
     metrics = accuracy_f1_precision_recall(
         victim_model, None, victim_data_loader, cfg.DEVICE, is_thief_set=False)
 
-    log_victim_metrics(cfg.LOG_DEST, metrics)
+    log_victim_metrics(cfg.LOG_PATH, metrics)
     log_victim_metrics(cfg.INTERNAL_LOG_PATH, metrics)
 
     return (victim_data, num_class), victim_data_loader, victim_model
