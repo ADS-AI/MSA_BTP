@@ -29,7 +29,7 @@ class Diabetic5(ImageFolder):
         200 images per class for evaluation.
     """
 
-    def __init__(self, train=True, transform=None, target_transform=None):
+    def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
         Initialize the Diabetic5 dataset.
 
@@ -40,7 +40,7 @@ class Diabetic5(ImageFolder):
             target_transform (callable, optional): A function/transform that takes in the 
                 target and transforms it.
         """
-        root = os.path.join(cfg.DATASET_ROOT, 'diabetic_retinopathy')
+        root = os.path.join(root, 'diabetic_retinopathy')
         if not os.path.exists(root):
             print(f'A dataset not found at {root}. Please download it from ')
             raise ValueError(f"Dataset not found at {root}. Please download it from "
@@ -56,8 +56,7 @@ class Diabetic5(ImageFolder):
         self.pruned_idxs = self.partition_to_idxs['train' if train else 'test']
         self.samples = [self.samples[i] for i in self.pruned_idxs]
         self.imgs = self.samples
-        print(f"=> done loading {self.__class__.__name__} " + f"{'train' if train else 'test'} set "
-                f"with {len(self.samples)} examples")
+        # print(f"=> done loading {self.__class__.__name__} " + f"{'train' if train else 'test'} set "f"with {len(self.samples)} examples")
 
     def __get_partition_to_idxs(self):
         """

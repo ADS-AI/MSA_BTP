@@ -5,6 +5,7 @@ which return the instances of the corresponding VGG model.
 
 from typing import  Any
 import torch.nn as nn
+import torch
 from torchvision.models import vgg11, vgg11_bn, vgg13, vgg13_bn, vgg16, vgg16_bn, vgg19, vgg19_bn
 from torchvision.models.vgg import VGG11_Weights, VGG11_BN_Weights, VGG13_Weights, VGG13_BN_Weights, VGG16_Weights, VGG16_BN_Weights, VGG19_Weights, VGG19_BN_Weights
 
@@ -29,8 +30,10 @@ def VGG11(num_classes, weights: str = "default",  progress: bool = True, **kwarg
         weights = VGG11_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="VGG11_Weights.IMAGENET1K_V1")    
     model = vgg11(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -54,8 +57,10 @@ def VGG11_BN(num_classes, weights: str = "default",  progress: bool = True, **kw
         weights = VGG11_BN_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="VGG11_BN_Weights.IMAGENET1K_V1")    
     model = vgg11_bn(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -79,8 +84,10 @@ def VGG13(num_classes, weights: str = "default",  progress: bool = True, **kwarg
         weights = VGG13_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="VGG13_Weights.IMAGENET1K_V1")    
     model = vgg13(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -104,8 +111,10 @@ def VGG13_BN(num_classes, weights: str = "default",  progress: bool = True, **kw
         weights = VGG13_BN_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="VGG13_BN_Weights.IMAGENET1K_V1")    
     model = vgg13_bn(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -131,8 +140,10 @@ def VGG16(num_classes, weights: str = "default",  progress: bool = True, **kwarg
         weights = VGG16_Weights.IMAGENET1K_FEATURES
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="VGG16_Weights.IMAGENET1K_V1")    
     model = vgg16(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -156,8 +167,10 @@ def VGG16_BN(num_classes, weights: str = "default",  progress: bool = True, **kw
         weights = VGG16_BN_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="VGG16_BN_Weights.IMAGENET1K_V1")    
     model = vgg16_bn(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -181,8 +194,10 @@ def VGG19(num_classes, weights: str = "default",  progress: bool = True, **kwarg
         weights = VGG19_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="VGG19_Weights.IMAGENET1K_V1")    
     model = vgg19(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -206,6 +221,8 @@ def VGG19_BN(num_classes, weights: str = "default",  progress: bool = True, **kw
         weights = VGG19_BN_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="VGG19_BN_Weights.IMAGENET1K_V1")    
     model = vgg19_bn(weights=weights, progress=progress, **kwargs)
     model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model

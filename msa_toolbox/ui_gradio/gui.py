@@ -7,14 +7,14 @@ from threading import Thread
 # from msa_toolbox.main import app
 from .. main import app
 
-config_dir = './msa_toolbox/ui/configs/'
+config_dir = './msa_toolbox/ui_gradio/configs/'
 lis = os.listdir(config_dir)
 
 
 def count():
     while True:
         s = ''
-        with open("/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/Logs/log.txt", 'r') as f:
+        with open("./msa_toolbox/ui_flask/logs/log.txt", 'r') as f:
             s = f.read()
         yield s
 
@@ -26,7 +26,7 @@ def start_training(config_name):
     if config_name in os.listdir(config_dir):
         thread = Thread(target=app, args=(config_path,))
         thread.start()
-        return 'Model Trained'
+        return 'Stealing Model...'
     else:
         return 'config file not found'
     # return config_path
@@ -75,7 +75,7 @@ def x():
 
 
 with gr.Blocks() as demo:
-    gr.Markdown("Gui for MSA-TOOLBOX")
+    gr.Markdown("G_gradio for MSA-TOOLBOX")
     with gr.Tab("Generate Config"):
         input = [
             gr.Textbox(lines=1, label="Config Name",
@@ -164,7 +164,7 @@ with gr.Blocks() as demo:
 
 
 demo1 = gr.Interface(count, inputs=None,
-                     outputs=gr.Textbox(label="Output Box",max_lines=1000))
+                     outputs=gr.Textbox(label="Output Box",max_lines=10000))
 
 demo2 = gr.TabbedInterface([demo, demo1], ['Setup Config', 'View Progress'])
 demo2.queue()

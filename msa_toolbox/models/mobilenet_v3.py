@@ -4,6 +4,7 @@ instances of the MobileNet V3 models respectively.
 '''
 
 from typing import Any
+import torch
 import torch.nn as nn
 from torchvision.models import mobilenet_v3_small, mobilenet_v3_large, MobileNet_V3_Small_Weights, MobileNet_V3_Large_Weights
 
@@ -28,8 +29,10 @@ def MobileNet_V3_Small(num_classes, weights: str = "default",  progress: bool = 
         weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="MobileNet_V3_Small_Weights.IMAGENET1K_V1")    
     model = mobilenet_v3_small(weights=weights, progress=progress, **kwargs)
     model.classifier[3] = nn.Linear(model.classifier[3].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -55,6 +58,8 @@ def MobileNet_V3_Large(num_classes, weights: str = "default",  progress: bool = 
         weights = MobileNet_V3_Large_Weights.IMAGENET1K_V2
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="MobileNet_V3_Large_Weights.IMAGENET1K_V1")    
     model = mobilenet_v3_large(weights=weights, progress=progress, **kwargs)
     model.classifier[3] = nn.Linear(model.classifier[3].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model

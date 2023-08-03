@@ -1,0 +1,1 @@
+{"Cycle_1": {"metrics_victim": {"accuracy": 0.26703125, "f1": 0.21846467056083635, "precision": 0.2601515035310201, "recall": 0.26703125}, "agreement_victim": 0.26765625, "metrics_thief": {"accuracy": 0.306, "f1": 0.1438258346537985, "precision": 0.16744227703187275, "recall": 0.15879652118130785}, "agreement_thief": 0.306}}
