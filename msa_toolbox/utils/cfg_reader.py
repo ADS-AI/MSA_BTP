@@ -49,8 +49,17 @@ def load_cfg(path):
     '''
     cfg = load_yaml(path)
     cfg = CfgNode(cfg)
-    cfg.ACTIVE.VAL = cfg.ACTIVE.BUDGET // (2 * cfg.ACTIVE.CYCLES)
-    rest_samples = cfg.ACTIVE.BUDGET - cfg.ACTIVE.VAL
-    cfg.ACTIVE.INITIAL = rest_samples // cfg.ACTIVE.CYCLES
+
+    # Initialize the paths for logging and saving models
+    cfg.INTERNAL_LOG_PATH = './msa_toolbox/ui_flask/logs/'
+    cfg.OUT_DIR_MODEL = cfg.OUT_DIR + '/SavedModels'
+    cfg.LOG_PATH = cfg.OUT_DIR + '/Logs'
+    os.makedirs(cfg.OUT_DIR_MODEL, exist_ok=True)
+    os.makedirs(cfg.LOG_PATH, exist_ok=True)
+
+    # Splitting the dataset for Active Learning
+    cfg.ACTIVE.VAL = cfg.ACTIVE.BUDGET // 10
+    cfg.ACTIVE.REST = cfg.ACTIVE.BUDGET - cfg.ACTIVE.VAL
+    cfg.ACTIVE.INITIAL = cfg.ACTIVE.REST // cfg.ACTIVE.CYCLES
     cfg.ACTIVE.ADDENDUM = cfg.ACTIVE.INITIAL 
     return cfg

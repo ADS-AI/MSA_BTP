@@ -1,0 +1,44 @@
+.sidebar {
+  background-color: #333;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 200px;
+  z-index: 1;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar li {
+  display: block;
+}
+
+.sidebar li a {
+  display: block;
+  color: white;
+  padding: 16px;
+  text-decoration: none;
+}
+
+.sidebar li.active {
+  background-color: #4CAF50;
+}
+
+.sidebar li:hover:not(.active) {
+  background-color: #555;
+}
+#file-viewer{
+  height: 200px;
+  overflow-y: scroll;
+  font-size: 15px;
+}
+.graph-container{
+  height: 300px;
+  width: 80%;
+  margin: 40px auto;
+}

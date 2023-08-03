@@ -29,7 +29,7 @@ class CUBS200(ImageFolder):
             Returns a mapping of filenames to train or test partition.
     """
 
-    def __init__(self, train=True, transform=None, target_transform=None):
+    def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
         Initializes the CUBS200 dataset.
 
@@ -44,9 +44,9 @@ class CUBS200(ImageFolder):
         Raises:
             ValueError: If dataset is not found at the root directory path.
         """
-        root = os.path.join(cfg.DATASET_ROOT, 'CUB_200_2011')
+        root = os.path.join(root, 'CUB_200_2011')
         if not os.path.exists(root):
-            raise ValueError(f'Dataset not found at {root}. Please download it from http://www.vision.caltech.edu/visipedia/CUB-200-2011.html.')
+            raise ValueError(f'Dataset not found at {root}. Please download it from http://www.vision.caltech.edu/visipedia/CUB-200-2011.html or https://data.caltech.edu/records/65de6-vp158.')
 
         super().__init__(root=os.path.join(root, 'images'), transform=transform,
                         target_transform=target_transform)
@@ -57,8 +57,7 @@ class CUBS200(ImageFolder):
 
         self.samples = [self.samples[i] for i in self.pruned_idxs]
         self.imgs = self.samples
-
-        print(f"=> done loading {self.__class__.__name__} " f"({'train' if train else 'test'}) with {len(self.samples)} examples")
+        # print(f"=> done loading {self.__class__.__name__} " f"({'train' if train else 'test'}) with {len(self.samples)} examples")
 
 
     def get_partition_to_idxs(self):

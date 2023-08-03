@@ -1,0 +1,30 @@
+VICTIM:
+  ARCHITECTURE: "resnet50"
+  DATASET: "svhn"
+  DATASET_ROOT: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img"
+  WEIGHTS: "default"
+THIEF:
+  ARCHITECTURE: "resnet18"
+  DATASET: "svhn"
+  DATASET_ROOT: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img"
+  SUBSET: 10000
+  NUM_TRAIN: 100000
+  WEIGHTS: "default"
+ACTIVE:
+  BUDGET: 10000
+  METHOD: "entropy"
+  CYCLES: 5
+TRAIN:
+  OPTIMIZER: "adam"
+  LOSS_CRITERION: "cross_entropy_loss"
+  BATCH_SIZE: 128
+  WEIGHT_DECAY: 0.0001
+  EPOCH: 4
+  PATIENCE: 5
+  LR: 0.001
+TRIALS: 1
+DS_SEED: 123
+NUM_WORKERS: 2
+DEVICE: "cuda"
+LOG_DEST: "/raid/home/akshitj/research/MSA_BTP/Utils/Logs/Logs1"
+OUT_DIR: "/raid/home/akshitj/research/MSA_BTP/Utils/SavedModels"

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Graphs and File Output</title>
+	<!-- Include Chart.js library -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<!-- Include custom CSS -->
+	<link rel="stylesheet" href={{url_for('static', filename='style.css')}}>
+    <link rel="stylesheet" href={{url_for('static', filename='style1.css')}}>
+    
+</head>
+<body>
+    <nav class="sidebar">
+        <div style="text-align: center; padding: 0px; background-image: linear-gradient(125deg,#8b075b,#042c60); ">
+            <img src={{url_for('static', filename='logo1.jpeg')}} alt="logo" style="width: 100%; height: 100%;"> 
+        <!--<h1>MSA ToolBox</h1>-->
+        </div>
+        <div>
+        <ul>
+          <hr> 
+          <li {% if active == 'home' %}class="active"{% endif %}><a href="/create_config">Configs</a></li>
+          <li {% if active == 'Tranning' %}class="active"{% endif %}><a href="/tranning">Training</a></li>
+        </ul>
+        </div>
+      </nav>
+	<div class="container" style="margin-top: 80px; height: auto; background-color: aliceblue;">
+		<div class="row" >	
+			<div class="col-lg-6">
+				<!-- First Graph -->
+				<div class="graph-container">
+                    <h2 style="text-align: center;">Accuracy</h2>
+					<canvas id="graph1"></canvas>
+				</div>
+				<!-- Second Graph -->
+				<div class="graph-container">
+                    <h2 style="text-align: center;">Precision</h2>
+					<canvas id="graph2"></canvas>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<!-- Third Graph -->
+				<div class="graph-container">
+                    <h2 style="text-align: center;">F1-Score</h2>
+					<canvas id="graph3"></canvas>
+				</div>
+				<!-- Fourth Graph -->
+				<div class="graph-container">
+                    <h2 style="text-align: center;">Agreement</h2>
+					<canvas id="graph4"></canvas>
+				</div>
+			</div>
+		</div>
+		<!-- Text output -->
+        <div class="row" style="margin-top: 20px">
+            <div class="col-lg-12">
+                    <div class="text-container">
+                        <h1 style="text-align: center;">Progress</h1>
+                        <pre id="file-viewer" style="height: 1000px; overflow-y: scroll; font-size: 15px;"></pre>
+                </div>
+            </div>
+		
+	</div>
+
+	<!-- Include custom JavaScript -->
+	<script>
+		// First Graph
+		var ctx1 = document.getElementById('graph1').getContext('2d');
+        var chartData1 = {
+            labels: [],
+            datasets: [{
+                label: 'Val Accuracy',
+                data: [],
+                borderColor: 'red',
+                fill: false
+            }, {
+                label: 'Test Accuracy',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        var myChart1 = new Chart(ctx1, {
+            type: 'line',
+            data: chartData1,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        function updateChart1() {
+            fetch('/chart').then(response => response.json()).then(data => {
+                chartData1.labels = data.labels;
+                chartData1.datasets[0].data = data.accuracy_thief;
+                chartData1.datasets[1].data = data.accuracy_victim;
+                myChart1.update();
+            });
+        }
+        setInterval(updateChart1, 5000);
+
+		// Second Graph
+
+		var ctx2 = document.getElementById('graph2').getContext('2d');
+        var chartData2 = {
+            labels: [],
+            datasets: [{
+                label: 'Val Precision',
+                data: [],
+                borderColor: 'red',
+                fill: false
+            }, {
+                label: 'Test Precision',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        var myChart2 = new Chart(ctx2, {
+            type: 'line',
+            data: chartData2,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        function updateChart2() {
+            fetch('/chart').then(response => response.json()).then(data => {
+                chartData2.labels = data.labels;
+                chartData2.datasets[0].data = data.precision_thief;
+                chartData2.datasets[1].data = data.precision_victim;
+                myChart2.update();
+            });
+        }
+        setInterval(updateChart2, 5000);
+
+		// Third Graph
+		var ctx3 = document.getElementById('graph3').getContext('2d');
+        var chartData3 = {
+            labels: [],
+            datasets: [{
+                label: 'Val F1-Score',
+                data: [],
+                borderColor: 'red',
+                fill: false
+            }, {
+                label: 'Test F1-Score',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        var myChart3 = new Chart(ctx3, {
+            type: 'line',
+            data: chartData3,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        function updateChart3() {
+            fetch('/chart').then(response => response.json()).then(data => {
+                chartData3.labels = data.labels;
+                chartData3.datasets[0].data = data.f1_thief;
+                chartData3.datasets[1].data = data.f1_victim;
+                myChart3.update();
+            });
+        }
+        setInterval(updateChart3, 5000);
+
+		// Fourth Graph
+		var ctx4 = document.getElementById('graph4').getContext('2d');
+        var chartData4 = {
+            labels: [],
+            datasets: [{
+                label: 'Val Agreement',
+                data: [],
+                borderColor: 'red',
+                fill: false
+            }, {
+                label: 'Test Agreement',
+                data: [],
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+        var myChart4 = new Chart(ctx4, {
+            type: 'line',
+            data: chartData4,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        function updateChart4() {
+            fetch('/chart').then(response => response.json()).then(data => {
+                chartData4.labels = data.labels;
+                chartData4.datasets[0].data = data.agreement_thief;
+                chartData4.datasets[1].data = data.agreement_victim;
+                myChart4.update();
+            });
+        }
+        setInterval(updateChart4, 5000);
+		
+
+		$(document).ready(function(){
+			setInterval(function(){
+				$("#file-viewer").load("/file_content");
+        // $('#file-viewer').scrollTop($('#file-viewer')[0].scrollHeight);
+			}, 5000);
+		});
+	</script>
+</body>
+</html>

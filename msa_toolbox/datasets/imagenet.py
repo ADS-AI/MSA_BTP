@@ -22,7 +22,7 @@ class ImageNet1k(ImageFolder):
     """
     test_frac = 0.2
 
-    def __init__(self, train=True, transform=None, target_transform=None):
+    def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
         Initializes the ImageNet1k dataset.
         Args:
@@ -34,23 +34,21 @@ class ImageNet1k(ImageFolder):
         Returns:
             None
         """
-        root = os.path.join(cfg.DATASET_ROOT, 'ILSVRC2012')
+        # root = os.path.join(root, 'ILSVRC2012')
         if not os.path.exists(root):
             raise ValueError(f'Dataset not found at {root}. Please download it from http://image-net.org/download-images')
 
         # Initialize ImageFolder
-        super().__init__(root=os.path.join(root, 'training_imgs'), transform=transform,
-                         target_transform=target_transform)
+        # super().__init__(root=os.path.join(root, 'training_imgs'), transform=transform,target_transform=target_transform)
+        super().__init__(root=root, transform=transform,target_transform=target_transform)
         self.root = root
 
-        self.partition_to_idxs = self.__get_partition_to_idxs()
-        self.pruned_idxs = self.partition_to_idxs['train' if train else 'test']
+        # self.partition_to_idxs = self.__get_partition_to_idxs()
+        # self.pruned_idxs = self.partition_to_idxs['train' if train else 'test']
 
         # Prune (self.imgs, self.samples to only include examples from the required train/test partition
-        self.samples = [self.samples[i] for i in self.pruned_idxs]
-        self.imgs = self.samples
-
-        print(f"=> done loading {self.__class__.__name__} ({'train' if train else 'test'}) with {len(self.samples)} examples")
+        # self.samples = [self.samples[i] for i in self.pruned_idxs]
+        # print(f"=> done loading {self.__class__.__name__} ({'train' if train else 'test'}) with {len(self.samples)} examples")
 
 
     def __get_partition_to_idxs(self):

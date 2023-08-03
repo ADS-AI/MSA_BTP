@@ -3,6 +3,7 @@ This module provides three functions: EfficientNet_V2_S, EfficientNet_V2_M, and 
 which return instances of the corresponding EfficientNet V2 model.
 '''
 
+import torch
 from typing import  Any
 import torch.nn as nn
 from torchvision.models import efficientnet_v2_s, efficientnet_v2_m, efficientnet_v2_l  
@@ -29,8 +30,10 @@ def EfficientNet_V2_S(num_classes, weights: str = "default",  progress: bool = T
         weights = EfficientNet_V2_S_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_V2_S_Weights.IMAGENET1K_V1")
     model = efficientnet_v2_s(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -54,8 +57,10 @@ def EfficientNet_V2_M(num_classes, weights: str = "default",  progress: bool = T
         weights = EfficientNet_V2_M_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_V2_M_Weights.IMAGENET1K_V1")
     model = efficientnet_v2_m(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model
 
 
@@ -79,6 +84,8 @@ def EfficientNet_V2_L(num_classes, weights: str = "default",  progress: bool = T
         weights = EfficientNet_V2_L_Weights.IMAGENET1K_V1
     else:
         weights = None
+    weights = torch.hub.load("pytorch/vision:v0.14.1", "get_weight", name="EfficientNet_V2_L_Weights.IMAGENET1K_V1")
     model = efficientnet_v2_l(weights=weights, progress=progress, **kwargs)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    model.transforms = weights.transforms()
     return model

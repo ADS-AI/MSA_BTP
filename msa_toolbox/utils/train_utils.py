@@ -10,18 +10,24 @@ from sklearn.utils import shuffle
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 
-def accuracy_f1_precision_recall(model: nn.Module, data_loader: DataLoader, device: torch.device) -> tuple:
+def accuracy_f1_precision_recall(thief_model: nn.Module, victim_model: nn.Module, data_loader: DataLoader, device: torch.device, is_thief_set=False) -> tuple:
     """
     Returns accuracy, f1, precision, recall for the model on the data_loader
     """
-    model = model.to(device)
-    model.eval()
+    thief_model.eval()
+    thief_model = thief_model.to(device)
+    if victim_model is not None:
+        victim_model.eval()
+        victim_model = victim_model.to(device)
     y_true = []
     y_pred = []
     with torch.no_grad():
         for data, target in data_loader:
             data, target = data.to(device), target.to(device)
-            output = model(data)
+            if (victim_model is not None) and is_thief_set:
+                target = victim_model(data)
+                _, target = torch.max(target.data, 1)
+            output = thief_model(data)
             _, predicted = torch.max(output.data, 1)
 
             y_true.extend(target.cpu().numpy())
@@ -39,7 +45,7 @@ def data_distribution(data_loader: DataLoader) -> list:
     """
     Returns the distribution of the data_loader
     """
-    print("Number of sample in Dataset: ", len(data_loader.dataset))
+    # print("Number of sample in Dataset: ", len(data_loader.dataset))
     # print(np.unique(data.labels, return_counts=True))
     distribution = {}
     all_labels = []
