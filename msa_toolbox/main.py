@@ -9,9 +9,9 @@ import torch.nn as nn
 import torch
 import json
 import numpy as np
-from .utils.active_learning import active_learning
-from .utils.load_victim_thief_data_and_model import load_victim_data_and_model
-from .utils.cfg_reader import load_cfg
+from .utils.image.active_learning import active_learning
+from .utils.image.load_victim_thief_data_and_model import load_victim_data_and_model
+from .utils.image.cfg_reader import load_cfg
 
 
 def app(cfg_path):
