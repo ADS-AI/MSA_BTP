@@ -19,7 +19,7 @@ import os
 from collections import defaultdict as dd
 import numpy as np
 from torchvision.datasets.folder import ImageFolder
-from .. import config as cfg
+from ... import config as cfg
 
 
 class Diabetic5(ImageFolder):

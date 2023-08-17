@@ -1,22 +1,22 @@
-from ..datasets import caltech256
-from ..datasets import cifar
-from ..datasets import cubs200
-from ..datasets import diabetic5
-from ..datasets import imagenet
-from ..datasets import mnist
-from ..datasets import svhn
-from ..datasets import tinyimagenet200
-from ..datasets import indoor67
-from ..datasets import custom_dataset
-from ..datasets import dataset_to_modelfamily, modelfamily_to_mean_std, modelfamily_to_transforms, modelfamily_to_transforms_sans_normalization
-from ..models import alexnet
-from ..models import resnet
-from ..models import efficientnet
-from ..models import vgg
-from ..models import efficientnet_v2
-from ..models import mobilenet_v2
-from ..models import mobilenet_v3
-from ..models import densenet
+from ...datasets.image import caltech256
+from ...datasets.image import cifar
+from ...datasets.image import cubs200
+from ...datasets.image import diabetic5
+from ...datasets.image import imagenet
+from ...datasets.image import mnist
+from ...datasets.image import svhn
+from ...datasets.image import tinyimagenet200
+from ...datasets.image import indoor67
+from ...datasets.image import custom_dataset
+from ...datasets.image import dataset_to_modelfamily, modelfamily_to_mean_std, modelfamily_to_transforms, modelfamily_to_transforms_sans_normalization
+from ...models.image import alexnet
+from ...models.image import resnet
+from ...models.image import efficientnet
+from ...models.image import vgg
+from ...models.image import efficientnet_v2
+from ...models.image import mobilenet_v2
+from ...models.image import mobilenet_v3
+from ...models.image import densenet
 from . cfg_reader import CfgNode
 from torch.utils.data import Dataset, DataLoader, Subset
 from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
@@ -233,8 +233,8 @@ def load_thief_model(model_name: str,  num_classes: int, weights: str = "default
         num_classes (int): The number of output classes for the loaded model.
         weights (str): Specifies which weights to load for the model. If 'default', loads the pre-trained weights. If 'random', initializes the model with random weights. Defaults to 'default'.
             - weights must be one of the following: 
-                1. 'default' - for any pre-trained models.
-                2. 'imagenet1k_v1' - for any pre-trained models.
+                1. 'default' - for any pre-trained .models.image.
+                2. 'imagenet1k_v1' - for any pre-trained .models.image.
                 3. 'imagenet1k_v2' - only for 'efficientnet_b1', 'mobilenet_v2', 'mobilenet_v3_large', 'resnet50'
                 4. 'imagenet1k_features' - only for 'vgg16'
                 5. None - for no weights.
@@ -264,8 +264,8 @@ def load_victim_model(model_name: str, num_classes: int,  weights: str = "defaul
         num_classes (int): The number of output classes for the loaded model.
         weights (str): Specifies which weights to load for the model. If 'default', loads the pre-trained weights. If 'random', initializes the model with random weights. Defaults to 'default'.
             - weights must be one of the following: 
-                1. 'default' - for any pre-trained models.
-                2. 'imagenet1k_v1' - for any pre-trained models.
+                1. 'default' - for any pre-trained .models.image.
+                2. 'imagenet1k_v1' - for any pre-trained .models.image.
                 3. 'imagenet1k_v2' - only for 'efficientnet_b1', 'mobilenet_v2', 'mobilenet_v3_large', 'resnet50'
                 4. 'imagenet1k_features' - only for 'vgg16'
                 5. None - for no weights.

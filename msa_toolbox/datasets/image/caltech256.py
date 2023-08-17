@@ -11,7 +11,7 @@ import os.path as osp
 from collections import defaultdict
 import numpy as np
 from torchvision.datasets.folder import ImageFolder
-from .. import config as cfg
+from ... import config as cfg
 
 
 class Caltech256(ImageFolder):

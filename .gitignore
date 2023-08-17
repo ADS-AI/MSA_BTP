@@ -2,11 +2,12 @@ env/
 build/
 dist/
 data/
-Utils/
+# Utils/
 flagged/
-msa_toolbox/datasets/__pycache__/
-msa_toolbox/models/__pycache__/
-msa_toolbox/utils/__pycache__/
+# msa_toolbox/datasets/__pycache__/
+# msa_toolbox/models/__pycache__/
+# msa_toolbox/utils/__pycache__/
+**/__pycache__/**
 msa_toolbox/__pycache__/
 msa_toolbox/cfgs/
 msa_toolbox.egg-info/
@@ -28,6 +29,6 @@ nohup2.out
 nohup3.out
 nohup4.out
 msa_toolbox/results/
-# msa_toolbox/ui/configs/
-msa_toolbox/ui_gradio/__pycache__/
-msa_toolbox/ui_flask/__pycache__/
+msa_toolbox/ui/configs/
+# msa_toolbox/ui_gradio/__pycache__/
+# msa_toolbox/ui_flask/__pycache__/
