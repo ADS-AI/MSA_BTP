@@ -16,10 +16,10 @@ from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_
 from . load_data_and_models import load_thief_model, load_victim_model
 from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
-from . active_learning_methods import active_learning_technique
+from . active_learning_methods import train_active_learning, select_samples_active_learning
 from . train_model import train_one_epoch
 from . load_victim_thief_data_and_model import load_victim_data_and_model, create_thief_loaders, change_thief_loader_labels
-from . active_learning_train import train
+from . all_logs import log_thief_data_model, log_new_cycle, log_metrics, log_calculating_metrics
 
 
 def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: DataLoader,
@@ -47,7 +47,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
                                   lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
         criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
 
-        train(cfg, thief_model, victim_model, criteria, optimizer,
+        train_active_learning(cfg, thief_model, victim_model, criteria, optimizer,
               dataloader, trial_num, cycle, log_interval=1000)
 
         best_model_path = os.path.join(
@@ -71,7 +71,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         log_metrics(cfg.INTERNAL_LOG_PATH, cycle, metrics_victim, agree_victim, metrics_thief, agree_thief)
 
         if cycle != cfg.ACTIVE.CYCLES-1:
-            new_training_samples = active_learning_technique(
+            new_training_samples = select_samples_active_learning(
                 cfg, thief_model, dataloader['unlabeled'])
             if len(new_training_samples) == 0:
                 return
@@ -124,46 +124,3 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     '''
     for trial in range(cfg.TRIALS):
         one_trial(cfg, trial, num_class, victim_data_loader, victim_model, thief_data)
-        
-
-
-def log_metrics(path:str, cycle:int, metrics_victim:Dict[str, float], agree_victim:float, metrics_thief:Dict[str, float], agree_thief:float):
-    with open(os.path.join(path, 'log_metrics.json'), 'r') as f:
-        old_metrics = json.load(f)
-        old_metrics['Cycle_'+str(cycle+1)] = {'metrics_victim': metrics_victim, 'agreement_victim': agree_victim, 'metrics_thief': metrics_thief, 'agreement_thief': agree_thief}
-    with open(os.path.join(path, 'log_metrics.json'), 'w') as f:
-        json.dump(old_metrics, f)
-        
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write("Metrics of Thief Model on Victim Dataset: " +
-                str(metrics_victim) + "\n")
-        f.write("Agreement of Thief Model on Victim Dataset: " +
-                str(agree_victim) + "\n")
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write("Metrics of Thief Model on Validation Dataset: " +
-                str(metrics_thief) + "\n")
-        f.write("Agreement of Thief Model on Validation Dataset: " +
-            str(agree_thief) + "\n")
-
-
-def log_new_cycle(path:str, cycle:int, dataloader:Dict[str, DataLoader]):
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write("\n\n===============================> Cycle:" +
-                str(cycle+1) + " <===============================\n")
-        f.write("\nLength of Datasets: {labeled=" + str(len(dataloader['train'].dataset)) + ', val:' + str(len(
-            dataloader['val'].dataset)) + ', unlabeled:' + str(len(dataloader['unlabeled'].dataset)) + '}' + '\n')
-    with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
-        f.write("Cycle:" +str(cycle+1) + "\n")
-
-def log_calculating_metrics(path:str):
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write("Calculating Metrics and Agreement on Victim and Thief Datasets\n")
-
-def log_thief_data_model(path: str, thief_data, thief_model, thief_model_name:str):
-    log_dest = os.path.join(path, 'log.txt')
-    with open(log_dest, 'a') as f:
-        f.write('\n======================================> Thief Data and Model Loaded <======================================\n')
-        f.write(f"Thief Data: {thief_data}\n")
-        f.write(f"\nThief Model: {type(thief_model)}: {thief_model_name}\n")
-
-    

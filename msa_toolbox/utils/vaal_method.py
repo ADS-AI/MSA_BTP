@@ -8,7 +8,7 @@ class View(nn.Module):
     def __init__(self, size):
         super(View, self).__init__()
         self.size = size
-
+        
     def forward(self, tensor):
         return tensor.view(self.size)
 
@@ -34,7 +34,6 @@ class VAE(nn.Module):
             nn.ReLU(True),
             View((-1, 1024*2*2)),                                 # B, 1024*4*4
         )
-
         self.fc_mu = nn.Linear(1024*2*2, z_dim)                            # B, z_dim
         self.fc_logvar = nn.Linear(1024*2*2, z_dim)                            # B, z_dim
         self.decoder = nn.Sequential(
