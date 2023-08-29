@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch
 import json
 import numpy as np
-from .utils.active_learning import active_learning
+from .active_learning.active_learning_main import active_learning
 from .utils.load_victim_thief_data_and_model import load_victim_data_and_model
 from .utils.cfg_reader import load_cfg
 from .utils.all_logs import log_victim_data_model, log_start_active_learning, log_finish_active_learning

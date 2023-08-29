@@ -15,7 +15,7 @@ from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_
 from . load_data_and_models import load_thief_model, load_victim_model
 from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
-from .entropy_method import train_one_epoch
+from ..active_learning.entropy.entropy_method import train_one_epoch
 from . all_logs import log_victim_data, log_weights, log_victim_metrics
 
 
