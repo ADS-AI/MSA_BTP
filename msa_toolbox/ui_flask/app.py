@@ -6,6 +6,7 @@ import random
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+from ..main import app as main_app
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
@@ -44,7 +45,7 @@ def get_file_progress():
     with open(path_log) as f:
         
         content = f.read()
-        print(content)
+        # print(content)
         # parse content to calculate progress
         # progress = content
         # print(progress)
@@ -59,9 +60,10 @@ def tranning():
     if request.method == 'POST':
         fg=1
         print(request.form)
+        main_app(current_dir+"/configs/"+request.form['config_file_name'])
         return render_template('progress.html',configs=[],fg=fg)
     else:
-        configs = os.listdir('msa_toolbox/ui_flask/configs')
+        configs = os.listdir(current_dir+'/configs')
     if fg==1:
         return render_template('progress.html',configs=configs,fg=fg,active = 'traning')
     return render_template('index.html', configs=configs,active = 'traning')
@@ -82,7 +84,7 @@ def submit():
 
 
 def extract_data(form):
-    print(form)
+    # print(form)
     # return 'config file generated'
 
     name = form['config_name']
@@ -90,7 +92,7 @@ def extract_data(form):
     
     v_dataset = form['V_data']
     v_model = form['V_arch']
-    
+    v_w_dir = form['V_W_dir']
     t_dataset = form['T_data']
     t_model = form['T_arch']
     # subset = form['subset']
@@ -105,7 +107,7 @@ def extract_data(form):
     # to be added
     Cycles = float(form['Cycles'])
     # Patience = form['Patience']
-    log_dir = form['log_dir']
+    # log_dir = form['log_dir']
     out_dir = form['out_dir']
     v_data_root = form['v_data_root']
     t_data_root = form['t_data_root']
@@ -113,7 +115,7 @@ def extract_data(form):
     victim={'DATASET':v_dataset,
             'ARCHITECTURE':v_model,
             'DATA_ROOT':v_data_root,
-            'WEIGHTS':'default'}
+            'WEIGHTS':v_w_dir if v_w_dir else 'default'}
     
     thief={'DATASET':t_dataset,
            'ARCHITECTURE':t_model,
@@ -143,14 +145,14 @@ def extract_data(form):
           'DS_SEED':123,
           'NUM_WORKERS':2, 
           'DEVICE':Device,
-          'LOG_DEST':log_dir,
+        #   'LOG_DEST':log_dir,
           'OUT_DEST':out_dir,
           }
     # print(cfg)
 
     yaml_string=yaml.dump(cfg, default_flow_style=False,sort_keys=False)
-    print("The YAML string is:")
-    print(yaml_string)
+    # print("The YAML string is:")
+    # print(yaml_string)
     
     
     #save the yaml file to the disk 

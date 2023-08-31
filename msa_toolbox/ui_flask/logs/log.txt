@@ -1,13 +1,13 @@
 ======================================> Starting Active Learning <======================================
 
 Loaded Victim Datset of size 6400 with 256 classes
-Loaded Victim Model weights from '/raid/home/akshitj/research/MSA_BTP/Utils/Stealing_Task_1/caltech256-resnet34/checkpoint_new.pth'
-Metrics of Victim Model on Victim Dataset: {'accuracy': 0.784375, 'f1': 0.7828617715695259, 'precision': 0.7949897557823686, 'recall': 0.784375}
+Loaded Victim Model weights from '/mnt/disk1/sumdev/MSA_BTP/Utils/Stealing_Task_1/caltech256-resnet34/checkpoint_new.pth'
+Metrics of Victim Model on Victim Dataset: {'accuracy': 0.78421875, 'f1': 0.7826506983365533, 'precision': 0.7952140278937017, 'recall': 0.7842187500000001}
 
 ======================================> Victim Data and Model Loaded <======================================
 Victim Data: Dataset Caltech256
     Number of datapoints: 6400
-    Root location: /raid/home/akshitj/research/MSA_BTP/Utils/data/256_ObjectCategories
+    Root location: /mnt/disk1/sumdev/MSA_BTP/Utils/data/256_ObjectCategories
     StandardTransform
 Transform: ImageClassification(
                crop_size=[224]
@@ -22,7 +22,7 @@ Victim Model: <class 'torchvision.models.resnet.ResNet'>: resnet34
 ======================================> Thief Data and Model Loaded <======================================
 Thief Data: Dataset ImageNet1k
     Number of datapoints: 1281167
-    Root location: /raid/home/akshitj/research/datasets/Imagenet_full/Imagenet_2010_train/full_data
+    Root location: /mnt/disk1/sumdev/MSA_BTP/Utils/data/Imagenet_full/Imagenet_2010_train/full_data
     StandardTransform
 Transform: ImageClassification(
                crop_size=[224]
@@ -102,6 +102,227 @@ Epoch 60 started
 Epoch 61 started
 Epoch 62 started
 Epoch 63 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.2721875, 'f1': 0.22159598745327636, 'precision': 0.269323717776482, 'recall': 0.2721875}
+Agreement of Thief Model on Victim Dataset: 0.2759375
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.308, 'f1': 0.1483207261983969, 'precision': 0.16402293380610042, 'recall': 0.16103929315976878}
+Agreement of Thief Model on Validation Dataset: 0.308
+
+
+===============================> Cycle:2 <===============================
+
+Length of Datasets: {labeled=2700, val:3000, unlabeled:1275467}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Epoch 50 started
+Epoch 51 started
+Epoch 52 started
+Epoch 53 started
+Epoch 54 started
+Epoch 55 started
+Epoch 56 started
+Epoch 57 started
+Epoch 58 started
+Epoch 59 started
+Epoch 60 started
+Epoch 61 started
+Epoch 62 started
+Epoch 63 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.36296875, 'f1': 0.31463236099066705, 'precision': 0.3547835687637172, 'recall': 0.36296875}
+Agreement of Thief Model on Victim Dataset: 0.363125
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.3486666666666667, 'f1': 0.20103513174401563, 'precision': 0.21409434462735344, 'recall': 0.2164398644632881}
+Agreement of Thief Model on Validation Dataset: 0.3486666666666667
+
+
+===============================> Cycle:3 <===============================
+
+Length of Datasets: {labeled=4050, val:3000, unlabeled:1274117}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Epoch 50 started
+Epoch 51 started
+Epoch 52 started
+Epoch 53 started
+Epoch 54 started
+Epoch 55 started
+Epoch 56 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.40296875, 'f1': 0.3643573047042896, 'precision': 0.42673933116445667, 'recall': 0.40296875}
+Agreement of Thief Model on Victim Dataset: 0.3990625
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.36133333333333334, 'f1': 0.2281433978032926, 'precision': 0.25923902868275317, 'recall': 0.23607975223001956}
+Agreement of Thief Model on Validation Dataset: 0.36133333333333334
+
+
+===============================> Cycle:4 <===============================
+
+Length of Datasets: {labeled=5400, val:3000, unlabeled:1272767}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Epoch 50 started
+Epoch 51 started
+Epoch 52 started
+Epoch 53 started
+Epoch 54 started
+Epoch 55 started
+Epoch 56 started
+Epoch 57 started
+Epoch 58 started
+Epoch 59 started
+Epoch 60 started
+Epoch 61 started
+Epoch 62 started
+Epoch 63 started
 Epoch 64 started
 Epoch 65 started
 Epoch 66 started
@@ -116,10 +337,956 @@ Epoch 74 started
 Epoch 75 started
 Epoch 76 started
 Epoch 77 started
+Epoch 78 started
+Epoch 79 started
+Epoch 80 started
+Epoch 81 started
+Epoch 82 started
+Epoch 83 started
+Epoch 84 started
 Training Completed
 
 Calculating Metrics and Agreement on Victim and Thief Datasets
-Metrics of Thief Model on Victim Dataset: {'accuracy': 0.26703125, 'f1': 0.21846467056083635, 'precision': 0.2601515035310201, 'recall': 0.26703125}
-Agreement of Thief Model on Victim Dataset: 0.26765625
-Metrics of Thief Model on Validation Dataset: {'accuracy': 0.306, 'f1': 0.1438258346537985, 'precision': 0.16744227703187275, 'recall': 0.15879652118130785}
-Agreement of Thief Model on Validation Dataset: 0.306
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.43453125, 'f1': 0.40361645450117906, 'precision': 0.46865221398072476, 'recall': 0.43453125000000004}
+Agreement of Thief Model on Victim Dataset: 0.4215625
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.36033333333333334, 'f1': 0.23481733688699827, 'precision': 0.2574378014367409, 'recall': 0.24831495625105826}
+Agreement of Thief Model on Validation Dataset: 0.36033333333333334
+
+
+===============================> Cycle:5 <===============================
+
+Length of Datasets: {labeled=6750, val:3000, unlabeled:1271417}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Epoch 50 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.45796875, 'f1': 0.42752959926612866, 'precision': 0.4928224221413061, 'recall': 0.45796875000000004}
+Agreement of Thief Model on Victim Dataset: 0.45
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.374, 'f1': 0.2468725850449722, 'precision': 0.27265107979386743, 'recall': 0.2531568465658052}
+Agreement of Thief Model on Validation Dataset: 0.374
+
+
+===============================> Cycle:6 <===============================
+
+Length of Datasets: {labeled=8100, val:3000, unlabeled:1270067}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.471875, 'f1': 0.4423214409117856, 'precision': 0.49312645887814294, 'recall': 0.47187500000000004}
+Agreement of Thief Model on Victim Dataset: 0.4675
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.384, 'f1': 0.2635349712149309, 'precision': 0.28221704551493915, 'recall': 0.28058083251971}
+Agreement of Thief Model on Validation Dataset: 0.384
+
+
+===============================> Cycle:7 <===============================
+
+Length of Datasets: {labeled=9450, val:3000, unlabeled:1268717}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.47390625, 'f1': 0.4451380570278243, 'precision': 0.5039682901720935, 'recall': 0.47390625}
+Agreement of Thief Model on Victim Dataset: 0.468125
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.38133333333333336, 'f1': 0.25595176446116086, 'precision': 0.2844659780563348, 'recall': 0.2645086088405309}
+Agreement of Thief Model on Validation Dataset: 0.38133333333333336
+
+
+===============================> Cycle:8 <===============================
+
+Length of Datasets: {labeled=10800, val:3000, unlabeled:1267367}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.484375, 'f1': 0.4561209013133481, 'precision': 0.516074750452832, 'recall': 0.484375}
+Agreement of Thief Model on Victim Dataset: 0.47859375
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.39, 'f1': 0.2687113996776401, 'precision': 0.3029447255959665, 'recall': 0.27773738298297257}
+Agreement of Thief Model on Validation Dataset: 0.39
+
+
+===============================> Cycle:9 <===============================
+
+Length of Datasets: {labeled=12150, val:3000, unlabeled:1266017}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.50265625, 'f1': 0.47522791118493635, 'precision': 0.5431451381144764, 'recall': 0.5026562499999999}
+Agreement of Thief Model on Victim Dataset: 0.4940625
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.39366666666666666, 'f1': 0.26962187925212994, 'precision': 0.30156703061009255, 'recall': 0.2835198322594878}
+Agreement of Thief Model on Validation Dataset: 0.39366666666666666
+
+
+===============================> Cycle:10 <===============================
+
+Length of Datasets: {labeled=13500, val:3000, unlabeled:1264667}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.5021875, 'f1': 0.4783611129779019, 'precision': 0.5491115085498404, 'recall': 0.5021875}
+Agreement of Thief Model on Victim Dataset: 0.49890625
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.393, 'f1': 0.2653944384319476, 'precision': 0.2971842852346193, 'recall': 0.2727250462620973}
+Agreement of Thief Model on Validation Dataset: 0.393
+
+
+===============================> Cycle:11 <===============================
+
+Length of Datasets: {labeled=14850, val:3000, unlabeled:1263317}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Epoch 50 started
+Epoch 51 started
+Epoch 52 started
+Epoch 53 started
+Epoch 54 started
+Epoch 55 started
+Epoch 56 started
+Epoch 57 started
+Epoch 58 started
+Epoch 59 started
+Epoch 60 started
+Epoch 61 started
+Epoch 62 started
+Epoch 63 started
+Epoch 64 started
+Epoch 65 started
+Epoch 66 started
+Epoch 67 started
+Epoch 68 started
+Epoch 69 started
+Epoch 70 started
+Epoch 71 started
+Epoch 72 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.5084375, 'f1': 0.4864679235123076, 'precision': 0.5479384042629206, 'recall': 0.5084375}
+Agreement of Thief Model on Victim Dataset: 0.50375
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.3963333333333333, 'f1': 0.27398840122840373, 'precision': 0.3080520290699346, 'recall': 0.2818985317014738}
+Agreement of Thief Model on Validation Dataset: 0.3963333333333333
+
+
+===============================> Cycle:12 <===============================
+
+Length of Datasets: {labeled=16200, val:3000, unlabeled:1261967}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.514375, 'f1': 0.49389792467055554, 'precision': 0.5683858462127993, 'recall': 0.514375}
+Agreement of Thief Model on Victim Dataset: 0.5075
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.40166666666666667, 'f1': 0.27780294807728095, 'precision': 0.3118123347170815, 'recall': 0.2804069399838646}
+Agreement of Thief Model on Validation Dataset: 0.40166666666666667
+
+
+===============================> Cycle:13 <===============================
+
+Length of Datasets: {labeled=17550, val:3000, unlabeled:1260617}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.52078125, 'f1': 0.4998950118494597, 'precision': 0.570122462424393, 'recall': 0.52078125}
+Agreement of Thief Model on Victim Dataset: 0.51703125
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.40166666666666667, 'f1': 0.2816002342963274, 'precision': 0.29790782249307857, 'recall': 0.29271065537688024}
+Agreement of Thief Model on Validation Dataset: 0.40166666666666667
+
+
+===============================> Cycle:14 <===============================
+
+Length of Datasets: {labeled=18900, val:3000, unlabeled:1259267}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Epoch 50 started
+Epoch 51 started
+Epoch 52 started
+Epoch 53 started
+Epoch 54 started
+Epoch 55 started
+Epoch 56 started
+Epoch 57 started
+Epoch 58 started
+Epoch 59 started
+Epoch 60 started
+Epoch 61 started
+Epoch 62 started
+Epoch 63 started
+Epoch 64 started
+Epoch 65 started
+Epoch 66 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.5196875, 'f1': 0.49890296829045133, 'precision': 0.5672099484425722, 'recall': 0.5196875}
+Agreement of Thief Model on Victim Dataset: 0.51296875
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.39666666666666667, 'f1': 0.2734463746620449, 'precision': 0.2882707260884742, 'recall': 0.2890802441423234}
+Agreement of Thief Model on Validation Dataset: 0.39666666666666667
+
+
+===============================> Cycle:15 <===============================
+
+Length of Datasets: {labeled=20250, val:3000, unlabeled:1257917}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.5103125, 'f1': 0.48214547891869414, 'precision': 0.5424525212371918, 'recall': 0.5103125}
+Agreement of Thief Model on Victim Dataset: 0.50390625
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.4003333333333333, 'f1': 0.27102908912919166, 'precision': 0.30276933424827224, 'recall': 0.2763310775292731}
+Agreement of Thief Model on Validation Dataset: 0.4003333333333333
+
+
+===============================> Cycle:16 <===============================
+
+Length of Datasets: {labeled=21600, val:3000, unlabeled:1256567}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Epoch 39 started
+Epoch 40 started
+Epoch 41 started
+Epoch 42 started
+Epoch 43 started
+Epoch 44 started
+Epoch 45 started
+Epoch 46 started
+Epoch 47 started
+Epoch 48 started
+Epoch 49 started
+Epoch 50 started
+Epoch 51 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.53453125, 'f1': 0.5180200590260481, 'precision': 0.5785598903929824, 'recall': 0.53453125}
+Agreement of Thief Model on Victim Dataset: 0.5275
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.412, 'f1': 0.2888922965052554, 'precision': 0.3152794584082104, 'recall': 0.29665660694261115}
+Agreement of Thief Model on Validation Dataset: 0.412
+
+
+===============================> Cycle:17 <===============================
+
+Length of Datasets: {labeled=22950, val:3000, unlabeled:1255217}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Epoch 38 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.52671875, 'f1': 0.508797807629995, 'precision': 0.583079753042233, 'recall': 0.5267187499999999}
+Agreement of Thief Model on Victim Dataset: 0.5246875
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.4083333333333333, 'f1': 0.27952918636896673, 'precision': 0.3007399120943867, 'recall': 0.28882534157154927}
+Agreement of Thief Model on Validation Dataset: 0.4083333333333333
+
+
+===============================> Cycle:18 <===============================
+
+Length of Datasets: {labeled=24300, val:3000, unlabeled:1253867}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Epoch 34 started
+Epoch 35 started
+Epoch 36 started
+Epoch 37 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.534375, 'f1': 0.5163109963170607, 'precision': 0.5841087846701395, 'recall': 0.534375}
+Agreement of Thief Model on Victim Dataset: 0.52578125
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.401, 'f1': 0.2717049244830861, 'precision': 0.29162943701050564, 'recall': 0.2873024544647765}
+Agreement of Thief Model on Validation Dataset: 0.401
+
+
+===============================> Cycle:19 <===============================
+
+Length of Datasets: {labeled=25650, val:3000, unlabeled:1252517}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Epoch 32 started
+Epoch 33 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.53796875, 'f1': 0.5186039239975323, 'precision': 0.5904236922676301, 'recall': 0.53796875}
+Agreement of Thief Model on Victim Dataset: 0.53046875
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.4066666666666667, 'f1': 0.28669903249152895, 'precision': 0.30682002873085956, 'recall': 0.29806152761343935}
+Agreement of Thief Model on Validation Dataset: 0.4066666666666667
+
+
+===============================> Cycle:20 <===============================
+
+Length of Datasets: {labeled=27000, val:3000, unlabeled:1251167}
+Training Thief Model on Thief Dataset with 100 epochs
+Epoch 1 started
+Epoch 2 started
+Epoch 3 started
+Epoch 4 started
+Epoch 5 started
+Epoch 6 started
+Epoch 7 started
+Epoch 8 started
+Epoch 9 started
+Epoch 10 started
+Epoch 11 started
+Epoch 12 started
+Epoch 13 started
+Epoch 14 started
+Epoch 15 started
+Epoch 16 started
+Epoch 17 started
+Epoch 18 started
+Epoch 19 started
+Epoch 20 started
+Epoch 21 started
+Epoch 22 started
+Epoch 23 started
+Epoch 24 started
+Epoch 25 started
+Epoch 26 started
+Epoch 27 started
+Epoch 28 started
+Epoch 29 started
+Epoch 30 started
+Epoch 31 started
+Training Completed
+
+Calculating Metrics and Agreement on Victim and Thief Datasets
+Metrics of Thief Model on Victim Dataset: {'accuracy': 0.54515625, 'f1': 0.5249346176529517, 'precision': 0.5880319086511474, 'recall': 0.54515625}
+Agreement of Thief Model on Victim Dataset: 0.54078125
+Metrics of Thief Model on Validation Dataset: {'accuracy': 0.41533333333333333, 'f1': 0.29761090367807946, 'precision': 0.3304918570113407, 'recall': 0.30630692498150247}
+Agreement of Thief Model on Validation Dataset: 0.41533333333333333
+
+======================================> Active Learning Finished <======================================
+
