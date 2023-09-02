@@ -168,3 +168,12 @@ background-color: #555;
   background-color: gray; /* Active background color */
   border-color: gray; /* Active border color */
 }
+
+.vertical-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* height: inherit; */
+  /* height: 100vh; This ensures the container spans the entire viewport height */
+}
