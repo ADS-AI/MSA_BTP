@@ -2,10 +2,7 @@ from flask import Flask, render_template, request , flash ,jsonify
 # from flask_socketio import SocketIO, emit
 import yaml
 import os
-import random
 import json
-import matplotlib.pyplot as plt
-import numpy as np
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
