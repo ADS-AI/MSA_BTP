@@ -3,7 +3,7 @@ This module provides a PyTorch dataset class for the TinyImageNet200 dataset.
 """
 import os
 from torchvision.datasets import ImageFolder
-from ... import config as cfg
+from .. import config as cfg
 
 
 class TinyImageNet200(ImageFolder):

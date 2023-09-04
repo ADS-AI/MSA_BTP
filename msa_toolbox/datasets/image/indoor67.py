@@ -11,7 +11,7 @@ It must be downloaded manually from the following link: http://web.mit.edu/torra
 
 import os
 from torchvision.datasets.folder import ImageFolder
-from ... import config as cfg
+from .. import config as cfg
 
 class Indoor67(ImageFolder):
     """ The Indoor67 dataset class """

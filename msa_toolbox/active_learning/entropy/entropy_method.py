@@ -8,12 +8,14 @@ import sys
 from torch.utils.data import Dataset, DataLoader, Subset
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
+import torch.nn.functional as F
 from typing import Any, Dict
-from . cfg_reader import load_cfg, CfgNode
-from . train_utils import accuracy_f1_precision_recall, agreement
+from ...utils.image.cfg_reader import load_cfg, CfgNode
+from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
+from ...utils.image.all_logs import log_training, log_finish_training, log_epoch
 
 
-def train(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
+def train_entropy(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
           dataloader: Dict[str, DataLoader], trail_num: int, cycle_num: int, log_interval=1000):
     '''
     Trains the Thief Model on the Thief Dataset
@@ -93,17 +95,23 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Modul
     return train_loss / len(dataloader.dataset), 100. * correct / total
 
 
-def log_training(path: str, total_epoch:int):
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write(f"Training Thief Model on Thief Dataset with {total_epoch} epochs\n")
-        
 
-def log_finish_training(path:str):
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write("Training Completed\n\n")
-    
-def log_epoch(path:str, epoch:int):
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write(f"Epoch {epoch+1} started\n")
-    with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
-        f.write(f"Epoch:{epoch+1}\n")
+def select_samples_entropy(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader):
+    theif_model.eval()
+    theif_model = theif_model.to(cfg.DEVICE)
+    uncertainty = torch.tensor([])
+    indices = torch.tensor([])
+    with torch.no_grad():
+        for i, (images, _) in enumerate(unlabeled_loader):
+            images = images.to(cfg.DEVICE)
+            outputs = theif_model(images)
+            prob = F.softmax(outputs, dim=1)
+            entropy = -torch.sum(prob * torch.log(prob), dim=1)
+            uncertainty = torch.cat(
+                (uncertainty, entropy.clone().detach().cpu()), dim=0)
+            indices = torch.cat((indices, torch.tensor(
+                np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
+
+    arg = np.argsort(uncertainty)
+    selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
+    return selected_index_list
