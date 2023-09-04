@@ -5,6 +5,8 @@ import os
 from torchvision.datasets import ImageFolder
 from .. import config as cfg
 
+from .. import config as cfg
+
 
 class TinyImageNet200(ImageFolder):
     '''A Dataset class for the TinyImageNet200 dataset.'''
