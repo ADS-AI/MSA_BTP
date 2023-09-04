@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Package GUI</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+</head>
+<body>
+    <nav class="sidebar">
+        <div style="text-align: center; padding: 0px; background-image: linear-gradient(125deg, #8b075b, #042c60);">
+            <img src="{{ url_for('static', filename='logo1.jpeg') }}" alt="logo" style="width: 100%; height: 100%;">
+        </div>
+        <div>
+            <ul>
+                <li {% if active == 'home' %}class="active"{% endif %}><a href="/config_image">Configs</a></li>
+                <li {% if active == 'training' %}class="active"{% endif %}><a href="/training">Training</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div id='popup' class="alert alert-success text-center" style="font-size: 30px;">{{ messages[0] }}</div>
+        {% endif %}
+    {% endwith %}
+
+    <section class="get-in-touch">
+        <h1 class="title">New Configuration</h1>
+        <div class="btn-group d-flex" role="group" aria-label="Form Type Buttons">
+            <button type="button" class="btn btn-custom flex-fill active" id="imageFormBtn">Image Form</button>
+            <button type="button" class="btn btn-custom flex-fill" id="textFormBtn">Text Form</button>
+        </div>
+        <form class="contact-form row" id="imageForm" method="POST" action="/config_image">
+            <div class="form-field col-lg-12">
+                <lable class="lable" >Configuration File Name</lable>
+                <input type="text" class="input-text js-input" id="config_name" name="config_name" placeholder="Enter name of the configuration file" value=filename required>   
+            </div>
+
+
+            <div class="form-field col-lg-6">
+                <lable class="lable">Victim Architecture</lable>
+                <select class="input-text js-input" id="V_arch" name="V_arch" required>
+                    {% for arc in options['archi'] %}
+                    <option value="{{ arc }}" {% if arc == file['VICTIM']['ARCHITECTURE'] %}selected{% endif %}>{{ arc }}</option>
+                    <!-- <option value="{{ arc }}">{{ arc }}</option> -->
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-6">
+                <lable class="lable">Victim Model Path</lable>
+                <input type="text" class="input-text js-input" id="v_weights" name="v_weights" placeholder="Victim Model weights Path">   
+
+            </div>
+
+            <div class="form-field col-lg-6" >
+                <lable class="lable">Victim Dataset</lable>
+                <select class="input-text js-input" id="V_data" name="V_data" required>
+                    {% for data in options['datasets'] %}
+                    <option {% if data == file['VICTIM']['DATASET'] %}selected{% endif %} >{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-6">
+                <lable class="lable">Victim Data Directory</lable>
+                <input type="text" class="input-text js-input" id="v_data_root" name="v_data_root" placeholder="Victim Data Directory ( If Avaialable !!! )" value={{ file['VICTIM']['DATA_ROOT'] }}>   
+
+            </div>
+
+
+
+            <div class="form-field col-lg-6">
+                <lable class="lable">Thief Architecture</lable>
+                <select class="input-text js-input" id="T_arch" name="T_arch" required>
+                    {% for arc in options['archi'] %}
+                    <option value="{{ arc }}" {% if arc == file['THIEF']['ARCHITECTURE'] %}selected{% endif %}>{{ arc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-6" >
+                <lable class="lable">Thief Dataset</lable>
+                <select class="input-text js-input" id="T_data" name="T_data" required>
+                    {% for data in options['datasets'] %}
+                    <option {% if data == file['THIEF']['DATASET'] %}selected{% endif %}>{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-12">
+                <lable class="lable">Thief Data Directory</lable>
+                <input type="text" class="input-text js-input" id="t_data_root" name="t_data_root" placeholder="Thief Data Directory ( If Avaialable !!! )">   
+            </div>
+
+            <div class="form-field col-lg-6">
+                <lable class="lable"> Batch Size</lable>
+                <input type="number" class="input-text js-input" id="batch_size" name="batch_size" placeholder=" Batch size" required>   
+            </div>
+
+            <div class="form-field col-lg-6">
+                <lable class="lable">Budget</lable>
+                <input type="number" class="input-text js-input" id="budget" name="budget" placeholder="Enter budget" required>   
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <lable class="lable">Methods</lable>
+                <select class="input-text js-input" id="method" name="method" required>
+                    {% for method in options['methods'] %}
+                    <option {% if method == file['ACTIVE']['METHOD'] %}selected{% endif %}>{{ method }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <lable class="lable">Optimizer</lable>
+                <select class="input-text js-input" id="optim" name="optim" required>
+                    {% for optimizer in options['optimizers'] %}
+                    <option {% if optimizer == file['TRAIN']['OPTIMIZER'] %}selected{% endif %}>{{ optimizer }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <lable class="lable">Loss function</lable>
+                <select class="input-text js-input" id="criteria" name="criteria" required>
+                    {% for criteria in options['criterias'] %}
+                    <option {% if criteria == file['TRAIN']['CRITERIA'] %}selected{% endif %}>{{ criteria }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <lable class="lable">Device</lable>
+                <select class="input-text js-input" id="device" name="device" required>
+                    <option {% if 'cpu' == file['DEVICE'] %}selected{% endif %}>cpu</option>
+                    <option {% if 'cuda' == file['DEVICE'] %}selected{% endif %}>cuda</option>
+                    
+                </select>
+            </div>
+            <div class="form-field col-lg-4">
+                <lable class="lable"> Cycles</lable>
+                <input type="number" class="input-text js-input" id="Cycles" name="Cycles" min ="1" max = "10" placeholder=" Number of Cycles" required>   
+            </div>
+
+            <div class="form-field col-lg-4">
+                <lable class="lable">Epochs</lable>
+                <input type="number" class="input-text js-input" id="Epochs" min ="1" max = "10" name="Epochs" placeholder="Epochs" required>   
+            </div>
+
+            <div class="form-field col-lg-12">
+                <lable class="lable">Log Directory</lable>
+                <input type="text" class="input-text js-input" id="log_dir" name="log_dir" placeholder="Logs directory path" required>   
+            </div>
+
+            <div class="form-field col-lg-12">
+                <lable class="lable">Output Directory</lable>
+                <input type="text" class="input-text js-input" id="out_dir" name="out_dir" placeholder="Output directory path" required>   
+            </div>
+
+            <div class="form-field col-lg-12">
+            <button type="submit" class="col-lg-12 submit-btn">Submit</button>
+            </div>
+        </form>
+        <form class="contact-form row" id="textForm" method="POST" action="/config_text">
+            <!-- Modify this form to include fields for text input -->
+            <div class="form-field col-lg-12">
+                <lable class="lable" >Configuration File Name</lable>
+                <input type="text" class="input-text js-input" id="config_name" name="config_name" placeholder="Enter name of the configuration file" required>   
+            </div>
+
+
+            <div class="form-field col-lg-6">
+                <lable class="lable">Victim Architecture</lable>
+                <select class="input-text js-input" id="V_arch" name="V_arch" required>
+                    {% for arc in options['archi'] %}
+                    <option value="{{ arc }}">{{ arc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-6">
+                <lable class="lable">Victim Model Path</lable>
+                <input type="text" class="input-text js-input" id="v_weights" name="v_weights" placeholder="Victim Model weights Path">   
+
+            </div>
+
+
+
+            <div class="form-field col-lg-6" >
+                <lable class="lable">Thief Dataset</lable>
+                <select class="input-text js-input" id="T_data" name="T_data" required>
+                    {% for data in options['datasets'] %}
+                    <option >{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-12">
+                <lable class="lable">Thief Data Directory</lable>
+                <input type="text" class="input-text js-input" id="t_data_root" name="t_data_root" placeholder="Thief Data Directory ( If Avaialable !!! )">   
+            </div>
+
+            <div class="form-field col-lg-6">
+                <lable class="lable"> Batch Size</lable>
+                <input type="number" class="input-text js-input" id="batch_size" name="batch_size" placeholder=" Batch size" required>   
+            </div>
+
+            <div class="form-field col-lg-6">
+                <lable class="lable">Budget</lable>
+                <input type="number" class="input-text js-input" id="budget" name="budget" placeholder="Enter budget" required>   
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <lable class="lable">Methods</lable>
+                <select class="input-text js-input" id="method" name="method" required>
+                    {% for method in options['methods'] %}
+                    <option >{{ method }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <lable class="lable">Optimizer</lable>
+                <select class="input-text js-input" id="optim" name="optim" required>
+                    {% for optimizer in options['optimizers'] %}
+                    <option >{{ optimizer }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <lable class="lable">Loss function</lable>
+                <select class="input-text js-input" id="criteria" name="criteria" required>
+                    {% for criteria in options['criterias'] %}
+                    <option >{{ criteria }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <lable class="lable">Device</lable>
+                <select class="input-text js-input" id="device" name="device" required>
+                    <option >cpu</option>
+                    <option >cuda</option>
+                    
+                </select>
+            </div>
+            <div class="form-field col-lg-4">
+                <lable class="lable"> Cycles</lable>
+                <input type="number" class="input-text js-input" id="Cycles" name="Cycles" min ="1" max = "10" placeholder=" Number of Cycles" required>   
+            </div>
+
+            <div class="form-field col-lg-4">
+                <lable class="lable">Epochs</lable>
+                <input type="number" class="input-text js-input" id="Epochs" min ="1" max = "10" name="Epochs" placeholder="Epochs" required>   
+            </div>
+
+            <div class="form-field col-lg-12">
+                <lable class="lable">Log Directory</lable>
+                <input type="text" class="input-text js-input" id="log_dir" name="log_dir" placeholder="Logs directory path" required>   
+            </div>
+
+            <div class="form-field col-lg-12">
+                <lable class="lable">Output Directory</lable>
+                <input type="text" class="input-text js-input" id="out_dir" name="out_dir" placeholder="Output directory path" required>   
+            </div>
+
+                        <div class="form-field col-lg-12">
+                            <button type="submit" class="col-lg-12 submit-btn btn btn-primary">Submit Text Form</button>
+                        </div>
+        </form>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // $('#textForm').hide();
+            // $('#imageFormBtn').click(function() {
+            //     $('#textForm').hide();
+            //     $('#imageForm').show();
+            //     $(this).addClass('active');
+            //     $('#textFormBtn').removeClass('active');
+            // });
+    
+            // $('#textFormBtn').click(function() {
+            //     $('#imageForm').hide();
+            //     $('#textForm').show();
+            //     $(this).addClass('active');
+            //     $('#imageFormBtn').removeClass('active');
+            // });
+    
+            // Close the popup message after 5 seconds
+            setTimeout(function() {
+                $('#popup').remove();
+            }, 5000);
+        });
+    </script>
+    
+</body>
+</html>

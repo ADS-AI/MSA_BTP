@@ -18,7 +18,7 @@
         <div>
         <ul>
           <hr> 
-          <li {% if active == 'home' %}class="active"{% endif %}><a href="/create_config">Configs</a></li>
+          <li {% if active == 'home' %}class="active"{% endif %}><a href="/config_image">Configs</a></li>
           <li {% if active == 'training' %}class="active"{% endif %}><a href="/training">Training</a></li>
         </ul>
         </div>
@@ -31,45 +31,93 @@
         {% endif %}
     {% endwith %} -->
 
-{%if configs %}
+
     <section class='get-in-touch'>
         <h1 class="title">Choose Config file</h1>
-        <form class="contact-form row" method="POST" action="/training">
+        <div class="btn-group d-flex" role="group" aria-label="Form Type Buttons">
+            <button type="button" class="btn btn-custom flex-fill active" id="imageFormBtn">Image Form</button>
+            <button type="button" class="btn btn-custom flex-fill" id="textFormBtn">Text Form</button>
+        </div>
         
+        <form class="contact-form row" id='imageForm' method="POST" action="/update_image">
+            {%if configs[0] %}
             <div class="form-field col-lg-12" >
                 <lable class="lable">Configuration Files</lable>
                 <select class="input-text js-input" id="config_file_name" name="config_file_name" required>
-                    {% for config in configs %}
+                    {% for config in configs[0] %}
                         <option >{{ config }}</option>
                     {% endfor %}
                 </select>
             </div>
 
             <div class="form-field col-lg-12">
-                <button type="submit" class="col-lg-12 submit-btn">Submit</button>
+                <button type="submit" class="col-lg-12 submit-btn" required>Submit</button>
             </div>
+            {% else %}
+        <div class="vertical-center">
+                <div class="alert alert-warning">Create config file</div>
+        </div>
+        {%endif%}
         </form>
+
+        <form class="contact-form row" id='textForm' method="POST" action="/update_text">
+            {%if configs[1] %}
+            <div class="form-field col-lg-12" >
+                <lable class="lable">Configuration Files</lable>
+                <select class="input-text js-input" id="config_file_name" name="config_file_name" required>
+                    {% for config in configs[1] %}
+                        <option >{{ config }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-12">
+                <button type="submit" class="col-lg-12 submit-btn" required>Submit</button>
+            </div>
+            {% else %}
+        <div class="vertical-center">
+                <div class="alert alert-warning">Create config file</div>
+        </div>
+        {%endif%}
+        </form>
+        
     </section>
 
-{%endif%}
+
 
 <div style="margin-left:200px" id="file-content">{{m}}</div>
 <script>
     setTimeout(function() {
         document.getElementById('popup').remove();
     }, 5000);
-    $(document).ready(function(){
-        setInterval(function(){
-            $.ajax({
-                url: '/file_content',
-                success: function(data) {
-                    console.log(data);
-                    $('#file-content').m = data;
+    // $(document).ready(function(){
+    //     setInterval(function(){
+    //         $.ajax({
+    //             url: '/file_content',
+    //             success: function(data) {
+    //                 console.log(data);
+    //                 $('#file-content').m = data;
                     
-                }
+    //             }
+    //         });
+    //     }, 2000);
+    // });
+    $(document).ready(function() {
+        $('#textForm').hide();
+            $('#imageFormBtn').click(function() {
+                $('#textForm').hide();
+                $('#imageForm').show();
+                $(this).addClass('active');
+                $('#textFormBtn').removeClass('active');
             });
-        }, 2000);
-    });
+    
+            $('#textFormBtn').click(function() {
+                $('#imageForm').hide();
+                $('#textForm').show();
+                $(this).addClass('active');
+                $('#imageFormBtn').removeClass('active');
+            });
+        });
     </script>
 </body>
 </html>

@@ -233,8 +233,8 @@ def load_thief_model(model_name: str,  num_classes: int, weights: str = "default
         num_classes (int): The number of output classes for the loaded model.
         weights (str): Specifies which weights to load for the model. If 'default', loads the pre-trained weights. If 'random', initializes the model with random weights. Defaults to 'default'.
             - weights must be one of the following: 
-                1. 'default' - for any pre-trained .models.image.
-                2. 'imagenet1k_v1' - for any pre-trained .models.image.
+                1. 'default' - for any pre-trained models.
+                2. 'imagenet1k_v1' - for any pre-trained models.
                 3. 'imagenet1k_v2' - only for 'efficientnet_b1', 'mobilenet_v2', 'mobilenet_v3_large', 'resnet50'
                 4. 'imagenet1k_features' - only for 'vgg16'
                 5. None - for no weights.
@@ -264,8 +264,8 @@ def load_victim_model(model_name: str, num_classes: int,  weights: str = "defaul
         num_classes (int): The number of output classes for the loaded model.
         weights (str): Specifies which weights to load for the model. If 'default', loads the pre-trained weights. If 'random', initializes the model with random weights. Defaults to 'default'.
             - weights must be one of the following: 
-                1. 'default' - for any pre-trained .models.image.
-                2. 'imagenet1k_v1' - for any pre-trained .models.image.
+                1. 'default' - for any pre-trained models.
+                2. 'imagenet1k_v1' - for any pre-trained models.
                 3. 'imagenet1k_v2' - only for 'efficientnet_b1', 'mobilenet_v2', 'mobilenet_v3_large', 'resnet50'
                 4. 'imagenet1k_features' - only for 'vgg16'
                 5. None - for no weights.
