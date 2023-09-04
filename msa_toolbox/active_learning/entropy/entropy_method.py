@@ -10,9 +10,9 @@ from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 import torch.nn.functional as F
 from typing import Any, Dict
-from ...utils.cfg_reader import load_cfg, CfgNode
-from ...utils.train_utils import accuracy_f1_precision_recall, agreement
-from ...utils.all_logs import log_training, log_finish_training, log_epoch
+from ...utils.image.cfg_reader import load_cfg, CfgNode
+from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
+from ...utils.image.all_logs import log_training, log_finish_training, log_epoch
 
 
 def train_entropy(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criterion: _Loss, optimizer: Optimizer,

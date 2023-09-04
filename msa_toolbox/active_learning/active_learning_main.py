@@ -10,15 +10,15 @@ from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from typing import Any, Dict
 from torchvision import transforms
-from ..utils.loss_criterion import get_loss_criterion
-from ..utils.optimizer import get_optimizer
-from ..utils.load_data_and_models import load_thief_dataset, load_victim_dataset, get_data_loader, load_custom_dataset
-from ..utils.load_data_and_models import load_thief_model, load_victim_model
-from ..utils.cfg_reader import load_cfg, CfgNode
-from ..utils.train_utils import accuracy_f1_precision_recall, agreement
+from ..utils.image.loss_criterion import get_loss_criterion
+from ..utils.image.optimizer import get_optimizer
+from ..utils.image.load_data_and_models import load_thief_dataset, load_victim_dataset, get_data_loader, load_custom_dataset
+from ..utils.image.load_data_and_models import load_thief_model, load_victim_model
+from ..utils.image.cfg_reader import load_cfg, CfgNode
+from ..utils.image.train_utils import accuracy_f1_precision_recall, agreement
 from .active_learning_methods import train_active_learning, select_samples_active_learning
-from ..utils.load_victim_thief_data_and_model import load_victim_data_and_model, create_thief_loaders, change_thief_loader_labels
-from ..utils.all_logs import log_thief_data_model, log_new_cycle, log_metrics, log_calculating_metrics
+from ..utils.image.load_victim_thief_data_and_model import load_victim_data_and_model, create_thief_loaders, change_thief_loader_labels
+from ..utils.image.all_logs import log_thief_data_model, log_new_cycle, log_metrics, log_calculating_metrics
 
 
 def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: DataLoader,
