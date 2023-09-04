@@ -215,4 +215,27 @@ def pr():
     print(file)
     return render_template('update.html',options=options,active = 'traning',file=file)
 
+
+@app.route('/testing', methods=['GET','POST'])
+def test():
+    return render_template('test_index.html',options=options,active = 'testing')
+@app.route('/get_existing_config_files', methods=['GET'])
+def get_existing_config_files():
+    # Logic to retrieve a list of existing config file names
+    # Return the list as JSON
+    return jsonify(os.listdir('msa_toolbox/ui_flask/configs/image'))
+
+@app.route('/get_config_data', methods=['GET'])
+def get_config_data():
+    selected_config_file = request.args.get('selected_config_file')
+    if selected_config_file == 'create_new':
+        # Return an empty structure for a new config file
+        return jsonify({'config_data': {}})
+
+    # Logic to fetch the data of the selected config file
+    selected_config_file_data = yaml.load(open('msa_toolbox/ui_flask/configs/image/'+selected_config_file), Loader=yaml.FullLoader)
+    # Return the data as JSON
+    print(selected_config_file_data)
+    return jsonify({'config_data': dict(selected_config_file_data)})
+
 app.run(host='127.0.0.1', port=8085, debug=True)
