@@ -13,7 +13,6 @@ from torchvision.datasets import CIFAR10 as Old_CIFAR10
 from torchvision.datasets import CIFAR100 as Old_CIFAR100
 from .. import config as cfg
 
-
 class CIFAR10(Old_CIFAR10):
     """ 
     CIFAR10 dataset class, subclass of Old_CIFAR10.
