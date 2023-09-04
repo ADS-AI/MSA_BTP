@@ -2,20 +2,9 @@ env/
 build/
 dist/
 data/
-<<<<<<< HEAD
-# Utils/
-flagged/
-# msa_toolbox/datasets/__pycache__/
-# msa_toolbox/models/__pycache__/
-# msa_toolbox/utils/__pycache__/
-**/__pycache__/**
-msa_toolbox/__pycache__/
-=======
-Utils/
 Test/
 flagged/
 **/__pycache__/
->>>>>>> 1cb227f52cef2ff24efdc02c550c2bb0bde77768
 msa_toolbox/cfgs/
 msa_toolbox.egg-info/
 msa_toolbox/data/
@@ -29,11 +18,5 @@ testing6.ipynb
 testing_checkpoint&transform.ipynb
 testing1.py
 msa_toolbox/results/
-<<<<<<< HEAD
-msa_toolbox/ui/configs/
-# msa_toolbox/ui_gradio/__pycache__/
-# msa_toolbox/ui_flask/__pycache__/
-=======
 output.log
 # msa_toolbox/ui/configs/
->>>>>>> 1cb227f52cef2ff24efdc02c550c2bb0bde77768
