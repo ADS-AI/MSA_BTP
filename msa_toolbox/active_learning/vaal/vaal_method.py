@@ -12,9 +12,9 @@ from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 import torch.nn.functional as F
 from typing import Any, Dict
-from ...utils.image.cfg_reader import CfgNode
-from ...utils.image.all_logs import log_training, log_finish_training, log_epoch
-from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
+from ...utils.image.image.cfg_reader import CfgNode
+from ...utils.image.image.all_logs import log_training, log_finish_training, log_epoch
+from ...utils.image.image.train_utils import accuracy_f1_precision_recall, agreement
 from ...utils.optimizer import get_optimizer
 from ...utils.loss_criterion import get_loss_criterion
 
