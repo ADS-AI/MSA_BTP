@@ -1,22 +1,22 @@
-from ..datasets import caltech256
-from ..datasets import cifar
-from ..datasets import cubs200
-from ..datasets import diabetic5
-from ..datasets import imagenet
-from ..datasets import mnist
-from ..datasets import svhn
-from ..datasets import tinyimagenet200
-from ..datasets import indoor67
-from ..datasets import custom_dataset
-from ..datasets import dataset_to_modelfamily, modelfamily_to_mean_std, modelfamily_to_transforms, modelfamily_to_transforms_sans_normalization
-from ..models import alexnet
-from ..models import resnet
-from ..models import efficientnet
-from ..models import vgg
-from ..models import efficientnet_v2
-from ..models import mobilenet_v2
-from ..models import mobilenet_v3
-from ..models import densenet
+from ...datasets.image import caltech256
+from ...datasets.image import cifar
+from ...datasets.image import cubs200
+from ...datasets.image import diabetic5
+from ...datasets.image import imagenet
+from ...datasets.image import mnist
+from ...datasets.image import svhn
+from ...datasets.image import tinyimagenet200
+from ...datasets.image import indoor67
+from ...datasets.image import custom_dataset
+from ...datasets.image import dataset_to_modelfamily, modelfamily_to_mean_std, modelfamily_to_transforms, modelfamily_to_transforms_sans_normalization
+from ...models.image import alexnet
+from ...models.image import resnet
+from ...models.image import efficientnet
+from ...models.image import vgg
+from ...models.image import efficientnet_v2
+from ...models.image import mobilenet_v2
+from ...models.image import mobilenet_v3
+from ...models.image import densenet
 from . cfg_reader import CfgNode
 from torch.utils.data import Dataset, DataLoader, Subset
 from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
