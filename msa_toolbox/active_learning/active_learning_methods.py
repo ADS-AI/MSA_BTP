@@ -10,6 +10,7 @@ from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from typing import Any, Dict
 from .entropy.entropy_method import train_entropy, select_samples_entropy
+from .vaal.vaal_method import train_vaal
 
 
 def train_active_learning(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
@@ -17,7 +18,7 @@ def train_active_learning(cfg: CfgNode, thief_model: nn.Module, victim_model: nn
     if cfg.ACTIVE.METHOD == "entropy":
         return train_entropy(cfg, thief_model, victim_model, criterion, optimizer, dataloader, trail_num, cycle_num, log_interval)
     elif cfg.ACTIVE.METHOD == "vaal":
-        pass
+        return train_vaal(cfg, thief_model, victim_model, criterion, optimizer, dataloader, trail_num, cycle_num, log_interval)
     elif cfg.ACTIVE.METHOD == "kcenter":
         pass
     elif cfg.ACTIVE.METHOD == "montecarlo":
