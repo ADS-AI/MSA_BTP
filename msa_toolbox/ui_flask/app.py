@@ -2,17 +2,13 @@ from flask import Flask, render_template, request , flash ,jsonify
 # from flask_socketio import SocketIO, emit
 import yaml
 import os
-import random
 import json
-import matplotlib.pyplot as plt
-import numpy as np
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
 current_dir = os.path.dirname(os.path.abspath(__file__))
 path_log = os.path.join(current_dir, 'logs/log.txt')
 path_json = os.path.join(current_dir, 'logs/log_metrics.json')
-# socketio = SocketIO(app)
 
 fg = 0
 
@@ -44,7 +40,7 @@ def get_file_progress():
     with open(path_log) as f:
         
         content = f.read()
-        print(content)
+        # print(content)
         # parse content to calculate progress
         # progress = content
         # print(progress)
@@ -57,11 +53,14 @@ def get_file_progress():
 def tranning():
     global fg
     if request.method == 'POST':
-        fg=1
+        # fg=1
         print(request.form)
         return render_template('progress.html',configs=[],fg=fg)
     else:
-        configs = os.listdir('msa_toolbox/ui_flask/configs')
+        configs = [os.listdir('msa_toolbox/ui_flask/configs/image'),os.listdir('msa_toolbox/ui_flask/configs/text')]
+    # if not configs:
+    #     configs=['No config file available']
+    # configs=[]
     if fg==1:
         return render_template('progress.html',configs=configs,fg=fg,active = 'traning')
     return render_template('index.html', configs=configs,active = 'traning')
@@ -71,7 +70,7 @@ def index():
     return render_template('index1.html',options=options,active = 'home')
 
 
-@app.route('/create_config', methods=['GET','POST'])
+@app.route('/config_image', methods=['GET','POST'])
 def submit():
     if request.method == 'POST':
         msg = extract_data(dict(request.form))
@@ -154,7 +153,7 @@ def extract_data(form):
     
     
     #save the yaml file to the disk 
-    path = os.path.join(os.getcwd(), 'msa_toolbox/ui_flask/configs/'+name+'.yaml')
+    path = os.path.join(os.getcwd(), 'msa_toolbox/ui_flask/configs/image/'+name+'.yaml')
     yaml.dump(cfg, open(path, 'w'),sort_keys=False)
     return 'config file generated'
 
@@ -207,5 +206,13 @@ def progress():
         return render_template('progress.html',fg=fg)
     else:
         return render_template('progress.html')
+
+@app.route('/update_image', methods=['POST'])
+def pr():
+    filename = current_dir+"/configs/image/"+request.form['config_file_name']
+    print(filename)
+    file = yaml.load(open(filename), Loader=yaml.FullLoader)
+    print(file)
+    return render_template('update.html',options=options,active = 'traning',file=file)
 
 app.run(host='127.0.0.1', port=8085, debug=True)

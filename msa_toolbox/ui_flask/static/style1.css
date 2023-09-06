@@ -158,3 +158,22 @@ background-color: #555;
 .sidebar li:hover:not(.active) {
   background-color: #555;
 }
+.btn-custom {
+  color: white; /* Text color */
+  background-color: lightgray; /* Default background color */
+  border-color: gray; /* Default border color */
+}
+
+.btn-custom.active {
+  background-color: gray; /* Active background color */
+  border-color: gray; /* Active border color */
+}
+
+.vertical-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* height: inherit; */
+  /* height: 100vh; This ensures the container spans the entire viewport height */
+}

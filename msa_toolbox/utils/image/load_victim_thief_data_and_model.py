@@ -15,7 +15,8 @@ from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_
 from . load_data_and_models import load_thief_model, load_victim_model
 from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
-from . active_learning_train import train_one_epoch
+from ...active_learning.entropy.entropy_method import train_one_epoch
+from . all_logs import log_victim_data, log_weights, log_victim_metrics
 
 
 def load_victim_data_and_model(cfg: CfgNode):
@@ -117,16 +118,3 @@ def change_thief_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_mod
             new_labels = torch.cat((new_labels, predicted.cpu()), dim=0)        
     return new_labels
 
-
-def log_victim_data(path: str, victim_data: Dataset, num_class: int):
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write(f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes\n")
-
-
-def log_victim_metrics(path: str, metrics: Dict[str, float]):
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write(f"Metrics of Victim Model on Victim Dataset: {metrics}\n")
-        
-def log_weights(path: str, weights: str):
-    with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write(f"Loaded Victim Model weights from '{weights}'\n")
