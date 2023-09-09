@@ -99,6 +99,12 @@ def log_epoch(path:str, epoch:int):
     with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
         f.write(f"Epoch:{epoch+1}\n")
         
+def log_epoch_vaal(path:str, iter:int, total_iter:int):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"VAAL Iteration {iter+1}/{total_iter} started\n")
+    with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
+        f.write(f"VAAL Iteration:{iter+1}/{total_iter}\n")
+        
 
 
 # Functions in load_victim_thief_data_and_model.py
