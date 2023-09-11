@@ -10,14 +10,8 @@ msa_toolbox/cfgs/
 msa_toolbox.egg-info/
 msa_toolbox/data/
 testing1.ipynb
-testing2.ipynb
-testing3.ipynb
-testing4.ipynb
-testing5.ipynb
-testing6.ipynb
 .ipynb_checkpoints/
 testing_checkpoint&transform.ipynb
 testing1.py
 msa_toolbox/results/
-output.log
-# msa_toolbox/ui/configs/
+out/

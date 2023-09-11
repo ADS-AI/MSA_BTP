@@ -12,7 +12,7 @@ import torch.nn.functional as F
 from typing import Any, Dict
 from ...utils.image.cfg_reader import load_cfg, CfgNode
 from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
-from ...utils.image.all_logs import log_training, log_finish_training, log_epoch
+from ...utils.image.all_logs import log_training, log_finish_training, log_epoch, log_metrics_intervals
 
 
 def train_entropy(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
@@ -25,7 +25,7 @@ def train_entropy(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module,
     
     exit = False
     curr_loss = None
-    best_f1 = None
+    best_acc = None
     no_improvement = 0
     for epoch in range(cfg.TRAIN.EPOCH):
         log_epoch(cfg.LOG_PATH, epoch)
@@ -34,13 +34,13 @@ def train_entropy(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module,
         train_epoch_loss, train_epoch_acc = train_one_epoch(
             cfg, thief_model, victim_model, dataloader['train'], epoch, optimizer, criterion)
 
-        metrics_val = accuracy_f1_precision_recall(
+        metrics_thief_val = accuracy_f1_precision_recall(
             thief_model, victim_model, dataloader['val'], cfg.DEVICE, is_thief_set=True)
 
-        if best_f1 is None or metrics_val['f1'] > best_f1:
+        if best_acc is None or metrics_thief_val['accuracy'] > best_acc:
             if os.path.isdir(cfg.OUT_DIR_MODEL) is False:
                 os.makedirs(cfg.OUT_DIR_MODEL, exist_ok=True)
-            best_f1 = metrics_val['f1']
+            best_acc = metrics_thief_val['accuracy']
             torch.save({'trail': trail_num, 'cycle': cycle_num, 'epoch': epoch, 'state_dict': thief_model.state_dict(
             )}, f"{cfg.OUT_DIR_MODEL}/thief_model__trial_{trail_num+1}_cycle_{cycle_num+1}.pth")
             no_improvement = 0
@@ -50,6 +50,16 @@ def train_entropy(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module,
                 exit = True
         if exit:
             break
+        if (epoch + 1) % log_interval == 0:
+            metrics_victim_test = accuracy_f1_precision_recall(
+                    thief_model, victim_model, dataloader['victim'], cfg.DEVICE, is_thief_set=False)
+            agree_victim_test = agreement(thief_model, victim_model,
+                              dataloader['victim'], cfg.DEVICE)
+            agree_thief_val = agreement(thief_model, victim_model,
+                              dataloader['val'], cfg.DEVICE)
+            log_metrics_intervals(cfg.LOG_PATH, metrics_victim_test, agree_victim_test, metrics_thief_val, agree_thief_val)
+            log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_victim_test, agree_victim_test, metrics_thief_val, agree_thief_val)
+
     log_finish_training(cfg.LOG_PATH)
     log_finish_training(cfg.INTERNAL_LOG_PATH)
 
