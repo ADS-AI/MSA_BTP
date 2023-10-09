@@ -125,3 +125,8 @@ def select_samples_entropy(cfg: CfgNode, theif_model: nn.Module, unlabeled_loade
     arg = np.argsort(uncertainty)
     selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
     return selected_index_list
+
+    # indices = [0, 1, 2, 3, 4]
+    # uncertainty = [6.6, 5.6, 9.9, 2.2, 8.3]
+    # arg = [3, 1, 0, 4, 2]
+    # indices[arg] = [3, 1, 0, 4, 2]

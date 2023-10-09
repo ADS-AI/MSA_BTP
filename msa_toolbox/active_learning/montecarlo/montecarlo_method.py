@@ -119,7 +119,7 @@ def select_samples_montecarlo(cfg: CfgNode, theif_model: nn.Module, unlabeled_lo
     uncertainty = torch.tensor([])
     indices = torch.tensor([])
     with torch.no_grad():
-        for i, (images, _) in enumerate(unlabeled_loader):
+        for ind, (images, _) in enumerate(unlabeled_loader):
             images = images.to(cfg.DEVICE)
             z=np.zeros((int(images.shape[0]), cfg.ACTIVE.K, cfg.VICTIM.NUM_CLASSES))
             
@@ -138,10 +138,8 @@ def select_samples_montecarlo(cfg: CfgNode, theif_model: nn.Module, unlabeled_lo
 
             uncertainty = torch.cat((uncertainty, torch.tensor(entropies).float()), dim=0)
             indices = torch.cat((indices, torch.tensor(
-                np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
+                np.arange(ind*cfg.TRAIN.BATCH_SIZE, ind*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
 
     arg = np.argsort(uncertainty)
     selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
-    with open(os.path.join(cfg.LOG_PATH, 'log.txt'), 'a') as f:
-        f.write("Length of samples selected: " + len(str(selected_index_list)) + '\n')
     return selected_index_list
