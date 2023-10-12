@@ -84,8 +84,10 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Modul
             inputs, targets = inputs.to(cfg.DEVICE), targets.to(cfg.DEVICE)
             if victim_model is not None:
                 targets = victim_model(inputs)
-                _, targets = torch.max(targets.data, 1)
-            
+                if cfg.TRAIN.BLACKBOX_TRAINING == True:
+                    _, targets = torch.max(targets.data, 1)
+                else:
+                    targets = F.softmax(targets, dim=1)    
             optimizer.zero_grad()
             outputs = thief_model(inputs)
             loss = criterion(outputs, targets)
@@ -95,6 +97,8 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Modul
             train_loss += loss.item()
             _, predicted = torch.max(outputs.data, 1)
             total += targets.size(0)
+            if cfg.TRAIN.BLACKBOX_TRAINING == False:
+                _, targets = torch.max(targets.data, 1)
             correct += predicted.eq(targets).sum().item()
     
             if verbose:
