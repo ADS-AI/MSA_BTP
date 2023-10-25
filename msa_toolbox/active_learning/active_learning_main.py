@@ -18,7 +18,7 @@ from ..utils.image.cfg_reader import load_cfg, CfgNode
 from ..utils.image.train_utils import accuracy_f1_precision_recall, agreement
 from .active_learning_methods import train_active_learning, select_samples_active_learning
 from ..utils.image.load_victim_thief_data_and_model import load_victim_data_and_model, create_thief_loaders, change_thief_loader_labels
-from ..utils.image.all_logs import log_thief_data_model, log_new_cycle, log_metrics, log_calculating_metrics
+from ..utils.image.all_logs import log_thief_data_model, log_new_cycle, log_metrics, log_calculating_metrics, log_active_learning_train_start
 
 
 def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: DataLoader,
@@ -47,7 +47,7 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
         criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
 
         train_active_learning(cfg, thief_model, victim_model, criteria, optimizer,
-              dataloader, trial_num, cycle, log_interval=1000)
+              dataloader, trial_num, cycle, log_interval=cfg.TRAIN.LOG_INTERVAL)
 
         best_model_path = os.path.join(
             cfg.OUT_DIR_MODEL, f"thief_model__trial_{trial_num+1}_cycle_{cycle+1}.pth")
@@ -90,6 +90,7 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
     '''
     Performs active learning on the victim dataset according to the user configuration
     '''
+    cfg.VICTIM.NUM_CLASSES = num_class
     model = load_thief_model(cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
 
     if cfg.THIEF.DATASET.lower() == 'custom_dataset':
@@ -101,7 +102,7 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
             root_dir=cfg.THIEF.DATASET_ROOT, transform=model.transforms)
     else:
         thief_data = load_thief_dataset(
-            cfg.THIEF.DATASET, cfg, train=True, transform=model.transforms, download=True)
+            cfg.THIEF.DATASET, cfg, train=True, transform=model.transforms, download=True)    
 
     log_thief_data_model(cfg.LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE)
     log_thief_data_model(cfg.INTERNAL_LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE)
@@ -121,5 +122,9 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
         print(samples[:,1])
         thief_data.samples = samples.tolist()
     '''
+    
+    log_active_learning_train_start(cfg.LOG_PATH, cfg.ACTIVE.METHOD)
+    log_active_learning_train_start(cfg.INTERNAL_LOG_PATH, cfg.ACTIVE.METHOD)
+    
     for trial in range(cfg.TRIALS):
         one_trial(cfg, trial, num_class, victim_data_loader, victim_model, thief_data)

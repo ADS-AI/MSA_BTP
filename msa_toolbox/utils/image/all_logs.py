@@ -48,9 +48,21 @@ def log_metrics(path:str, cycle:int, metrics_victim:Dict[str, float], agree_vict
         json.dump(old_metrics, f)
         
     with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write("Metrics of Thief Model on Victim Dataset: " +
+        f.write("Metrics of Thief Model on Victim Test Dataset: " +
                 str(metrics_victim) + "\n")
-        f.write("Agreement of Thief Model on Victim Dataset: " +
+        f.write("Agreement of Thief Model on Victim Test Dataset: " +
+                str(agree_victim) + "\n")
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("Metrics of Thief Model on Validation Dataset: " +
+                str(metrics_thief) + "\n")
+        f.write("Agreement of Thief Model on Validation Dataset: " +
+            str(agree_thief) + "\n")
+
+def log_metrics_intervals(path:str, metrics_victim:Dict[str, float], agree_victim:float, metrics_thief:Dict[str, float], agree_thief:float):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("Metrics of Thief Model on Victim Test Dataset: " +
+                str(metrics_victim) + "\n")
+        f.write("Agreement of Thief Model on Victim Test Dataset: " +
                 str(agree_victim) + "\n")
     with open(os.path.join(path, 'log.txt'), 'a') as f:
         f.write("Metrics of Thief Model on Validation Dataset: " +
@@ -61,8 +73,8 @@ def log_metrics(path:str, cycle:int, metrics_victim:Dict[str, float], agree_vict
 
 def log_new_cycle(path:str, cycle:int, dataloader:Dict[str, DataLoader]):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write("\n\n===============================> Cycle:" +
-                str(cycle+1) + " <===============================\n")
+        f.write("\n\n==============================================> Cycle:" +
+                str(cycle+1) + " <===============================================\n")
         f.write("\nLength of Datasets: {labeled=" + str(len(dataloader['train'].dataset)) + ', val:' + str(len(
             dataloader['val'].dataset)) + ', unlabeled:' + str(len(dataloader['unlabeled'].dataset)) + '}' + '\n')
     with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
@@ -70,7 +82,7 @@ def log_new_cycle(path:str, cycle:int, dataloader:Dict[str, DataLoader]):
 
 def log_calculating_metrics(path:str):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write("Calculating Metrics and Agreement on Victim and Thief Datasets\n")
+        f.write("\n===============> Calculating Metrics and Agreement on Victim and Thief Datasets ......\n")
 
 def log_thief_data_model(path: str, thief_data, thief_model, thief_model_name:str):
     log_dest = os.path.join(path, 'log.txt')
@@ -78,15 +90,22 @@ def log_thief_data_model(path: str, thief_data, thief_model, thief_model_name:st
         f.write('\n======================================> Thief Data and Model Loaded <======================================\n')
         f.write(f"Thief Data: {thief_data}\n")
         f.write(f"\nThief Model: {type(thief_model)}: {thief_model_name}\n")
+        
+def log_active_learning_train_start(path:str, method:str):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"\n\n====================================> Starting Active Learning Training <====================================\n")
+        f.write(f"Active Learning Method Used: {method}\n")
+    with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
+        f.write(f"\n\n====================================> Starting Active Learning Training <====================================\n")
+        f.write(f"Active Learning Method Used: {method}\n")
 
-    
 
 
 # Functions in active_learning_train.py
 
 def log_training(path: str, total_epoch:int):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write(f"Training Thief Model on Thief Dataset with {total_epoch} epochs\n")
+        f.write(f"Training Thief Model on Thief Dataset with {total_epoch} epochs\n\n")
         
 
 def log_finish_training(path:str):
@@ -98,6 +117,12 @@ def log_epoch(path:str, epoch:int):
         f.write(f"Epoch {epoch+1} started\n")
     with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
         f.write(f"Epoch:{epoch+1}\n")
+        
+def log_epoch_vaal(path:str, iter:int, total_iter:int):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"VAAL Iteration {iter+1}/{total_iter} started\n")
+    with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
+        f.write(f"VAAL Iteration:{iter+1}/{total_iter}\n")
         
 
 

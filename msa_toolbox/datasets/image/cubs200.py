@@ -10,7 +10,7 @@ The download link can be found at http://www.vision.caltech.edu/visipedia/CUB-20
 
 import os
 from torchvision.datasets.folder import ImageFolder
-from .. import config as cfg
+from ... import config as cfg
 
 
 class CUBS200(ImageFolder):

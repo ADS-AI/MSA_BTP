@@ -1,21 +1,24 @@
-import os
 import torch
-import random
 import torch.nn as nn
+import torch.optim as optim
+import os
+import sys
 import numpy as np
 from tqdm import tqdm
-import sys
+from sklearn.metrics import accuracy_score
 from torch.utils.data import Dataset, DataLoader, Subset
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 import torch.nn.functional as F
 from typing import Any, Dict
-from ...utils.image.cfg_reader import load_cfg, CfgNode
-from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
+from scipy.stats import entropy
+from ...utils.image.cfg_reader import CfgNode
 from ...utils.image.all_logs import log_training, log_finish_training, log_epoch, log_metrics_intervals
+from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
 
 
-def train_entropy(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
+
+def train_montecarlo(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
           dataloader: Dict[str, DataLoader], trail_num: int, cycle_num: int, log_interval=1000):
     '''
     Trains the Thief Model on the Thief Dataset
@@ -87,7 +90,7 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Modul
                 if cfg.TRAIN.BLACKBOX_TRAINING == True:
                     _, targets = torch.max(targets.data, 1)
                 else:
-                    targets = F.softmax(targets, dim=1)    
+                    targets = F.softmax(targets, dim=1)
             optimizer.zero_grad()
             outputs = thief_model(inputs)
             loss = criterion(outputs, targets)
@@ -110,27 +113,37 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, victim_model: nn.Modul
 
 
 
-def select_samples_entropy(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader):
+def select_samples_montecarlo(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader):
     theif_model.eval()
     theif_model = theif_model.to(cfg.DEVICE)
+    for m in theif_model.modules():
+        if m.__class__.__name__.startswith('Dropout'):
+            m.train()
+            
     uncertainty = torch.tensor([])
     indices = torch.tensor([])
     with torch.no_grad():
-        for i, (images, _) in enumerate(unlabeled_loader):
+        for ind, (images, _) in enumerate(unlabeled_loader):
             images = images.to(cfg.DEVICE)
-            outputs = theif_model(images)
-            prob = F.softmax(outputs, dim=1)
-            entropy = -torch.sum(prob * torch.log(prob), dim=1)
-            uncertainty = torch.cat(
-                (uncertainty, entropy.clone().detach().cpu()), dim=0)
+            z=np.zeros((int(images.shape[0]), cfg.ACTIVE.K, cfg.VICTIM.NUM_CLASSES))
+            
+            for i in range(cfg.ACTIVE.K):
+                scores = theif_model(images)
+                scores = F.softmax(scores)
+                z[:,i,:] = scores.detach().cpu().numpy()
+
+            pred_sum = np.zeros((int(images.shape[0]), cfg.VICTIM.NUM_CLASSES))
+            for index in range(len(z)):
+                pred_sum[index,:] = np.sum(z[index],axis=0)
+           
+            entropies = np.zeros((int(images.shape[0])))
+            for index in range(len(pred_sum)):
+                entropies[index] = entropy(pred_sum[index])
+
+            uncertainty = torch.cat((uncertainty, torch.tensor(entropies).float()), dim=0)
             indices = torch.cat((indices, torch.tensor(
-                np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
+                np.arange(ind*cfg.TRAIN.BATCH_SIZE, ind*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
 
     arg = np.argsort(uncertainty)
     selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
     return selected_index_list
-
-    # indices = [0, 1, 2, 3, 4]
-    # uncertainty = [6.6, 5.6, 9.9, 2.2, 8.3]
-    # arg = [3, 1, 0, 4, 2]
-    # indices[arg] = [3, 1, 0, 4, 2]
