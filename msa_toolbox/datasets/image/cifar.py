@@ -15,7 +15,6 @@ from ... import config as cfg
 from PIL import Image
 from typing import Any, Callable, Optional, Tuple
 
-
 class CIFAR10(Old_CIFAR10):
     """ 
     CIFAR10 dataset class, subclass of Old_CIFAR10.
