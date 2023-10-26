@@ -6,6 +6,8 @@ import os
 import numpy as np
 from torchvision.datasets import SVHN as Old_SVHN
 from ... import config as cfg
+from PIL import Image
+from typing import Any, Callable, Optional, Tuple
 
 
 class SVHN(Old_SVHN):
@@ -59,3 +61,20 @@ class SVHN(Old_SVHN):
             numpy.ndarray: The image data at the specified index.
         """
         return self.data[index]
+
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (sample, target) where target is class_index of the target class.
+        """
+        img, target = self.data[index], self.labels[index]
+        # doing this so that it is consistent with all other datasets to return a PIL Image
+        img = Image.fromarray(img, mode='RGB')
+        if self.transform is not None:
+            img = self.transform(img)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return img, target, index

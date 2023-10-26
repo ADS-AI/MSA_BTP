@@ -14,14 +14,14 @@ def log_victim_data_model(path: str, victim_data, victim_model, victim_model_nam
     with open(log_dest, 'a') as f:
         f.write('\n======================================> Victim Data and Model Loaded <======================================\n')
         f.write(f"Victim Data: {victim_data}\n")
-        f.write(f"\nVictim Model: {type(victim_model)}: {victim_model_name}\n")
+        f.write(f"Number of Classes: {len(victim_data.classes)}\n")
+        f.write(f"Victim Model: {type(victim_model)}: {victim_model_name}\n")
         
 
 def log_start_active_learning(path: str):
     log_dest = os.path.join(path, 'log.txt')
     with open(log_dest, 'w') as f:
         f.write('======================================> Starting Active Learning <======================================\n\n')
-        
     log_dest = os.path.join(path, 'log_tqdm.txt')
     with open(log_dest, 'w') as f:
         f.write('======================================>  Active Learning TQDM <======================================\n')
@@ -89,15 +89,24 @@ def log_thief_data_model(path: str, thief_data, thief_model, thief_model_name:st
     with open(log_dest, 'a') as f:
         f.write('\n======================================> Thief Data and Model Loaded <======================================\n')
         f.write(f"Thief Data: {thief_data}\n")
-        f.write(f"\nThief Model: {type(thief_model)}: {thief_model_name}\n")
-        
-def log_active_learning_train_start(path:str, method:str):
+        f.write(f"Number of Classes: {len(thief_data.classes)}\n")
+        f.write(f"Thief Model: {type(thief_model)}: {thief_model_name}\n")
+                
+def log_active_learning_trail_start(path:str, trial_num:int, method:str):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write(f"\n\n====================================> Starting Active Learning Training <====================================\n")
+        f.write(f"\n\n*******************************************************************************************************\n")
+        f.write(f"*******************************************************************************************************\n")
+        f.write(f"=============================> Starting Active Learning Training Trial {trial_num} <============================\n")
         f.write(f"Active Learning Method Used: {method}\n")
+        f.write(f"*******************************************************************************************************\n")
+        f.write(f"*******************************************************************************************************\n")
     with open(os.path.join(path, 'log_tqdm.txt'), 'a') as f:
-        f.write(f"\n\n====================================> Starting Active Learning Training <====================================\n")
+        f.write(f"\n\n*******************************************************************************************************\n")
+        f.write(f"=============================> Starting Active Learning Training Trial {trial_num} <============================\n")
         f.write(f"Active Learning Method Used: {method}\n")
+        f.write(f"*******************************************************************************************************\n")
+        f.write(f"*******************************************************************************************************\n")
+
 
 
 
