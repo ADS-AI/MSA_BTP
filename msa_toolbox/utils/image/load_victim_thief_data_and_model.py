@@ -15,7 +15,6 @@ from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_
 from . load_data_and_models import load_thief_model, load_victim_model
 from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
-from ...active_learning.entropy.entropy_method import train_one_epoch
 from . all_logs import log_victim_data, log_weights, log_victim_metrics
 
 
@@ -38,8 +37,8 @@ def load_victim_data_and_model(cfg: CfgNode):
     log_victim_data(cfg.LOG_PATH, victim_data, num_class)
     log_victim_data(cfg.INTERNAL_LOG_PATH, victim_data, num_class)
 
-    # Load Victim Data Loader
-    victim_data_loader = get_data_loader(
+    # Load Victim Test Data Loader
+    victim_test_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
 
     # Load victim model weights if present, else train the victim model (just to measure performance)
@@ -53,16 +52,15 @@ def load_victim_data_and_model(cfg: CfgNode):
                                 lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
         criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
         for i in range(min(10, cfg.TRAIN.EPOCH)):
-            train_one_epoch(cfg, victim_model, None, victim_data_loader,0, optimizer, criteria, verbose=False)
+            train_one_epoch(cfg, victim_model, victim_test_loader, optimizer, criteria, verbose=False)
         
     # Measure performance of victim model on victim dataset
-    metrics = accuracy_f1_precision_recall(
-        victim_model, None, victim_data_loader, cfg.DEVICE, is_thief_set=False)
+    metrics = accuracy_f1_precision_recall(cfg, victim_model, victim_test_loader, cfg.DEVICE, is_victim_loader=True)
 
     log_victim_metrics(cfg.LOG_PATH, metrics)
     log_victim_metrics(cfg.INTERNAL_LOG_PATH, metrics)
 
-    return (victim_data, num_class), victim_data_loader, victim_model
+    return (victim_data, num_class), victim_test_loader, victim_model
 
 
 
@@ -84,3 +82,25 @@ def load_victim_data(cfg: CfgNode, victim_model: nn.Module):
             cfg.VICTIM.DATASET, cfg, train=False, transform=transform, download=True)
     num_class = len(victim_data.classes)
     return victim_data, num_class
+
+
+
+def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, optimizer: Optimizer,
+                    criterion: _Loss, verbose: bool = True):
+    train_loss = 0
+    correct = 0
+    total = 0
+    model.train()
+    model = model.to(cfg.DEVICE)
+    for images, labels, index in dataloader:
+        images, labels = images.to(cfg.DEVICE), labels.to(cfg.DEVICE)
+        optimizer.zero_grad()
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+        train_loss += loss.item()
+        predicted = torch.argmax(outputs.data, dim=1)
+        total += labels.size(0)
+        correct += predicted.eq(labels).sum().item()
+    return train_loss / len(dataloader.dataset), 100. * correct / total

@@ -15,12 +15,12 @@ class View(nn.Module):
 
 class VAE(nn.Module):
     """Encoder-Decoder architecture for both WAE-MMD and WAE-GAN."""
-    def __init__(self, z_dim=32, nc=3):
+    def __init__(self, z_dim=32, num_channel=3):
         super(VAE, self).__init__()
         self.z_dim = z_dim
-        self.nc = nc
+        self.num_channel = num_channel
         self.encoder = nn.Sequential(
-            nn.Conv2d(nc, 128, 4, 2, 1, bias=False),              # B,  128, 32, 32
+            nn.Conv2d(num_channel, 128, 4, 2, 1, bias=False),              # B,  128, 32, 32
             nn.BatchNorm2d(128),
             nn.ReLU(True),
             nn.Conv2d(128, 256, 4, 2, 1, bias=False),             # B,  256, 16, 16
@@ -48,7 +48,7 @@ class VAE(nn.Module):
             nn.ConvTranspose2d(256, 128, 4, 2, 1, bias=False),    # B,  128, 64, 64
             nn.BatchNorm2d(128),
             nn.ReLU(True),
-            nn.ConvTranspose2d(128, nc, 1),                       # B,   nc, 64, 64
+            nn.ConvTranspose2d(128, num_channel, 1),                       # B,   num_channel, 64, 64
         )
         self.weight_init()
 
@@ -62,10 +62,11 @@ class VAE(nn.Module):
 
     def forward(self, x):
         z = self._encode(x)
+        print("1",z.shape)
         mu, logvar = self.fc_mu(z), self.fc_logvar(z)
         z = self.reparameterize(mu, logvar)
+        print("2",z.shape)
         x_recon = self._decode(z)
-
         return x_recon, z, mu, logvar
 
     def reparameterize(self, mu, logvar):

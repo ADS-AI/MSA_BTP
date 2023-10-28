@@ -7,6 +7,9 @@ from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 from torch.nn.modules.loss import _Loss
 
+'''
+Sample file for training a model on a dataset.
+'''
 
 def train(model: nn.Module, train_loader: DataLoader, val_loader: DataLoader, epochs: int, batch_size: int, optimizer: Optimizer,
           criterion: _Loss, device: str, log_interval=100, all_data=False, verbose=True):
