@@ -9,12 +9,12 @@ from ..utils.image.cfg_reader import CfgNode
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import MultiStepLR
-from typing import Any, Dict
+from typing import Any, Dict, List
 from .entropy.entropy_method import train_entropy, select_samples_entropy
 from .vaal.vaal_method import train_vaal, select_samples_vaal
 from .montecarlo.montecarlo_method import train_montecarlo, select_samples_montecarlo
 from .random.random_method import train_random, select_samples_random
-from .kcenter.kcenter_method import train_kcenter
+from .kcenter.kcenter_method import train_kcenter, select_samples_kcenter
 
 
 def train_active_learning(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
@@ -31,14 +31,18 @@ def train_active_learning(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss
         return train_random(cfg, thief_model, criterion, optimizer, scheduler, dataloader, trail_num, cycle_num, log_interval)
     
 
-def select_samples_active_learning(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader, *args, **kwargs):
+def select_samples_active_learning(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader,
+            thief_data:Dataset, labeled_indices:List, unlabeled_indices:List, *args, **kwargs):
     if cfg.ACTIVE.METHOD == "entropy":
-        return select_samples_entropy(cfg, theif_model, unlabeled_loader)
+        new_training_samples_indices = select_samples_entropy(cfg, theif_model, unlabeled_loader)
+        return unlabeled_indices[new_training_samples_indices]
     elif cfg.ACTIVE.METHOD == "vaal":
         return select_samples_vaal(cfg, theif_model, unlabeled_loader)
     elif cfg.ACTIVE.METHOD == "kcenter":
-        pass
+        return select_samples_kcenter(cfg, theif_model, thief_data, labeled_indices, unlabeled_indices)
     elif cfg.ACTIVE.METHOD == "montecarlo":
-        return select_samples_montecarlo(cfg, theif_model, unlabeled_loader)
+        new_training_samples_indices = select_samples_montecarlo(cfg, theif_model, unlabeled_loader)
+        return unlabeled_indices[new_training_samples_indices]
     elif cfg.ACTIVE.METHOD == "random":
-        return select_samples_random(cfg, theif_model, unlabeled_loader)
+        new_training_samples_indices = select_samples_random(cfg, theif_model, unlabeled_loader)
+        return unlabeled_indices[new_training_samples_indices]

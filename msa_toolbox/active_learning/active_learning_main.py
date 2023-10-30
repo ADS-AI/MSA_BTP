@@ -96,19 +96,18 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
 
         # SELECT NEW TRAINING SAMPLES USING THE ACTIVE LEARNING METHOD
         if cycle != cfg.ACTIVE.CYCLES-1:
-            new_training_samples = select_samples_active_learning(
-                cfg, thief_model, dataloader['unlabeled'])
-            if len(new_training_samples) == 0:
+            new_training_samples_indices = select_samples_active_learning(
+                cfg, thief_model, dataloader['unlabeled'], thief_data, labeled_indices, unlabeled_indices)
+            if len(new_training_samples_indices) == 0:
                 return
-            new_training_samples = unlabeled_indices[new_training_samples]
             labeled_indices = np.concatenate(
-                [labeled_indices, new_training_samples])
+                [labeled_indices, new_training_samples_indices])
             labeled_indices = np.array(list(set(labeled_indices)))
             unlabeled_indices = np.array(
-                list(set(unlabeled_indices) - set(new_training_samples)))
+                list(set(unlabeled_indices) - set(new_training_samples_indices)))
             
             # replace addendum labels with victim labels
-            addendum_loader = get_data_loader(Subset(thief_data, new_training_samples), 
+            addendum_loader = get_data_loader(Subset(thief_data, new_training_samples_indices), 
                         batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
             victim_model.eval()
             victim_model = victim_model.to(cfg.DEVICE)
@@ -145,7 +144,7 @@ def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Data
     '''
     # replace train labels with victim labels
     train_loader = get_data_loader(Subset(thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE,
-                            shuffle=True, pin_memory=False, num_workers=cfg.NUM_WORKERS)
+                            shuffle=False, pin_memory=False, num_workers=cfg.NUM_WORKERS)
     victim_model.eval()
     victim_model = victim_model.to(cfg.DEVICE)
     with torch.no_grad():
@@ -164,7 +163,7 @@ def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Data
         
     # replace val labels with victim labels
     val_loader = DataLoader(Subset(thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, 
-                            pin_memory=False, num_workers=4, shuffle=True)
+                            pin_memory=False, num_workers=4, shuffle=False)
     victim_model.eval()
     victim_model = victim_model.to(cfg.DEVICE)
     with torch.no_grad():
@@ -181,11 +180,11 @@ def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Data
             for ii, jj in enumerate(index):
                 thief_data.samples[jj] = (thief_data.samples[jj][0], label[ii])
     train_loader = get_data_loader(Subset(
-        thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
+        thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
     val_loader = get_data_loader(Subset(
-        thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
+        thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
     unlabeled_loader = get_data_loader(Subset(
-        thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
+        thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
     dataloader = {'train': train_loader,
                   'val': val_loader, 'unlabeled': unlabeled_loader}
     return dataloader

@@ -37,7 +37,10 @@ def log_start_active_learning(path: str):
 def log_finish_active_learning(path: str):
     log_dest = os.path.join(path, 'log.txt')
     with open(log_dest, 'a') as f:
-        f.write('\n======================================> Active Learning Finished <======================================\n\n') 
+        f.write(f"\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
+        f.write(f'=============================================> Active Learning Finished <============================================\n') 
+        f.write(f"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n")
+        
 
 
 
@@ -161,3 +164,13 @@ def log_victim_metrics(path: str, metrics: Dict[str, float]):
 def log_weights(path: str, weights: str):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
         f.write(f"Loaded Victim Model weights from '{weights}'\n")
+
+
+
+# Functions in KCenterGreedy.py
+
+def log_max_dist_kcenter(path:str, max_val:float, mean_val:float, median_val:float, std_val:float):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"Max Distance to Cluster Center: {max_val:.3f}\n")
+        f.write(f"Mean and Std. Distance to Cluster Center: {mean_val:.3f}, {std_val:.3f}\n")
+        f.write(f"Median Distance to Cluster Center: {median_val:.3f}\n")
