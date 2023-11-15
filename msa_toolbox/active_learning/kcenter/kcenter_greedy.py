@@ -102,7 +102,6 @@ class KCenterGreedy:
             # detach the hooks
             h1.remove()
             self.features = np.asarray(feat)[:, :, 0, 0]
-            print('here')
             
         elif self.feature == 'fc':        
             # compute activations for both labeled and unlabeled data
@@ -133,8 +132,6 @@ class KCenterGreedy:
         else:
             raise NotImplementedError(f"Feature {self.feature} not supported! Must either be 'avgpool' or 'fc'")
         
-        print('Labeld idx:', labeled_idx)
-        print('Already selected:', already_selected)
         # Compute distances from unlabeled points to their nearest cluster centers
         self.update_distances(already_selected, only_new=False, reset_dist=True)
 
@@ -154,9 +151,6 @@ class KCenterGreedy:
             new_batch.append(true_ind)
         
         max_dist, mean_dist, median_dist, std_dist = np.max(self.min_distances), np.mean(self.min_distances), np.median(self.min_distances), np.std(self.min_distances)
-        print(len(new_batch))
-        print(new_batch)
-        print(max_dist, mean_dist, median_dist, std_dist)
         log_max_dist_kcenter(cfg.LOG_PATH, max_dist, mean_dist, median_dist, std_dist)
         log_max_dist_kcenter(cfg.INTERNAL_LOG_PATH, max_dist, mean_dist, median_dist, std_dist)
         self.already_selected = already_selected

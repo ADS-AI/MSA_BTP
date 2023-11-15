@@ -210,8 +210,8 @@ def select_samples_vaal(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: 
             all_indices = torch.cat((all_indices, torch.tensor(
                 np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
             
-    # all_preds = torch.stack(all_preds)
-    # all_preds = all_preds.view(-1) 
+    all_preds = torch.stack(all_preds)
+    all_preds = all_preds.view(-1) 
     all_preds *= -1     # need to multiply by -1 to be able to use torch.topk
     
     # select the points which the discriminator things are the most likely to be unlabeled

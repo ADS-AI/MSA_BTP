@@ -15,6 +15,8 @@ from .vaal.vaal_method import train_vaal, select_samples_vaal
 from .montecarlo.montecarlo_method import train_montecarlo, select_samples_montecarlo
 from .random.random_method import train_random, select_samples_random
 from .kcenter.kcenter_method import train_kcenter, select_samples_kcenter
+from .dfal.dfal_method import train_dfal, select_samples_dfa
+from ..utils.image.load_data_and_models import get_data_loader
 
 
 def train_active_learning(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
@@ -29,6 +31,10 @@ def train_active_learning(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss
         return train_montecarlo(cfg, thief_model, criterion, optimizer, scheduler, dataloader, trail_num, cycle_num, log_interval)
     elif cfg.ACTIVE.METHOD == "random":
         return train_random(cfg, thief_model, criterion, optimizer, scheduler, dataloader, trail_num, cycle_num, log_interval)
+    elif cfg.ACTIVE.METHOD == "dfal":
+        return train_dfal(cfg, thief_model, criterion, optimizer, scheduler, dataloader, trail_num, cycle_num, log_interval)
+    else:
+        raise NotImplementedError(f"Active Learning Method {cfg.ACTIVE.METHOD} not implemented")
     
 
 def select_samples_active_learning(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader,
@@ -46,3 +52,10 @@ def select_samples_active_learning(cfg: CfgNode, theif_model: nn.Module, unlabel
     elif cfg.ACTIVE.METHOD == "random":
         new_training_samples_indices = select_samples_random(cfg, theif_model, unlabeled_loader)
         return unlabeled_indices[new_training_samples_indices]
+    elif cfg.ACTIVE.METHOD == "dfal":
+        unlabeled_loader = get_data_loader(Subset(thief_data, unlabeled_indices), 
+                        batch_size=1, shuffle=False, num_workers=cfg.NUM_WORKERS)
+        new_training_samples_indices = select_samples_dfal(cfg, theif_model, unlabeled_loader)
+        return unlabeled_indices[new_training_samples_indices]
+    else:
+        raise NotImplementedError(f"Active Learning Method {cfg.ACTIVE.METHOD} not implemented")
