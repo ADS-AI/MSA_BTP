@@ -1,5 +1,5 @@
 import os
-from CustomDataset import CustomDataset
+from .CustomDataset import CustomDataset
 from datasets import load_dataset
 
 # inherits ecerything from custom dataset + some dataset specific functions

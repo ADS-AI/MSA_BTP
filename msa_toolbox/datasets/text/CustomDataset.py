@@ -77,7 +77,7 @@ class CustomDataset:
             file = split + '.csv'
             return self._create_examples(self._read_csv(os.path.join(self.data_directory, file)))
         elif self.data_import_method == 'HuggingFace':
-            return self._create_examples(self._read_hugging(mode = split))
+            return self._create_examples(self._read_hugging(split = split))
     
     def set_new_labels(self, new_label):
         '''
@@ -130,7 +130,7 @@ class CustomDataset:
                 examples.append(Example(i, line[0], line[1], line[2], self.num_attributes))
         return examples
 
-    def _read_hugging(self, mode='train'):
+    def _read_hugging(self, split='train'):
         """
         will be inherited by each dataset class
         """

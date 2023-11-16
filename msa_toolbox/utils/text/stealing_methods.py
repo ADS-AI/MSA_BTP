@@ -5,73 +5,108 @@ import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, Subset
-from model_loader import load_untrained_model
+from MSA_BTP.msa_toolbox.utils.text.load_data_and_models import load_untrained_model, load_dataset_thief
 from . cfg_reader import CfgNode
+# import samplers
+from transformers import (
+    WEIGHTS_NAME,
+    AdamW,
+    AutoConfig,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+)
+from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
+from tqdm import tqdm, trange
 
-def active_learning_technique(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader):
+def active_learning_technique(victim_dataset, thief_dataset, victim_model, thief_model, victim_tokenizer, thief_tokenizer, victim_config, thief_config, cfg):
     if cfg.ACTIVE.METHOD == "qbc_stealing":
-        return qbc_stealing(cfg, device, theif_model)
+        return qbc_stealing(cfg,None, thief_model)
     elif cfg.ACTIVE.METHOD == "entroby_stealing":
-        return entropy_stealing(cfg, theif_model, unlabeled_loader)
-    elif cfg.ACTIVE.METHOD == "all_data_stealing":
-        return all_data_stealing(cfg, theif_model, unlabeled_loader)
+        return entropy_stealing(cfg, victim_dataset, thief_dataset, victim_model, thief_model, victim_tokenizer, thief_tokenizer, victim_config, thief_config)
+    # elif cfg.ACTIVE.METHOD == "all_data_stealing":
+    #     return all_data_stealing(cfg, thief_model, unlabeled_loader)
 
-def Active_Learning_basic(cfg, n_gpu, device , prefix = ''):
+def query_data_in_victim(cfg , theif_dataloader, victim_model, victim_tokenizer, victim_config):
+    '''
+    This function is used to query all the data from the victim model
+    returns- 
+    index_to_new_label - dictionary mapping index to new label
+    index_to_entropy -  dictionary mapping index to entropy
+    orignal_index - list of original index
+    '''
+    print("--------------- victim model setup for querying ---------------")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    victim_model.to(device)
+    
+    print("--------------- querying ---------------")
+    new_labels = None
+    orignal_labels = None
+    orignal_index = None
+    entropy = None
+    for batch in tqdm(theif_dataloader, desc="Evaluating"):
+        victim_model.eval()
+        batch = tuple(t.to(device) for t in batch)
+        with torch.no_grad():
+            inputs = {"input_ids": batch[1], "attention_mask": batch[2]}
+            outputs = victim_model(**inputs)
+            logits = outputs['logits']
+        if new_labels is None:
+            new_labels = logits.detach().cpu().numpy()
+            orignal_labels = batch[4].detach().cpu().numpy()
+            orignal_index = batch[0].detach().cpu().numpy()
+            entropy = torch.nn.functional.softmax(logits, dim=1).detach().cpu().numpy()
+            entropy = np.sum(entropy * np.log(entropy), axis=1)
+        else:
+            new_labels = np.append(new_labels, logits.detach().cpu().numpy(), axis=0)
+            orignal_labels = np.append(orignal_labels, batch[4].detach().cpu().numpy(), axis=0)
+            orignal_index = np.append(orignal_index, batch[0].detach().cpu().numpy(), axis=0)
+            tmp_entropy = torch.nn.functional.softmax(logits, dim=1).detach().cpu().numpy()
+            tmp_entropy = np.sum(tmp_entropy * np.log(tmp_entropy), axis=1)
+            entropy = np.append(entropy, tmp_entropy, axis=0)
+
+    new_labels = np.argmax(new_labels, axis=1)
+    index_to_new_label = {}
+    index_to_entropy = {}
+
+    for i in range(len(orignal_index)):
+        index_to_new_label[orignal_index[i]] = new_labels[i]
+        index_to_entropy[orignal_index[i]] = entropy[i]
+
+    print("--------------- querying done ---------------")
+    return index_to_new_label, index_to_entropy , orignal_index
+   
+
+def entropy_stealing(cfg, victim_dataset, thief_dataset, victim_model, thief_model, victim_tokenizer, thief_tokenizer, victim_config, thief_config):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    n_gpu = torch.cuda.device_count()
     model_out_dir = os.path.join(cfg.THIEF_MODEL_DIR,  "thief-{} victim-{} thief_model-{} method-{}".format(cfg.THIEF.DATASET, cfg.VICTIM.DATASET , cfg.THIEF.MODEL_TYPE , cfg.ACTIVE.METHOD), "prefix-{}".format(prefix) , cfg.THIEF.MODEL_TYPE)
     if not os.path.exists(model_out_dir):
         os.makedirs(model_out_dir)
     validation_accuracy_dict = {}
     global_step_dict = {}
     loss_dict = {}
-
-    config = AutoConfig.from_pretrained( cfg.THIEF.MODEL_NAME_OR_PATH,num_labels= cfg.VICTIM.NUM_LABELS ,finetuning_task=cfg.THIEF.TASK_NAME)
-    tokenizer = AutoTokenizer.from_pretrained(cfg.THIEF.MODEL_NAME_OR_PATH,do_lower_case=cfg.THIEF.DO_LOWER_CASE,cache_dir=cfg.THIEF.CACHE_DIR if cfg.THIEF.CACHE_DIR else None)
-    model = AutoModelForSequenceClassification.from_pretrained(cfg.THIEF.MODEL_NAME_OR_PATH, from_tf=bool(".ckpt" in cfg.THIEF.MODEL_NAME_OR_PATH),config=config)
-    model.to(device)  
+    thief_model.to(device)  
     if not os.path.exists(model_out_dir):
         os.makedirs(model_out_dir)
-    model.save_pretrained(model_out_dir)
-    tokenizer.save_pretrained(model_out_dir)
-    config.save_pretrained(model_out_dir)
-    print("--------------- model setup done ---------------")
+    thief_model.save_pretrained(model_out_dir)
+    thief_tokenizer.save_pretrained(model_out_dir)
+    thief_config.save_pretrained(model_out_dir)
 
-    theif_datasets = Dataset.__dict__.keys()
-    if cfg.THIEF.DATASET not in theif_datasets:
-        raise ValueError('Dataset not found. Valid arguments = {}'.format(theif_datasets))
-    Thief_Dataset = Dataset.__dict__[cfg.THIEF.DATASET]
-    Thief_Dataset = Thief_Dataset(cfg.THIEF.DATASET , cfg.THIEF.DATA_DIR, cfg.THIEF.NUM_LABELS , label_probs = False, Mode = cfg.THIEF.DATA_MODE , args = cfg)
-    train_examples = Thief_Dataset.get_train_examples()
-    train_label_list = Thief_Dataset.get_labels()
-    train_features = convert_examples_to_features(train_examples,tokenizer,label_list=train_label_list,
-        max_length=cfg.TRAIN.MAX_SEQ_LENGTH,
-        pad_on_left=bool(cfg.VICTIM.MODEL_TYPE in ["xlnet"]),  # pad on the left for xlnet
-        pad_token=tokenizer.convert_tokens_to_ids([tokenizer.pad_token])[0],
-        pad_token_segment_id=4 if cfg.VICTIM.MODEL_TYPE in ["xlnet"] else 0)
-    train_data = load_and_cache_examples(cfg, train_features)
-    sampler = RandomSampler(train_data)
+    thief_dataset_train_features = thief_dataset.get_features(split = 'train', tokenizer = thief_tokenizer)
     BATCH_SIZE = cfg.THIEF.PER_GPU_TRAIN_BATCH_SIZE * max(1, n_gpu)
-    train_dataloader = DataLoader(train_data, sampler=sampler, batch_size=BATCH_SIZE)
+    sampler = RandomSampler(thief_dataset_train_features)
+    train_dataloader = DataLoader(thief_dataset_train_features, sampler=sampler, batch_size=BATCH_SIZE)
     
     if cfg.THIEF.DO_EVALUATION == True:
-        val_examples = Thief_Dataset.get_dev_examples()
-        val_label_list = Thief_Dataset.get_labels()
-        val_features = convert_examples_to_features(val_examples,tokenizer,label_list=val_label_list,
-                max_length=cfg.TRAIN.MAX_SEQ_LENGTH,
-                pad_on_left=bool(cfg.THIEF.MODEL_TYPE in ["xlnet"]),  # pad on the left for xlnet
-                pad_token=tokenizer.convert_tokens_to_ids([tokenizer.pad_token])[0],
-                pad_token_segment_id=4 if cfg.THIEF.MODEL_TYPE in ["xlnet"] else 0)
-        val_data = load_and_cache_examples(cfg, val_features)
-        sampler = RandomSampler(val_data)
-        BATCH_SIZE = cfg.THIEF.PER_GPU_TRAIN_BATCH_SIZE * max(1, n_gpu)
-        val_dataloader = DataLoader(val_data, sampler=sampler, batch_size=BATCH_SIZE)
+        thief_dataset_val_features = thief_dataset.get_features(split = 'val', tokenizer = thief_tokenizer)
+        validation_sampler = SequentialSampler(thief_dataset_val_features)
+        validation_dataloader = DataLoader(thief_dataset_val_features, sampler=validation_sampler, batch_size=BATCH_SIZE)
     
-
-
     if cfg.THIEF.DO_TRAINING == True:
-        print("---------------  quering victim model using theif data & created indexes ---------------")
-        Thief_dataset_train , index_to_new_label_train, index_to_entropy_train , index_list_train =  query_all_data_theif(cfg=cfg, n_gpu=n_gpu, device=device , split='train')
+        print("---------------  quering victim thief_model using thief data & created indexes ---------------")
+        Thief_dataset_train , index_to_new_label_train, index_to_entropy_train , index_list_train =  query_data_in_victim(cfg=cfg, theif_dataloader=train_dataloader, victim_model=victim_model, victim_tokenizer=victim_tokenizer, victim_config=victim_config)
         if cfg.THIEF.DO_EVALUATION == True:
-            Thief_dataset_val , index_to_new_label_val, index_to_entropy_val , index_list_val =  query_all_data_theif(cfg=cfg, n_gpu=n_gpu, device=device , split='val')
+            Thief_dataset_val , index_to_new_label_val, index_to_entropy_val , index_list_val =  query_data_in_victim(cfg=cfg, theif_dataloader=validation_dataloader, victim_model=victim_model, victim_tokenizer=victim_tokenizer, victim_config=victim_config)
 
         budget = cfg.ACTIVE.BUDGET
         unlabeled_index_list = list(index_list_train)
@@ -88,31 +123,32 @@ def Active_Learning_basic(cfg, n_gpu, device , prefix = ''):
         cycle_num = 1
         while(budget >= 0):
             print("--------------- cycle {} budget spent -{}---------------".format(cycle_num , budget))
-            training_dataset = load_and_cache_examples(cfg , train_features, labelled_index_list)
-            validation_dataset = load_and_cache_examples(cfg ,train_features ,validation_index_list)
+            thief_dataset_train_features_select = thief_dataset.get_features(labelled_index_list, split = 'train', tokenizer = thief_tokenizer, indexes = labelled_index_list)
+            thief_dataset_val_features_select = thief_dataset.get_features(validation_index_list, split = 'val', tokenizer = thief_tokenizer, indexes = validation_index_list)
             BATCH_SIZE_TRAIN = cfg.VICTIM.PER_GPU_TRAIN_BATCH_SIZE * max(1, n_gpu)
             BATCH_SIZE_EVAL = cfg.VICTIM.PER_GPU_EVAL_BATCH_SIZE * max(1, n_gpu)
-            train_sampler = RandomSampler(training_dataset)
-            train_loader = DataLoader(training_dataset, sampler=train_sampler, batch_size=BATCH_SIZE_TRAIN)
-            validation_sampler = SequentialSampler(validation_dataset)
-            validation_loader = DataLoader(validation_dataset, sampler=validation_sampler, batch_size=BATCH_SIZE_EVAL)
-            global_step, tr_loss , validation_accuracy , model , config , tokenizer = active_train(cfg , train_loader , validation_loader , device , n_gpu , index_to_new_label_train, cycle_num , prefix)
+            train_sampler = RandomSampler(thief_dataset_train_features_select)
+            train_loader = DataLoader(thief_dataset_train_features_select, sampler=train_sampler, batch_size=BATCH_SIZE_TRAIN)
+            validation_sampler = SequentialSampler(thief_dataset_val_features_select)
+            validation_loader = DataLoader(thief_dataset_val_features_select, sampler=validation_sampler, batch_size=BATCH_SIZE_EVAL)
+            global_step, tr_loss , validation_accuracy , thief_model , thief_config , thief_tokenizer = active_train(cfg , train_loader , validation_loader , device , n_gpu , index_to_new_label_train, cycle_num , prefix)
             validation_accuracy_dict[cycle_num] = validation_accuracy
             global_step_dict[cycle_num] = global_step
             loss_dict[cycle_num] = tr_loss
             print("global_step = %s, average_training_loss = %s" % (global_step, tr_loss))
             print("validation accuracy", validation_accuracy)
-            model.save_pretrained(model_out_dir)
-            tokenizer.save_pretrained(model_out_dir)
-            config.save_pretrained(model_out_dir)
+            thief_model.save_pretrained(model_out_dir)
+            thief_tokenizer.save_pretrained(model_out_dir)
+            thief_config.save_pretrained(model_out_dir)
             
             # select the top 1000 data
             if budget >= 1000:
-                unlabelled_dataset = load_and_cache_examples(cfg , unlabelled_index_list , train_features)
+                unlabelled_dataset =
+                # load_and_cache_examples(cfg , unlabelled_index_list , train_features)
                 unlabelled_sampler = SequentialSampler(unlabelled_dataset)
                 unlabelled_loader = DataLoader(unlabelled_dataset, sampler=unlabelled_sampler, batch_size=BATCH_SIZE_EVAL)
                 print("--------------- get the entropy of the unlabelled data ---------------")
-                index_to_entropy = get_entropy(cfg , model , tokenizer , config , n_gpu , device , unlabelled_loader)
+                index_to_entropy = get_entropy(cfg , thief_model , thief_tokenizer , thief_config , n_gpu , device , unlabelled_loader)
                 unlabelled_index_list = sorted(unlabelled_index_list, key=lambda x: index_to_entropy[x], reverse=True)
                 labelled_index_list.extend(unlabelled_index_list[:1000])
                 unlabelled_index_list = unlabelled_index_list[1000:]
@@ -124,7 +160,7 @@ def Active_Learning_basic(cfg, n_gpu, device , prefix = ''):
                 unlabelled_sampler = SequentialSampler(unlabelled_dataset)
                 unlabelled_loader = DataLoader(unlabelled_dataset, sampler=unlabelled_sampler, batch_size=BATCH_SIZE_EVAL)
                 print("--------------- get the entropy of the unlabelled data ---------------")
-                index_to_entropy = get_entropy(cfg , model , tokenizer , config , n_gpu , device , unlabelled_loader)
+                index_to_entropy = get_entropy(cfg , thief_model , thief_tokenizer , thief_config , n_gpu , device , unlabelled_loader)
                 unlabelled_index_list = sorted(unlabelled_index_list, key=lambda x: index_to_entropy[x], reverse=True)
                 budget = len(unlabelled_index_list)
                 labelled_index_list.extend(unlabelled_index_list[:budget])  
@@ -135,7 +171,7 @@ def Active_Learning_basic(cfg, n_gpu, device , prefix = ''):
                 unlabelled_sampler = SequentialSampler(unlabelled_dataset)
                 unlabelled_loader = DataLoader(unlabelled_dataset, sampler=unlabelled_sampler, batch_size=BATCH_SIZE_EVAL)
                 print("--------------- get the entropy of the unlabelled data ---------------")
-                index_to_entropy = get_entropy(cfg , model , tokenizer , config , n_gpu , device , unlabelled_loader)
+                index_to_entropy = get_entropy(cfg , thief_model , thief_tokenizer , thief_config , n_gpu , device , unlabelled_loader)
                 unlabelled_index_list = sorted(unlabelled_index_list, key=lambda x: index_to_entropy[x], reverse=True)
                 labelled_index_list.extend(unlabelled_index_list[:budget])
                 unlabelled_index_list = unlabelled_index_list[budget:]
@@ -161,10 +197,10 @@ def Active_Learning_basic(cfg, n_gpu, device , prefix = ''):
         else:
             victim_examples = Dataset_victim.get_dev_examples()
         victim_label_list = Dataset_victim.get_labels()
-        victim_features = convert_examples_to_features(victim_examples,tokenizer,label_list=victim_label_list,
+        victim_features = convert_examples_to_features(victim_examples,thief_tokenizer,label_list=victim_label_list,
             max_length=cfg.TRAIN.MAX_SEQ_LENGTH,
             pad_on_left=bool(cfg.THIEF.MODEL_TYPE in ["xlnet"]),  # pad on the left for xlnet
-            pad_token=tokenizer.convert_tokens_to_ids([tokenizer.pad_token])[0],
+            pad_token=thief_tokenizer.convert_tokens_to_ids([thief_tokenizer.pad_token])[0],
             pad_token_segment_id=4 if cfg.THIEF.MODEL_TYPE in ["xlnet"] else 0)
         victim_data = load_and_cache_examples(cfg, victim_features)
         sampler = RandomSampler(victim_data)
@@ -178,12 +214,12 @@ def Active_Learning_basic(cfg, n_gpu, device , prefix = ''):
         model_folders = [os.path.join(model_out_dir, x) for x in model_folders]
         print(model_folders)
         for model_folder in model_folders:
-            print("Evaluating model:", model_folder)
-            model = AutoModelForSequenceClassification.from_pretrained(model_folder)
-            tokenizer = AutoTokenizer.from_pretrained(model_folder)
-            config = AutoConfig.from_pretrained(model_folder)
-            model.to(device)
-            result = evaluate(cfg, victim_dataloader, model, tokenizer, config, n_gpu , device)
+            print("Evaluating thief_model:", model_folder)
+            thief_model = AutoModelForSequenceClassification.from_pretrained(model_folder)
+            thief_tokenizer = AutoTokenizer.from_pretrained(model_folder)
+            thief_config = AutoConfig.from_pretrained(model_folder)
+            thief_model.to(device)
+            result = evaluate(cfg, victim_dataloader, thief_model, thief_tokenizer, thief_config, n_gpu , device)
             accuracy_list[model_folder] = result 
         print("accuracy list", accuracy_list)
         with open(os.path.join(model_out_dir, "accuracy_list.txt"), "w") as f:
@@ -198,9 +234,9 @@ def All_Data_Stealing(cfg , n_gpu , device , prefix = ""):
     model = AutoModelForSequenceClassification.from_pretrained(cfg.THIEF.MODEL_NAME_OR_PATH, from_tf=bool(".ckpt" in cfg.THIEF.MODEL_NAME_OR_PATH),config=config)
     model.to(device)
 
-    theif_datasets = Dataset.__dict__.keys()
-    if cfg.THIEF.DATASET not in theif_datasets:
-        raise ValueError('Dataset not found. Valid arguments = {}'.format(theif_datasets))
+    thief_datasets = Dataset.__dict__.keys()
+    if cfg.THIEF.DATASET not in thief_datasets:
+        raise ValueError('Dataset not found. Valid arguments = {}'.format(thief_datasets))
     Thief_Dataset = Dataset.__dict__[cfg.THIEF.DATASET]
     Thief_Dataset = Thief_Dataset(cfg.THIEF.DATASET , cfg.THIEF.DATA_DIR, cfg.THIEF.NUM_LABELS , label_probs = False, Mode = cfg.THIEF.DATA_MODE , args = cfg)
     train_examples = Thief_Dataset.get_train_examples()
@@ -230,20 +266,20 @@ def All_Data_Stealing(cfg , n_gpu , device , prefix = ""):
     
 
     if cfg.THIEF.DO_TRAINING == True:
-        print("---------------  quering victim model using theif data & created indexes ---------------")
+        print("---------------  quering victim model using thief data & created indexes ---------------")
         model_out_dir = os.path.join(cfg.THIEF_MODEL_DIR, "thief-{} victim-{} thief_model-{} method-{}".format(cfg.THIEF.DATASET, cfg.VICTIM.DATASET , cfg.THIEF.MODEL_TYPE , cfg.ACTIVE.METHOD), "prefix-{}".format(prefix)  , cfg.THIEF.MODEL_TYPE)
         if not os.path.exists(model_out_dir):
             os.makedirs(model_out_dir)
-        index_to_new_label_train, index_to_entropy_train , index_list_train =  query_all_data_theif(cfg=cfg, theif_dataloader=train_dataloader, n_gpu=n_gpu, device=device)
+        index_to_new_label_train, index_to_entropy_train , index_list_train =  query_all_data_thief(cfg=cfg, thief_dataloader=train_dataloader, n_gpu=n_gpu, device=device)
         if cfg.THIEF.DO_EVALUATION == True:
-            index_to_new_label_val, index_to_entropy_val , index_list_val =  query_all_data_theif(cfg=cfg, theif_dataloader=val_dataloader, n_gpu=n_gpu, device=device)
-        print("--------------- Train theif with all data ---------------")
+            index_to_new_label_val, index_to_entropy_val , index_list_val =  query_all_data_thief(cfg=cfg, thief_dataloader=val_dataloader, n_gpu=n_gpu, device=device)
+        print("--------------- Train thief with all data ---------------")
         # prefix = ""
         if cfg.THIEF.DO_EVALUATION == True:
-            global_step, tr_loss , model , tokenizer , config = train_theif(cfg,  train_dataloader, val_dataloader,  model, tokenizer, config , n_gpu , device , index_to_new_label=index_to_new_label_train, index_to_new_label_val = index_to_new_label_val , prefix = prefix)
+            global_step, tr_loss , model , tokenizer , config = train_thief(cfg,  train_dataloader, val_dataloader,  model, tokenizer, config , n_gpu , device , index_to_new_label=index_to_new_label_train, index_to_new_label_val = index_to_new_label_val , prefix = prefix)
         else:
             print("--------------- model setup ---------------") 
-            global_step, tr_loss , model , tokenizer , config = train_theif(cfg,  train_dataloader, None,  model, tokenizer, config , n_gpu , device , index_to_new_label=index_to_new_label_train, prefix = prefix)
+            global_step, tr_loss , model , tokenizer , config = train_thief(cfg,  train_dataloader, None,  model, tokenizer, config , n_gpu , device , index_to_new_label=index_to_new_label_train, prefix = prefix)
         
         print("Saving model to", model_out_dir)
         model_to_save = (model.module if hasattr(model, "module") else model)
@@ -293,25 +329,28 @@ def All_Data_Stealing(cfg , n_gpu , device , prefix = ""):
                 f.write("%s,%s" % (key, value))
                 f.write("\n")
   
-def qbc_stealing(cfg : CfgNode , device: torch.device() , theif_model: nn.Module , list_thief_models : list):
-    validation_accuracy_dict_all_models = [{}]*cfg.ACTIVE.NUM_MODELS
-    global_step_dict_all_models = [{}]*cfg.ACTIVE.NUM_MODELS
-    loss_dict_all_models = [{}]*cfg.ACTIVE.NUM_MODELS
+def qbc_stealing(cfg : CfgNode , device: torch.device() , thief_model: nn.Module , list_thief_models : list):
+    
+    validation_accuracy= [{}]*cfg.ACTIVE.NUM_MODELS
+    global_steps = [{}]*cfg.ACTIVE.NUM_MODELS
+    losses = [{}]*cfg.ACTIVE.NUM_MODELS
 
     thief_models = {}
     thief_config = {}
     thief_tokenizer = {}
 
+    
+
     if cfg.THIEF.DO_TRAINING == True:
         for i in range(cfg.ACTIVE.NUM_MODELS):
-            theif_model[i] , thief_config[i] , thief_tokenizer[i] = load_untrained_model(cfg, list_thief_models[i])
+            thief_model[i] , thief_config[i] , thief_tokenizer[i] = load_untrained_model(cfg, list_thief_models[i])
 
 
     if cfg.THIEF.DO_TRAINING == True:
-        print("---------------  quering victim model using theif data & created indexes ---------------")
-        Thief_dataset_train , index_to_new_label_train, index_to_entropy_train , index_list_train =  query_all_data_theif(cfg=cfg, n_gpu=n_gpu, device=device , split='train')
+        print("---------------  quering victim model using thief data & created indexes ---------------")
+        Thief_dataset_train , index_to_new_label_train, index_to_entropy_train , index_list_train =  query_all_data_thief(cfg=cfg, n_gpu=n_gpu, device=device , split='train')
         if cfg.THIEF.DO_EVALUATION == True:
-            Thief_dataset_val , index_to_new_label_val, index_to_entropy_val , index_list_val =  query_all_data_theif(cfg=cfg, n_gpu=n_gpu, device=device , split='val') 
+            Thief_dataset_val , index_to_new_label_val, index_to_entropy_val , index_list_val =  query_all_data_thief(cfg=cfg, n_gpu=n_gpu, device=device , split='val') 
         budget = cfg.ACTIVE.BUDGET
         unlabeled_index_list = list(index_list_train)
         labelled_index_list = []
@@ -438,3 +477,8 @@ def qbc_stealing(cfg : CfgNode , device: torch.device() , theif_model: nn.Module
                     for key, value in accuracy_list.items():
                         f.write("%s,%s" % (key, value))
                         f.write("\n")
+
+
+def Unlimited_Budget(cfg : CfgNode , victim_model , victim_tokenizer , victim_config):
+    thief_model , thief_tokenizer , thief_config = load_untrained_model(cfg)
+    thief_dataset = load_dataset_thief(cfg)
