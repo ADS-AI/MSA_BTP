@@ -3,6 +3,8 @@ from flask import Flask, render_template, request , flash ,jsonify
 import yaml
 import os
 import json
+from utils_ui import extract_data as extract_data_image
+from utils_ui import extract_data_text
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
@@ -10,7 +12,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 path_log = os.path.join(current_dir, 'logs/log.txt')
 path_json = os.path.join(current_dir, 'logs/log_metrics.json')
 
-fg = 0
 
 datasets =['cifar10','cifar100','imagenet','mnist','kmnist','fashionmnist','emnist','emnistletters','svhn','tinyimagenet200','tinyimagesubset','cubs200',
              'diabetic5','indoor67','caltech256']
@@ -27,42 +28,27 @@ criterias = ['cross_entropy_loss','mse_loss','l1_loss','soft_margin_loss','bce_l
 
 options = {'datasets': datasets, 'archi': archi, 'methods': methods, 'optimizers': optimizers, 'criterias': criterias}
     
-# @socketio.on('connect')
-# def on_connect():
-#     with open('C:/Users/sumit/Desktop/MSA_interface/my_package/filename.txt', 'r') as f:
-#         content = f.read()
-#     emit('file_content', content)
-    
+datasets_text = ['dataset1','dataset2']
+archi_text = ['archi1','archi2']
+
     
 @app.route('/file_content')
 def get_file_progress():
-    # return "kjhgjhfgdf"
     with open(path_log) as f:
-        
         content = f.read()
-        # print(content)
-        # parse content to calculate progress
-        # progress = content
-        # print(progress)
         return content
-        # return json.dumps({'progress': progress})
     
 
 
 @app.route('/training', methods=['GET','POST'])
 def tranning():
-    global fg
     if request.method == 'POST':
-        # fg=1
         print(request.form)
         return render_template('progress.html',configs=[],fg=fg)
     else:
         configs = [os.listdir('msa_toolbox/ui_flask/configs/image'),os.listdir('msa_toolbox/ui_flask/configs/text')]
-    # if not configs:
-    #     configs=['No config file available']
-    # configs=[]
     if fg==1:
-        return render_template('progress.html',configs=configs,fg=fg,active = 'traning')
+        return render_template('progress.html',configs=configs,active = 'traning')
     return render_template('index.html', configs=configs,active = 'traning')
 
 @app.route('/')
@@ -78,85 +64,19 @@ def submit():
         flash(msg)
         return render_template('index1.html', options=options)
     return render_template('index1.html', options=options)
+@app.route('/config_text', methods=['GET','POST'])
+def submit_text():
+    if request.method == 'POST':
+        msg = extract_data_text(dict(request.form))
+        # print(request.form)
+        flash(msg)
+        return render_template('index1.html', options=options)
+    return render_template('index1.html', options=options)
 
 
 def extract_data(form):
-    print(form)
-    # return 'config file generated'
-
-    name = form['config_name']
-    batch_size = form['batch_size']
+    return extract_data_image(form)
     
-    v_dataset = form['V_data']
-    v_model = form['V_arch']
-    
-    t_dataset = form['T_data']
-    t_model = form['T_arch']
-    # subset = form['subset']
-    
-    Method = form['method']
-    Budget = float(form['budget'])
-    Optimizer = form['optim']
-    Criteria = form['criteria']
-    
-    Device = form['device']
-    Epochs = float(form['Epochs'])
-    # to be added
-    Cycles = float(form['Cycles'])
-    # Patience = form['Patience']
-    log_dir = form['log_dir']
-    out_dir = form['out_dir']
-    v_data_root = form['v_data_root']
-    t_data_root = form['t_data_root']
-    
-    victim={'DATASET':v_dataset,
-            'ARCHITECTURE':v_model,
-            'DATA_ROOT':v_data_root,
-            'WEIGHTS':'default'}
-    
-    thief={'DATASET':t_dataset,
-           'ARCHITECTURE':t_model,
-           'DATA_ROOT':t_data_root,
-           'SUBSET':20000,
-           'NUM_TRAIN':100000,
-           'WEIGHTS':'default'}
-  
-    active={'BUDGET':Budget,
-            'METHOD':Method,
-            'CYCLES':Cycles}    
-    
-    train={'OPTIMIZER':Optimizer,
-           'LOSS_CRITERION':Criteria,
-           'BATCH_SIZE':128,
-           'WEIGHT_DECAY':0.0001,
-           'EPOCH':Epochs,
-           'PATIENCE':5,
-           'LR':0.001,
-           }
-    
-    cfg ={'VICTIM':victim,
-          'THIEF':thief,
-          'ACTIVE':active,
-          'TRAIN':train,
-          'TRIALS':1,
-          'DS_SEED':123,
-          'NUM_WORKERS':2, 
-          'DEVICE':Device,
-          'LOG_DEST':log_dir,
-          'OUT_DEST':out_dir,
-          }
-    # print(cfg)
-
-    yaml_string=yaml.dump(cfg, default_flow_style=False,sort_keys=False)
-    print("The YAML string is:")
-    print(yaml_string)
-    
-    
-    #save the yaml file to the disk 
-    path = os.path.join(os.getcwd(), 'msa_toolbox/ui_flask/configs/image/'+name+'.yaml')
-    yaml.dump(cfg, open(path, 'w'),sort_keys=False)
-    return 'config file generated'
-
 
 @app.route('/chart')
 def chart():
@@ -194,9 +114,9 @@ def chart():
     return jsonify({'accuracy_victim': accuracy_victim, 'accuracy_thief': accuracy_thief, 'precision_victim': precision_victim, 'precision_thief': precision_thief, 'f1_victim': f1_victim, 'f1_thief': f1_thief, 'agreement_victim': agreement_victim, 'agreement_thief': agreement_thief, 'labels': list(labels)})
 
 
-@app.route('/chart_draw')
-def heloijh():
-    return render_template('chart.html')
+# @app.route('/chart_draw')
+# def heloijh():
+#     return render_template('chart.html')
 
 
 @app.route('/progress')
@@ -223,19 +143,43 @@ def test():
 def get_existing_config_files():
     # Logic to retrieve a list of existing config file names
     # Return the list as JSON
-    return jsonify(os.listdir('msa_toolbox/ui_flask/configs/image'))
+    # remove the .yaml extension
+    config_list = [x[:-5] for x in os.listdir('msa_toolbox/ui_flask/configs/image')]
+    
+    return jsonify(config_list)
+
+@app.route('/get_existing_config_files_text', methods=['GET'])
+def get_existing_config_files_text():
+    # Logic to retrieve a list of existing config file names
+    # Return the list as JSON
+    # remove the .yaml extension
+    config_list = [x[:-5] for x in os.listdir('msa_toolbox/ui_flask/configs/text')]
+    
+    return jsonify(config_list)
 
 @app.route('/get_config_data', methods=['GET'])
 def get_config_data():
     selected_config_file = request.args.get('selected_config_file')
     if selected_config_file == 'create_new':
         # Return an empty structure for a new config file
-        return jsonify({'config_data': {}})
+        return jsonify({'config_data': {}, 'config_file_name': ''})
 
     # Logic to fetch the data of the selected config file
-    selected_config_file_data = yaml.load(open('msa_toolbox/ui_flask/configs/image/'+selected_config_file), Loader=yaml.FullLoader)
+    selected_config_file_data = yaml.load(open('msa_toolbox/ui_flask/configs/image/'+selected_config_file+'.yaml'), Loader=yaml.FullLoader)
     # Return the data as JSON
-    print(selected_config_file_data)
-    return jsonify({'config_data': dict(selected_config_file_data)})
+    print(selected_config_file)
+    return jsonify({'config_data': dict(selected_config_file_data), 'config_file_name': selected_config_file})
+@app.route('/get_config_data_text', methods=['GET'])
+def get_config_data_text():
+    selected_config_file = request.args.get('selected_config_file')
+    if selected_config_file == 'create_new':
+        # Return an empty structure for a new config file
+        return jsonify({'config_data': {}, 'config_file_name': ''})
+    else:
+        # Logic to fetch the data of the selected config file
+        selected_config_file_data = yaml.load(open('msa_toolbox/ui_flask/configs/text/'+selected_config_file+'.yaml'), Loader=yaml.FullLoader)
+        # Return the data as JSON
+        print(selected_config_file)
+        return jsonify({'config_data': dict(selected_config_file_data), 'config_file_name': selected_config_file})
 
 app.run(host='127.0.0.1', port=8085, debug=True)
