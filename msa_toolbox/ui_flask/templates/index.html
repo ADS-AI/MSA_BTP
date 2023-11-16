@@ -32,14 +32,14 @@
     {% endwith %} -->
 
 
-    <section class='get-in-touch'>
+    <section class='config-section'>
         <h1 class="title">Choose Config file</h1>
         <div class="btn-group d-flex" role="group" aria-label="Form Type Buttons">
             <button type="button" class="btn btn-custom flex-fill active" id="imageFormBtn">Image Form</button>
             <button type="button" class="btn btn-custom flex-fill" id="textFormBtn">Text Form</button>
         </div>
         
-        <form class="contact-form row" id='imageForm' method="POST" action="/update_image">
+        <form class="config-form row" id='imageForm' method="POST" action="/update_image">
             {%if configs[0] %}
             <div class="form-field col-lg-12" >
                 <lable class="lable">Configuration Files</lable>
@@ -60,7 +60,7 @@
         {%endif%}
         </form>
 
-        <form class="contact-form row" id='textForm' method="POST" action="/update_text">
+        <form class="config-form row" id='textForm' method="POST" action="/update_text">
             {%if configs[1] %}
             <div class="form-field col-lg-12" >
                 <lable class="lable">Configuration Files</lable>

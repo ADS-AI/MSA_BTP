@@ -1,0 +1,663 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Package GUI</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+</head>
+<body>
+    <nav class="sidebar">
+        <div style="text-align: center; padding: 0px; background-image: linear-gradient(125deg, #8b075b, #042c60);">
+            <img src="{{ url_for('static', filename='logo1.jpeg') }}" alt="logo" style="width: 100%; height: 100%;">
+        </div>
+        <div>
+            <ul>
+                <li {% if active == 'home' %}class="active"{% endif %}><a href="/config_image">Configs</a></li>
+                <li {% if active == 'training' %}class="active"{% endif %}><a href="/training">Training</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div id='popup' class="alert alert-success text-center" style="font-size: 30px;">{{ messages[0] }}</div>
+        {% endif %}
+    {% endwith %}
+
+    <section class="config-section">
+        <h1 class="title">New Configuration</h1>
+        <div class="btn-group d-flex" role="group" aria-label="Form Type Buttons">
+            <button type="button" class="btn btn-custom flex-fill active" id="imageFormBtn">Image Form</button>
+            <button type="button" class="btn btn-custom flex-fill" id="textFormBtn">Text Form</button>
+        </div>
+        <form class="config-form row" id="imageForm" method="POST" action="/config_image">
+            <div class="form-group col-lg-12" style="margin-top:10px">
+                <select class="form-control" id="config-dropdown" name="selected_config_file">
+                    <option value="create_new">Create New</option>
+                </select>
+            </div>
+            <div class="form-field col-lg-12">
+                <label>Configuration File Name</label>
+                <input type="text" class="input-text js-input" id="config_name" name="config_name" placeholder="Enter name of the configuration file" required>   
+            </div>
+
+
+            <div class="form-field col-lg-4">
+                <label>Victim Architecture</label>
+                <select class="input-text js-input" id="V_arch" name="V_arch" required>
+                    {% for arc in options['archi'] %}
+                    <option value="{{ arc }}">{{ arc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <label>Victim Dataset</label>
+                <select class="input-text js-input" id="V_data" name="V_data" required>
+                    {% for data in options['datasets'] %}
+                    <option >{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+             <div class="form-field col-lg-4">
+                <label>Victim Model Path</label>
+                <input type="text" class="input-text js-input" id="v_weights" name="v_weights" placeholder="Victim Model weights Path">   
+
+            </div>
+
+            <div class="form-field col-lg-3">
+                <label> Output Label</label>
+                <input type="number" class="input-text js-input" id="out_label" name="out_label" placeholder=" Number of Output Label" required>   
+            </div>
+            <div class="form-field col-lg-3" >
+                <label>labelType</label>
+                <select class="input-text js-input" id="label" name="label" required>
+                    <option >Soft Label</option>
+                    <option >Hard Label</option>
+                    
+                </select>
+            </div>
+
+            <div class="form-field col-lg-6">
+                <label>Victim Data Directory</label>
+                <input type="text" class="input-text js-input" id="V_data_root" name="V_data_root" placeholder="Victim Data Directory ( If Avaialabel!!! )">   
+
+            </div>
+
+
+            <div class="form-field col-lg-12">
+                <label>Victim Model API</label>
+                <input type="text" class="input-text js-input" id="V_api" name="V_api" placeholder="Victim Model API(If Hosted!!)">   
+            </div>
+
+            <div class="form-field col-lg-6">
+                <label>Thief Architecture</label>
+                <select class="input-text js-input" id="T_arch" name="T_arch" required>
+                    <option value="" disabled selected>Select Thief Architecture</option>
+                    {% for arc in options['archi'] %}
+                    <option value="{{ arc }}">{{ arc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-6" >
+                <label>Thief Dataset</label>
+                <select class="input-text js-input" id="T_data" name="T_data" required>
+                    {% for data in options['datasets'] %}
+                    <option >{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-12">
+                <label>Thief Data Directory</label>
+                <input type="text" class="input-text js-input" id="t_data_root" name="t_data_root" placeholder="Thief Data Directory ( If Avaialabel!!! )">   
+            </div>
+
+            <div class="form-field col-lg-6">
+                <label> Batch Size</label>
+                <input type="number" class="input-text js-input" id="batch_size" name="batch_size" placeholder=" Batch size" required>   
+            </div>
+
+            <div class="form-field col-lg-6">
+                <label>Budget</label>
+                <input type="number" class="input-text js-input" id="budget" name="budget" placeholder="Enter budget" required>   
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <label>Methods</label>
+                <select class="input-text js-input" id="method" name="method" required>
+                    {% for method in options['methods'] %}
+                    <option >{{ method }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <label>Optimizer</label>
+                <select class="input-text js-input" id="optim" name="optim" required>
+                    {% for optimizer in options['optimizers'] %}
+                    <option >{{ optimizer }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <label>Loss function</label>
+                <select class="input-text js-input" id="criteria" name="criteria" required>
+                    {% for criteria in options['criterias'] %}
+                    <option >{{ criteria }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <label>Device</label>
+                <select class="input-text js-input" id="device" name="device" required>
+                    <option >cpu</option>
+                    <option >cuda</option>
+                    
+                </select>
+            </div>
+            <div class="form-field col-lg-4">
+                <label> Cycles</label>
+                <input type="number" class="input-text js-input" id="Cycles" name="Cycles" min ="1" max = "10" placeholder=" Number of Cycles" required>   
+            </div>
+
+            <div class="form-field col-lg-4">
+                <label>Epochs</label>
+                <input type="number" class="input-text js-input" id="Epochs" min ="1" max = "500" name="Epochs" placeholder="Epochs" required>   
+            </div>
+
+            <!-- <div class="form-field col-lg-12">
+                <label>Log Directory</label>
+                <input type="text" class="input-text js-input" id="log_dir" name="log_dir" placeholder="Logs directory path" required>   
+            </div> -->
+
+            <div class="form-field col-lg-12">
+                <label>Output Directory</label>
+                <input type="text" class="input-text js-input" id="out_dir" name="out_dir" placeholder="Output directory path" required>   
+            </div>
+
+            <div class="form-field col-lg-12">
+            <button type="submit" class="col-lg-12 submit-btn">Submit</button>
+            </div>
+        </form>
+        <form class="config-form row" id="textForm" method="POST" action="/config_text">
+            <div class="form-group col-lg-12" style="margin-top:10px">
+                <select class="form-control" id="config-dropdown-text" name="selected_config_file_text">
+                    <option value="create_new">Create New</option>
+                </select>
+            </div>
+            <!-- Modify this form to include fields for text input -->
+            <div class="form-field col-lg-12">
+                <label>Configuration File Name</label>
+                <input type="text" class="input-text js-input" id="config_name_text" name="config_name_text" placeholder="Enter name of the configuration file" required>   
+            </div>
+
+
+            <div class="form-field col-lg-6">
+                <label>Victim Architecture</label>
+                <select class="input-text js-input" id="V_arch_text" name="V_arch_text" required>
+                    {% for arc in options['archi'] %}
+                    <option value="{{ arc }}">{{ arc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-field col-lg-6" >
+                <label>Victim Dataset</label>
+                <select class="input-text js-input" id="V_data_text" name="V_data_text" required>
+                    {% for data in options['datasets'] %}
+                    <option >{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <label>Victim Data Mode</label>
+                <select class="input-text js-input" id="V_data_mode_text" name="V_data_mode_text" required>
+                    {% for data in options['datasets'] %}
+                    <option >{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-field col-lg-3">
+                <label> Output Label</label>
+                <input type="number" class="input-text js-input" id="out_label" name="out_label" placeholder="No. of Victim Label" required>   
+            </div>
+
+            <div class="form-field col-lg-5">
+                <label>Victim Data Path</label>
+                <input type="text" class="input-text js-input" id="V_data_text" name="V_data_text" placeholder="Victim Data Path"> 
+            </div>
+
+            
+
+            <div class="form-field col-lg-6">
+                <label>Thief Architecture</label>
+                <select class="input-text js-input" id="T_arch_text" name="T_arch_text" required>
+                    {% for arc in options['archi'] %}
+                    <option value="{{ arc }}">{{ arc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-field col-lg-6" >
+                <label>Thief Dataset</label>
+                <select class="input-text js-input" id="T_data_text" name="T_data_text" required>
+                    {% for data in options['datasets'] %}
+                    <option >{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field col-lg-4" >
+                <label>Thief Data Mode</label>
+                <select class="input-text js-input" id="T_data_mode_text" name="T_data_mode_text" required>
+                    {% for data in options['datasets'] %}
+                    <option >{{ data }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-field col-lg-3">
+                <label>Output Label(thief)</label>
+                <input type="number" class="input-text js-input" id="T_out_label_text" name="T_out_label_text" placeholder=" No. of Thief Label" required>   
+            </div>
+            <div class="form-field col-lg-5">
+                <label>Thief data Path</label>
+                <input type="text" class="input-text js-input" id="T_data_text" name="T_data_text" placeholder="Thief Data Path">   
+            </div>
+            <div class="form-field col-lg-3">
+                <label>Momentum</label>
+                <input type="number" class="input-text js-input" id="momentum_text" name="momentum_text" step="0.01" min="0" max="1" placeholder="Momentum Text" required>   
+            </div>
+            <div class="form-field col-lg-3">
+                <label>Weight Decay</label>
+                <input type="number" class="input-text js-input" id="wdecay" name="wdecay" step="0.01" min="0" max="1" placeholder="Weight Decay" required>   
+            </div>
+            <div class="form-field col-lg-3">
+                <label>Gamma</label>
+                <input type="number" class="input-text js-input" id="gamma_text" name="gamma_text" step="0.01" min="0" max="1" placeholder="Gamma" required>   
+            </div>
+            <div class="form-field col-lg-3">
+                <label>Warm up steps</label>
+                <input type="number" class="input-text js-input" id="w_up_text" name="w_up_text" placeholder="Warm up steps" required>   
+            </div>
+            <div class="form-field col-lg-4">
+                <label>Learning Rate</label>
+                <input type="text" class="input-text js-input" id="lr_text" name="lr_text" max = '1' placeholder="Enter Learning Rate" required pattern="0\.\d+">
+            </div>
+
+            <div class="form-field col-lg-4">
+                <label>Adam Eps</label>
+                <input type="text" class="input-text js-input" id="adam_eps" name="adam_eps" max = '1' placeholder="Enter Adam Eps" required pattern="0\.\d+">
+            </div>
+
+            <div class="form-field col-lg-4">
+                <label>Milestone Step</label>
+                <input type="text" class="input-text js-input" id="mls_text" name="mls_text" placeholder="Enter Milestone Step">
+            </div>
+
+            <div class="form-field col-lg-4">
+                <label>LR Margin</label>
+                <input type="text" class="input-text js-input" id="lr_margin" name="lr_margin" placeholder="Enter LR Margin">
+            </div>
+            
+            <div class="form-field col-lg-4">
+                <label>LR Weight</label>
+                <input type="text" class="input-text js-input" id="lr_weight" name="lr_weight" placeholder="Enter Milestone Step">
+            </div>
+            <div class="form-field col-lg-4">
+                <label>LR Epochl</label>
+                <input type="text" class="input-text js-input" id="lr_epochl" name="lr_epochl" placeholder="Enter Milestone Step">
+            </div>
+ 
+            <!-- Pre trained path  -->
+            <div class="form-field col-lg-12">
+                <label>Use Pretrained</label>
+                <input type="checkbox" class="input-checkbox js-input" id="Pretrained" name="Pretrained" onclick="toggleInputField()">
+            </div>
+            <div id='additional' class="form-field col-lg-12" style="display: none">
+                <label>Pretrained Path</label>
+                <input type="text" class="input-text js-input" id="path_pretrained" name="path_pretrained" placeholder="Pretrained Path">   
+            </div>
+            <div class="form-field col-lg-3">
+                <label> Batch Size</label>
+                <input type="number" class="input-text js-input" id="batch_size_text" name="batch_size_text" placeholder=" Batch size" required>   
+            </div>
+            <div class="form-field col-lg-3">
+                <label>Cutmix Probablity</label>
+                <input type="number" class="input-text js-input" id="cutmix_prob" name="cutmix_prob" step="0.01" min="0" max="1" placeholder="Cutmix Probablity" required>   
+            </div>
+            <div class="form-field col-lg-2">
+                <label> Beta </label>
+                <input type="number" class="input-text js-input" id="beta" name="beta" placeholder="Beta" required>   
+            </div>
+            <div class="form-field col-lg-2">
+                <label>Val</label>
+                <input type="number" class="input-text js-input" id="val" name="val" placeholder="Val " required>   
+            </div>
+            <div class="form-field col-lg-2">
+                <label>Initial</label>
+                <input type="number" class="input-text js-input" id="Initial" name="Initial" placeholder="Initial " required>   
+            </div>
+            <div class="form-field col-lg-2">
+                <label>ADDENUM</label>
+                <input type="number" class="input-text js-input" id="ADDENUM" name="ADDENUM" placeholder="Addenum " required>   
+            </div>
+            <div class="form-field col-lg-2">
+                <label>Alpha</label>
+                <input type="number" class="input-text js-input" id="Alpha" name="Alpha" step="0.01" min="0" max="1" placeholder="Alpha" required>   
+            </div>
+            <div class="form-field col-lg-4">
+                <label>Budget</label>
+                <input type="number" class="input-text js-input" id="budget_text" name="budget_text" placeholder="Enter budget" required>   
+            </div>
+            <div class="form-field col-lg-4" >
+                <label>Methods</label>
+                <select class="input-text js-input" id="method" name="method" required>
+                    {% for method in options['methods'] %}
+                    <option >{{ method }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-field col-lg-4" >
+                <label>Optimizer</label>
+                <select class="input-text js-input" id="optim" name="optim" required>
+                    {% for optimizer in options['optimizers'] %}
+                    <option >{{ optimizer }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-field col-lg-4" >
+                <label>Device</label>
+                <select class="input-text js-input" id="device" name="device" required>
+                    <option >cpu</option>
+                    <option >cuda</option>
+                    
+                </select>
+            </div>
+            <div class="form-field col-lg-4">
+                <label> Cycles</label>
+                <input type="number" class="input-text js-input" id="Cycles" name="Cycles" min ="1" max = "10" placeholder=" Number of Cycles" required>   
+            </div>
+            <div class="form-field col-lg-4">
+                <label>Epochs</label>
+                <input type="number" class="input-text js-input" id="Epochs" min ="1" max = "500" name="Epochs" placeholder="Epochs" required>   
+            </div>
+
+            <div class="form-field col-lg-4">
+                <label>Trials</label>
+                <input type="number" class="input-text js-input" id="trials-text" name="trials-text" placeholder="Trials" required>   
+            </div>
+
+            <div class="form-field col-lg-4">
+                <label>Local Rank</label>
+                <input type="number" class="input-text js-input" id="Local-Rank-text" name="Local-Rank-text" placeholder="Local Rank" required>   
+            </div>
+
+            
+            <div class="form-field col-lg-4">
+                <label>Rng Seed</label>
+                <input type="number" class="input-text js-input" id="rng-seed-text" name="rng-seed-text" placeholder="RNG Seed" required>   
+            </div>
+            <div class="form-field col-lg-4">
+                <label>Epochs</label>
+                <input type="number" class="input-text js-input" id="Ds-seed-text" name="Ds-seed-text" placeholder="DS seed" required>   
+            </div>
+            <div class="form-field col-lg-4">
+                <label>No. of workers</label>
+                <input type="number" class="input-text js-input" id="no-workers-text" name="no-workers-text" placeholder="Num_workers" required>   
+            </div>
+            <div class="form-field col-lg-12">
+                <label>Output Directory</label>
+                <input type="text" class="input-text js-input" id="out_dir-text" name="out_dir-text" placeholder="Output directory path" required>   
+            </div>
+            <div class="form-field col-lg-12">
+                <button type="submit" class="col-lg-12 submit-btn btn btn-primary">Submit Text Form</button>
+            </div>
+        </form>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script>
+        
+        function toggleInputField() {
+            const checkBox = document.getElementById('Pretrained');
+            const additionalInput = document.getElementById('additional');
+            const apiKeyInput = document.getElementById('path_pretrained');
+
+            if (checkBox.checked) {
+                additionalInput.style.display = 'block';
+                apiKeyInput.setAttribute('required', 'required');
+            } else {
+                additionalInput.style.display = 'none';
+                apiKeyInput.removeAttribute('required');
+            }
+        }
+        // Set the default values for the form fields
+            function setFormDefaults(formId) {
+                const form = document.getElementById(formId);
+                
+                if (!form) {
+                    console.error('Form not found.');
+                    return;
+                }
+
+                const formElements = form.elements;
+                for (const element of formElements) {
+                    if (element.tagName === 'SELECT') {
+                        element.value = element.options[0].value;
+                    } else
+                    {
+                        element.value = '';  // Set value to empty string
+                        element.placeholder = element.placeholder || '';
+                    } 
+                }
+            }
+        function setFormFieldValue(formFieldId, formFieldValue) {
+            // Check if the form field is a dropdown
+            var isDropdown = $("#" + formFieldId).is("select");
+
+            // Set the selected option for dropdown or set the value for other types of form fields
+            if (isDropdown) {
+                setDropdownSelected(formFieldId, formFieldValue);
+            } else {
+                $("#" + formFieldId).val(formFieldValue);
+            }
+        }
+
+        function setDropdownSelected(dropdownId, selectedValue) {
+            var dropdown = document.getElementById(dropdownId);
+            for (const option of dropdown.options) {
+                if (option.value === selectedValue) {
+                    option.selected = true;
+                    break;
+                }
+            }
+        }
+        function setDropdownSelectedValue(dropdownId, valueToSelect) {
+            var dropdown = document.getElementById(dropdownId);
+            for (const option of dropdown.options) {
+                if (option.value === valueToSelect) {
+                    option.selected = true;
+                    break;
+                }
+            }
+        }
+        $(document).ready(function() {
+
+            var configDropdown = $('#config-dropdown');
+            var configDropdownText = $('#config-dropdown-text'); 
+            // Make an AJAX request to get the list of existing config file names
+            $.ajax({
+                url: '/get_existing_config_files', // Create a Flask route for this
+                method: 'GET',
+                success: function (data) {
+                    // Populate the dropdown with existing config file names
+                    console.log(data);
+                    $.each(data, function (key, value) {
+                        configDropdown.append($('<option>').text(value));
+                    });
+                }
+            });
+            $.ajax({
+                url: '/get_existing_config_files_text', // Create a Flask route for this
+                method: 'GET',
+                success: function (data) {
+                    // Populate the dropdown with existing config file names
+                    console.log(data);
+                    $.each(data, function (key, value) {
+                        configDropdownText.append($('<option>').text(value));
+                    });
+                }
+            });
+            configDropdown.change(function () {
+                var selectedOption = $(this).val();
+
+                if (selectedOption === 'create_new') {
+                    // setting to default values
+                    setFormDefaults('imageForm');
+                } else {
+                    // Make an AJAX request to fetch the selected config file data
+                    $.ajax({
+                        url: '/get_config_data', // Create a Flask route for this
+                        method: 'GET',
+                        data: { selected_config_file: selectedOption },
+                        success: function (data) {
+                            console.log(data);
+                            // Populate the form fields with data from the selected config file
+                            setDropdownSelectedValue("V_arch", data.config_data['VICTIM']['ARCHITECTURE']);
+                            setDropdownSelectedValue("V_data", data.config_data['VICTIM']['DATASET']);
+
+                            // Thief
+                            setDropdownSelectedValue("T_arch", data.config_data['THIEF']['ARCHITECTURE']);
+                            setDropdownSelectedValue("T_data", data.config_data['THIEF']['DATASET']);
+
+                            // Active
+                            setDropdownSelectedValue("method", data.config_data['ACTIVE']['METHOD']);
+
+                            // Train
+                            setDropdownSelectedValue("optim", data.config_data['TRAIN']['OPTIMIZER']);
+                            setDropdownSelectedValue("criteria", data.config_data['TRAIN']['LOSS_CRITERION']);
+
+                            // Device
+                            setDropdownSelectedValue("device", data.config_data['DEVICE']);
+
+                            document.getElementById("batch_size").value = data.config_data['TRAIN']['BATCH_SIZE'];
+                            document.getElementById("budget").value = data.config_data['ACTIVE']['BUDGET'];
+                            document.getElementById("Cycles").value = data.config_data['ACTIVE']['CYCLES'];
+                            document.getElementById("Epochs").value = data.config_data['TRAIN']['EPOCH'];  
+                            document.getElementById("out_dir").value = data.config_data['OUT_DIR'];
+                            document.getElementById("v_weights").value = data.config_data['VICTIM']['WEIGHTS'];
+                            document.getElementById("V_data_root").value = data.config_data['VICTIM']['DATA_ROOT']; 
+                            document.getElementById("t_data_root").value = data.config_data['THIEF']['DATA_ROOT'];
+                            document.getElementById("config_name").value = selectedOption;
+                        }
+                    });
+                }
+            });
+            configDropdownText.change(function(){
+                var selectedOption = $(this).val();
+
+                if (selectedOption === 'create_new') {
+                    // setting to default values
+                    setFormDefaults('textForm');
+                } else {
+                    // Make an AJAX request to fetch the selected config file data
+                    $.ajax({
+                        url: '/get_config_data_text', // Create a Flask route for this
+                        method: 'GET',
+                        data: { selected_config_file: selectedOption },
+                        success: function (data) {
+                            console.log(data);
+                            var fieldIdToKeyMapping = {
+                                "V_arch_text": "VICTIM.ARCHITECTURE",
+                                "V_data_text": "VICTIM.DATASET",
+                                "V_data_mode_text": "VICTIM.DATA_MODE",
+                                "out_label": "VICTIM.NUM_LABELS",
+                                "T_arch_text": "THIEF.ARCHITECTURE",
+                                "T_data_text": "THIEF.DATASET",
+                                "T_data_mode_text": "THIEF.DATA_MODE",
+                                "T_out_label_text": "THIEF.NUM_LABELS",
+                                "Pretrained": "ACTIVE.USE_PRETRAINED",
+                                "path_pretrained": "ACTIVE.PRETRAINED_PATH",
+                                "budget_text": "ACTIVE.BUDGET",
+                                "method": "ACTIVE.METHOD",
+                                "cutmix_prob": "ACTIVE.CUTMIX_PROB",
+                                "beta": "ACTIVE.BETA",
+                                "val": "ACTIVE.VAL",
+                                "Initial": "ACTIVE.INITIAL",
+                                "Cycles": "ACTIVE.CYCLES",
+                                "ADDENUM": "ACTIVE.ADDENUM",
+                                "Alpha": "ACTIVE.ALPHA",
+                                "batch_size_text": "THIEF_HYPERPARAMETERS.BATCH",
+                                "optim": "THIEF_HYPERPARAMETERS.OPTIMIZER",
+                                "lr_text": "THIEF_HYPERPARAMETERS.LR",
+                                "momentum_text": "THIEF_HYPERPARAMETERS.MOMEMTUM",
+                                "wdecay": "THIEF_HYPERPARAMETERS.WDECAY",
+                                "Epochs": "THIEF_HYPERPARAMETERS.EPOCH",
+                                "lr_epochl": "THIEF_HYPERPARAMETERS.MILESTONES",
+                                "gamma_text": "THIEF_HYPERPARAMETERS.GAMMA",
+                                "adam_eps": "THIEF_HYPERPARAMETERS.ADAM_EPS",
+                                "w_up_text": "THIEF_HYPERPARAMETERS.WARMUP_STEPS",
+                                "lr_margin": "THIEF_HYPERPARAMETERS.LR_MARGIN",
+                                "lr_weight": "THIEF_HYPERPARAMETERS.LR_WEIGHT",
+                                "trials-text": "TRIALS",
+                                "Local-Rank-text": "LOCAL_RANK",
+                                "rng-seed-text": "RNG_SEED",
+                                "Ds-seed-text": "DS_SEED",
+                                "no-workers-text": "NUM_WORKERS",
+                                "out_dir-text": "OUT_DIR"
+                                // Add more mappings as needed
+                            };
+
+                            // Iterate over the form field IDs and set the values based on the keys
+                            for (var fieldId in fieldIdToKeyMapping) {
+                                if (fieldIdToKeyMapping.hasOwnProperty(fieldId)) {
+                                    var key = fieldIdToKeyMapping[fieldId];
+                                    var value = data.config_data[key];
+
+                                    // Set the value for the form field with the corresponding ID
+                                    setFormFieldValue(fieldId, value);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+            //form hiding javascript for tabs
+            // $('#textForm').hide();
+            $('#imageForm').hide();
+            $('#imageFormBtn').click(function() {
+                $('#textForm').hide();
+                $('#imageForm').show();
+                $(this).addClass('active');
+                $('#textFormBtn').removeClass('active');
+            });
+    
+            $('#textFormBtn').click(function() {
+                $('#imageForm').hide();
+                $('#textForm').show();
+                $(this).addClass('active');
+                $('#imageFormBtn').removeClass('active');
+            });
+    
+            // Close the popup message after 5 seconds
+            setTimeout(function() {
+                $('#popup').remove();
+            }, 5000);
+    </script>
+    
+</body>
+</html>

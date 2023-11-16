@@ -26,7 +26,7 @@ border-radius: 10px;
 background-color: #555;
 }
 
-.get-in-touch {
+.config-section {
   max-width: 800px;
   margin: 50px auto;
   position: relative;
@@ -35,7 +35,7 @@ background-color: #555;
   background-color: #fff;
 
 }
-.get-in-touch .title {
+.config-section .title {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 3px;
@@ -51,11 +51,11 @@ background-color: #555;
     -webkit-text-fill-color: transparent !important;
 }
 
-.contact-form .form-field {
+.config-form .form-field {
   position: relative;
   margin: 15px 0;
 }
-.contact-form .input-text {
+.config-form .input-text {
   display: block;
   width: 100%;
   height: 36px;
@@ -65,15 +65,15 @@ background-color: #555;
   line-height: 26px;
   font-weight: 400;
 }
-.contact-form .input-text:focus {
+.config-form .input-text:focus {
   outline: none;
 }
-.contact-form .input-text:focus + .label,
-.contact-form .input-text.not-empty + .label {
+.config-form .input-text:focus + .label,
+.config-form .input-text.not-empty + .label {
   -webkit-transform: translateY(-24px);
           transform: translateY(-24px);
 }
-.contact-form .label {
+.config-form .label {
   position: absolute;
   left: 20px;
   bottom: 11px;
@@ -87,7 +87,7 @@ background-color: #555;
   transition: transform .2s ease-in-out, 
   -webkit-transform .2s ease-in-out;
 }
-.contact-form .submit-btn {
+.config-form .submit-btn {
   display: inline-block;
   background-color: #000;
   background-image: linear-gradient(125deg,#8b075b,#042c60);
@@ -98,12 +98,21 @@ background-color: #555;
   padding: 8px 16px;
   border: none;
   margin-top: 40px;
-  /* width:; */
   height: 50px;
   border-radius: 4px;
   cursor: pointer;
   align-self: stretch;
 }
+/* Adjust the checkbox style */
+.input-checkbox {
+    transform: scale(1.25); /* Increase the size of the checkbox */
+}
+
+/* Move the label after the checkbox */
+.form-field input[type="checkbox"] + label {
+    margin-left: 10px; /* Adjust the margin to your preference */
+}
+
 
 .sidebar {
   background-color: #fff;

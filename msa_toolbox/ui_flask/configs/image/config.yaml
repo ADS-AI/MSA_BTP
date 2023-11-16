@@ -1,5 +1,5 @@
 VICTIM:
-  ARCHITECTURE: "resnet18"
+  ARCHITECTURE: "resnet50"
   DATASET: "svhn"
   DATA_ROOT: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img"
   WEIGHTS: "default"
