@@ -15,7 +15,7 @@ from .vaal.vaal_method import train_vaal, select_samples_vaal
 from .montecarlo.montecarlo_method import train_montecarlo, select_samples_montecarlo
 from .random.random_method import train_random, select_samples_random
 from .kcenter.kcenter_method import train_kcenter, select_samples_kcenter
-from .dfal.dfal_method import train_dfal, select_samples_dfa
+from .dfal.dfal_method import train_dfal, select_samples_dfal
 from ..utils.image.load_data_and_models import get_data_loader
 
 

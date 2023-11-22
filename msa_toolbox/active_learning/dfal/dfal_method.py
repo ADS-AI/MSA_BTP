@@ -100,81 +100,58 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, dataloader: DataLoader
 
 
 def select_samples_dfal(cfg: CfgNode, thief_model: nn.Module, unlabeled_loader: DataLoader, *args, **kwargs):
-    torch.set_grad_enabled(True)  
     thief_model.eval()
     thief_model = thief_model.to(cfg.DEVICE)
-
-    uncertainty = torch.tensor([])
     indices = torch.tensor([])
-    n=len(unlabeled_loader)
-    uncertainty = torch.zeros((n),dtype=torch.float)
-    print(uncertainty.shape)
-    i=0
-    with torch.no_grad():
-        for ind, data in enumerate(unlabeled_loader):
-            images = data[0]
-            images = images.to(cfg.DEVICE)
-            images.requires_grad_()
-            print('images\'s shape:', images.shape)
-            print('images[0]\'s shape:', images[0].shape)
-            nx = torch.unsqueeze(images[0], 0).to(cfg.DEVICE)
-            nx.requires_grad_()
-            print('nx\'s shape:', nx.shape)
-            eta = torch.zeros(nx.shape).to(cfg.DEVICE)
-            eta.requires_grad_()
-            out = thief_model(nx + eta)
-            n_class = out.shape[1]
-            print('out_shape:', out.shape)
-            py = out.max(1)[1].item()
-            ny = out.max(1)[1].item()
-            # print('py:', py)
-            # print('ny:', ny)
-            # print(out.max(1)[1])
-            print('grad_funcs')
-            print(images.grad_fn, nx.grad_fn, eta.grad_fn, out.grad_fn)
-            
-            i_iter = 0
-            while py == ny and i_iter < cfg.ACTIVE.DFAL_MAX_ITER:
-                print('lmao 1')
-                print(out)
-                print(out[0, py])
-                print(out[0, py].requires_grad)
-                out.requires_grad_()
-                print(out[0, py])
-                print(out[0, py].requires_grad, out[0, py].grad_fn)
-                out[0, py].backward(retain_graph=True)
-                print('lmao 2')
-                grad_np = nx.grad.data.clone().to(cfg.DEVICE)
-                value_l = np.inf
-                ri = None
-                for i in range(n_class):
-                    if i == py:
-                        continue
-                    nx.grad.data.zero_()
-                    out.requires_grad_()
-                    out[0,i].backward(retain_graph=True)
-                    grad_i = nx.grad.data.clone()
-
-                    wi = grad_i - grad_np
-                    fi = out[0, i] - out[0, py]
-                    value_i = np.abs(fi.cpu().item()) / np.linalg.norm(wi.cpu().numpy().flatten())
-                    if value_i < value_l:
-                        ri = value_i / np.linalg.norm(wi.cpu().numpy().flatten()) * wi
-                eta += ri.clone().to(cfg.DEVICE)
+    n = len(unlabeled_loader)
+    uncertainty = torch.zeros((n), dtype=torch.float)
+    index = 0
+    
+    for ind, data in enumerate(unlabeled_loader):
+        images = data[0]
+        images = images.to(cfg.DEVICE)
+        nx = torch.unsqueeze(images[0], 0)
+        nx = nx.to(cfg.DEVICE)
+        nx.requires_grad_()
+        eta = torch.zeros(nx.shape)
+        eta = eta.to(cfg.DEVICE)        
+        out = thief_model(nx + eta)
+        n_class = out.shape[1]
+        py = out.max(1)[1].item()
+        ny = out.max(1)[1].item()
+        i_iter = 0
+        
+        while py == ny and i_iter < cfg.ACTIVE.DFAL_MAX_ITER:
+            out[0, py].backward(retain_graph=True)
+            grad_np = nx.grad.data.clone().to(cfg.DEVICE)
+            value_l = np.inf
+            ri = None
+            for i in range(n_class):
+                if i == py:
+                    continue
                 nx.grad.data.zero_()
-                out = thief_model(nx + eta)
-                py = out.max(1)[1].item()
-                i_iter += 1
-            z=(eta*eta).sum()
-            #print(z)
-            uncertainty[i] = z.data
-            i+=1
-            if i%1000==0:
-                print(i)
+                out[0,i].backward(retain_graph=True)
+                grad_i = nx.grad.data.clone()
+    
+                wi = grad_i - grad_np
+                fi = out[0, i] - out[0, py]
+                value_i = np.abs(fi.cpu().item()) / np.linalg.norm(wi.cpu().numpy().flatten())
+                if value_i < value_l:
+                    ri = value_i / np.linalg.norm(wi.cpu().numpy().flatten()) * wi
+                    value_l = value_i
+            eta += ri.clone().to(cfg.DEVICE)
+            nx.grad.data.zero_()
+            out = thief_model(nx + eta)
+            py = out.max(1)[1].item()
+            i_iter += 1
             
-    # return uncertainty
+        z = (eta * eta).sum()
+        uncertainty[index] = z.data
+        index += 1
+        if i%1000==0:
+            print(i)
+            
     arg = np.argsort(uncertainty)
-    print()
     selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
     return selected_index_list
 

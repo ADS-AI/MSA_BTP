@@ -30,8 +30,8 @@ def app(cfg_path):
     # Load victim data and model
     (victim_data, num_class), victim_data_loader, victim_model = load_victim_data_and_model(cfg)
 
-    log_victim_data_model(cfg.LOG_PATH, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE)
-    log_victim_data_model(cfg.INTERNAL_LOG_PATH, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE)
+    log_victim_data_model(cfg.LOG_PATH, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE, cfg.VICTIM.DEFENCE)
+    log_victim_data_model(cfg.INTERNAL_LOG_PATH, victim_data, victim_model, cfg.VICTIM.ARCHITECTURE, cfg.VICTIM.DEFENCE)
     
     # Start Active Learning
     active_learning(cfg, victim_data_loader, num_class, victim_model)

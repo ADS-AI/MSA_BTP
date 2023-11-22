@@ -9,7 +9,7 @@ from typing import Any, Dict
 
 # Functions in main.py
 
-def log_victim_data_model(path: str, victim_data, victim_model, victim_model_name: str = None):
+def log_victim_data_model(path: str, victim_data, victim_model, victim_model_name:str, victim_model_defence:str):
     log_dest = os.path.join(path, 'log.txt')
     with open(log_dest, 'a') as f:
         f.write(f"\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
@@ -18,6 +18,7 @@ def log_victim_data_model(path: str, victim_data, victim_model, victim_model_nam
         f.write(f"Victim Data: {victim_data}\n")
         f.write(f"Number of Classes: {len(victim_data.classes)}\n")
         f.write(f"Victim Model: {type(victim_model)}: {victim_model_name}\n")
+        f.write(f"Victim Model Defence: {victim_model_defence}\n")
         
 
 def log_start_active_learning(path: str):
@@ -90,13 +91,14 @@ def log_calculating_metrics(path:str, best_model_cycle:int, best_model_epoch:int
         f.write("===============> Calculating Metrics and Agreement for Best Thief Model on Victim and Thief Datasets ......\n")
         f.write(f"Best Model found in Cycle {best_model_cycle} at Epoch {best_model_epoch}\n")
 
-def log_thief_data_model(path: str, thief_data, thief_model, thief_model_name:str):
+def log_thief_data_model(path: str, thief_data, thief_model, thief_model_name:str, budget:int):
     log_dest = os.path.join(path, 'log.txt')
     with open(log_dest, 'a') as f:
         f.write('\n======================================> Thief Data and Model Loaded <======================================\n')
         f.write(f"Thief Data: {thief_data}\n")
         f.write(f"Number of Classes: {len(thief_data.classes)}\n")
         f.write(f"Thief Model: {type(thief_model)}: {thief_model_name}\n")
+        f.write(f"Thief Budget: {budget}\n")
                 
 def log_active_learning_trail_start(path:str, trial_num:int, method:str, training_type:str):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
@@ -154,7 +156,7 @@ def log_epoch_vaal(path:str, iter:int, total_iter:int):
 
 def log_victim_data(path: str, victim_data: Dataset, num_class: int):
     with open(os.path.join(path, 'log.txt'), 'a') as f:
-        f.write(f"Loaded Victim Datset of size {len(victim_data)} with {num_class} classes\n")
+        f.write(f"Loaded Victim Dataset of size {len(victim_data)} with {num_class} classes\n")
 
 
 def log_victim_metrics(path: str, metrics: Dict[str, float]):
