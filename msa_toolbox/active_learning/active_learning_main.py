@@ -20,6 +20,8 @@ from ..utils.image.train_utils import accuracy_f1_precision_recall, agreement, d
 from .active_learning_methods import train_active_learning, select_samples_active_learning
 from ..utils.image.load_victim_thief_data_and_model import load_victim_data_and_model
 from ..utils.image.all_logs import log_thief_data_model, log_new_cycle, log_metrics, log_calculating_metrics, log_active_learning_trail_start, log_data_distribution, log_metrics_before_training
+from ..defence.defence_main import query_victim_for_new_labels
+from ..defence.no_defence.no_defence import label_samples_with_no_defence
 
 
 def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: DataLoader,
@@ -107,24 +109,10 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
                 list(set(unlabeled_indices) - set(new_training_samples_indices)))
             
             # replace addendum labels with victim labels
+            query_victim_for_new_labels(cfg, victim_model, thief_data, new_training_samples_indices, take_action=True)
+            
             addendum_loader = get_data_loader(Subset(thief_data, new_training_samples_indices), 
                         batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
-            victim_model.eval()
-            victim_model = victim_model.to(cfg.DEVICE)
-            with torch.no_grad():
-                for img, label0, index in addendum_loader:
-                    img = img.to(cfg.DEVICE)
-                    label = victim_model(img)
-                    if cfg.TRAIN.BLACKBOX_TRAINING == True:
-                        # _, label = torch.max(label, 1)
-                        label = torch.argmax(label, dim=1)
-                        label = label.detach().cpu().tolist()
-                    else:
-                        label = F.softmax(label, dim=1)  
-                        label = label.clone().detach().cpu()  
-                    for ii, jj in enumerate(index):
-                        thief_data.samples[jj] = (thief_data.samples[jj][0], label[ii])
-            
             dist = data_distribution(cfg, addendum_loader)
             log_data_distribution(cfg.LOG_PATH, dist, 'addendum')
             log_data_distribution(cfg.INTERNAL_LOG_PATH, dist, 'addendum')
@@ -143,50 +131,18 @@ def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Data
     Creates the loaders for the thief model
     '''
     # replace train labels with victim labels
-    train_loader = get_data_loader(Subset(thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE,
-                            shuffle=False, pin_memory=False, num_workers=cfg.NUM_WORKERS)
-    victim_model.eval()
-    victim_model = victim_model.to(cfg.DEVICE)
-    with torch.no_grad():
-        for img, label0, index in train_loader:
-            img = img.to(cfg.DEVICE)
-            label = victim_model(img)
-            if cfg.TRAIN.BLACKBOX_TRAINING == True:
-                # _, label = torch.max(label, 1)
-                label = torch.argmax(label, dim=1)
-                label = label.detach().cpu().tolist()
-            else:
-                label = F.softmax(label, dim=1)   
-                label = label.clone().detach().cpu()
-            for ii, jj in enumerate(index):
-                thief_data.samples[jj] = (thief_data.samples[jj][0], label[ii])
-        
+    query_victim_for_new_labels(cfg, victim_model, thief_data, labeled_indices, take_action=False)
+    
     # replace val labels with victim labels
-    val_loader = DataLoader(Subset(thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, 
-                            pin_memory=False, num_workers=4, shuffle=False)
-    victim_model.eval()
-    victim_model = victim_model.to(cfg.DEVICE)
-    with torch.no_grad():
-        for img, label0, index in val_loader:
-            img = img.to(cfg.DEVICE)
-            label = victim_model(img)
-            if cfg.TRAIN.BLACKBOX_TRAINING == True:
-                # _, label = torch.max(label, 1)
-                label = torch.argmax(label, dim=1)
-                label = label.detach().cpu().tolist()
-            else:
-                label = F.softmax(label, dim=1)
-                label = label.clone().detach().cpu()
-            for ii, jj in enumerate(index):
-                thief_data.samples[jj] = (thief_data.samples[jj][0], label[ii])
+    label_samples_with_no_defence(cfg, victim_model, thief_data, val_indices)
+                
     train_loader = get_data_loader(Subset(
         thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
     val_loader = get_data_loader(Subset(
         thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
     unlabeled_loader = get_data_loader(Subset(
         thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
-    dataloader = {'train': train_loader,
-                  'val': val_loader, 'unlabeled': unlabeled_loader}
+    dataloader = {'train': train_loader, 'val': val_loader, 'unlabeled': unlabeled_loader}
     return dataloader
 
 
@@ -210,7 +166,7 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
             thief_data = load_thief_dataset(
                 cfg.THIEF.DATASET, cfg, train=True, transform=model.transforms, download=True)    
 
-        log_thief_data_model(cfg.LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE)
-        log_thief_data_model(cfg.INTERNAL_LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE)
+        log_thief_data_model(cfg.LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE, cfg.ACTIVE.BUDGET)
+        log_thief_data_model(cfg.INTERNAL_LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE, cfg.ACTIVE.BUDGET)
     
         one_trial(cfg, trial, num_class, victim_data_loader, victim_model, thief_data)
