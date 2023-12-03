@@ -3,6 +3,8 @@ import numpy as np
 import os
 import csv
 import random
+from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
+import torch
 
 class Example(object):
     def __init__(self, guid, text_a, label=None, meta=None, att=None):
@@ -54,11 +56,15 @@ class CustomDataset:
         self.config_file = config_file
         self.tokenizer = tokenizer
         self.new_label = None
-        self.train_example = self.get_examples(split = 'train')
-        self.test_example = self.get_examples(split = 'test')
-        self.val_example = self.get_examples(split = 'val')
         self.seed = seed
         self.label_map = None
+
+    def create_label_map(self):
+        """
+        Creates a label map for the dataset.
+        """
+        label_list = [str(i) for i in range(self.num_labels)]
+        self.label_map = {label: i for i, label in enumerate(label_list)}
     
     def get_examples(self , split = "train"):
         '''
@@ -116,6 +122,7 @@ class CustomDataset:
 
     def _create_examples(self, lines):
         examples = []
+        # print(lines[0])
         for i, line in enumerate(lines):
             if len(line) == 1:
                 examples.append(Example(i, line[0]))
@@ -170,8 +177,8 @@ class CustomDataset:
         if label_list is not None:
             label_map = {label: i for i, label in enumerate(label_list)}
         else:
-            label_map = None
-            raise ValueError('label_list must be defined')
+            label_map = self.create_label_map()
+            # raise ValueError('label_list must be defined')
 
         aux_label_map = {"0": 0, "1": 1}
 
@@ -229,7 +236,71 @@ class CustomDataset:
             if indexes is not None:
                 features = [features[i] for i in indexes]
     
-            return features
+        return features
+
+    def get_loaded_features(self , index = None, split = "train" , true_labels = None, features = None):
+        if features is None:
+            if split == 'train':
+                features = self.train_features
+            elif split == 'test':
+                features = self.test_features
+        
+
+        all_guids = []
+        all_input_ids = []
+        all_attention_mask = []
+        all_token_type_ids = []
+        all_labels = []
+        all_aux_labels = []
+        if index is None:
+            for i in range(len(features)):
+                all_guids.append(features[i].guid)
+                all_input_ids.append(features[i].input_ids)
+                all_attention_mask.append(features[i].attention_mask)
+                if features[i].token_type_ids is not None:
+                    all_token_type_ids.append(features[i].token_type_ids)
+                else:
+                    all_token_type_ids.append(0)
+                if true_labels is None:
+                    if features[i].label is None:
+                        all_labels.append(0)
+                    else:
+                        all_labels.append(features[i].label)
+                else:
+                    all_labels.append(true_labels[i])
+                all_aux_labels.append(features[i].aux_label)
+
+        else:
+            for i in range(len(features)):
+                if i in index:
+                    all_guids.append(features[i].guid)
+                    all_input_ids.append(features[i].input_ids)
+                    all_attention_mask.append(features[i].attention_mask)
+                    if features[i].token_type_ids is not None:
+                        all_token_type_ids.append(features[i].token_type_ids)
+                    else:
+                        all_token_type_ids.append(0)
+                    if true_labels is None:
+                        if features[i].label is None:
+                            all_labels.append(0)
+                        else:
+                            all_labels.append(features[i].label)
+                    else:
+                        all_labels.append(true_labels[i])
+                    all_aux_labels.append(features[i].aux_label)
+    
+        all_guids = torch.tensor(all_guids, dtype=torch.long)
+        all_input_ids = torch.tensor(all_input_ids, dtype=torch.long)
+        all_attention_mask = torch.tensor(all_attention_mask, dtype=torch.long)
+        all_token_type_ids = torch.tensor(all_token_type_ids, dtype=torch.long)
+        if type(all_labels[0]) == list:
+            all_labels = torch.tensor(all_labels,  dtype=torch.float64)
+        else:
+            all_labels = torch.tensor(all_labels,  dtype=torch.long)
+        all_aux_labels = [torch.tensor(all_aux_labels, dtype=torch.long) for i in range(len(features[0].aux_label))] 
+        dataset = TensorDataset(all_guids, all_input_ids, all_attention_mask, all_token_type_ids, all_labels, *all_aux_labels)
+        return dataset
+
 
 class InputFeatures(object):
     """

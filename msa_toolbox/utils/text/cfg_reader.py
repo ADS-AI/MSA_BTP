@@ -47,6 +47,7 @@ def load_cfg(path):
     Arguments:
         - path (str): The path to the YAML file.
     '''
+    print(path)
     cfg = load_yaml(path)
     cfg = CfgNode(cfg)
 

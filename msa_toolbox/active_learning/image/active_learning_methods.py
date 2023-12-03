@@ -5,7 +5,7 @@ import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, Subset
-from ..utils.image.cfg_reader import CfgNode
+from ...utils.image.cfg_reader import CfgNode
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from typing import Any, Dict

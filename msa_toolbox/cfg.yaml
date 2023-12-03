@@ -1,0 +1,44 @@
+VICTIM:
+  DATASET: "twitter"
+  ARCHITECTURE: "roberta"
+  DATA_ROOT: ""
+  DATA_MODE: "huggingface"
+  NUM_LABELS: 2
+  
+THIEF:
+  DATASET: "twitter_finance"
+  ARCHITECTURE: "bert-base-uncased"
+  DATA_ROOT: ""
+  DATA_MODE: "huggingface"
+  NUM_LABELS: 3
+
+ACTIVE:
+  BUDGET: 4000
+  METHOD: "qbc_stealing"
+  CYCLES: 5
+  MODELS:
+    - "bert-base-uncased"
+    - "roberta-base"
+    - "xlnet-base-cased"
+  
+THIEF_HYPERPARAMETERS:
+  EPOCH: 4
+  PER_GPU_BATCH_SIZE: 8
+  OPTIMIZER: "Adam"
+  ADAM_EPS: 1e-8
+  MAX_STEPS: -1
+  LR: 5e-5
+  WDECAY: 0.0
+  WARMUP_STEPS: 0
+  GRAD_ACCUM_STEPS: 1
+  MAX_GRAD_NORM: 1.0
+
+LOCAL_RANK: 0
+SEED: 123
+NUM_WORKERS: 2
+DEVICE: "cuda"
+LOG_DEST: "srishti"
+OUT_DIR: "srishti"
+VICTIM_MODEL_DIR : "results/victim_models"
+THIEF_MODEL_DIR : "results/thief_models"
+CACHE_DIR: "results/cache"

@@ -13,4 +13,3 @@ release: clean artifacts
 # testing will be used later
 testcov:
 	pytest --cov-report html --cov=configuration tests/
-

@@ -1,0 +1,52 @@
+VICTIM:
+  DATASET: "twitter"
+  ARCHITECTURE: resnet18
+  DATA_ROOT: ''
+  DATA_MODE: cifar10
+  NUM_LABELS: 1
+THIEF:
+  DATASET: cifar10
+  ARCHITECTURE: resnet18
+  DATA_ROOT: ''
+  DATA_MODE: cifar10
+  NUM_LABELS: 8
+ACTIVE:
+  USE_PRETRAINED: true
+  PRETRAINED_PATH: pretrained/path/
+  BUDGET: 50000000
+  METHOD: random
+  AUGMENTATION:
+  - null
+  CUTMIX_PROB: 0.03
+  BETA: 1.0
+  VAL: 1
+  INITIAL: 1
+  CYCLES: 1
+  ADDENUM: 1
+  ALPHA: 0.01
+THIEF_HYPERPARAMETERS:
+  BATCH: 11
+  OPTIMIZER: adam
+  LR: 0.001
+  MOMEMTUM: 0.02
+  WDECAY: 0.02
+  EPOCH: 1
+  MILESTONES:
+  - 0
+  GAMMA: 0.01
+  ADAM_EPS: 0.01
+  WARMUP_STEPS: 3
+  LR_MARGIN: 0.0
+  LR_WEIGHT: 0.0
+  LR_EPOCHL: 0
+TRIALS: 4
+LOCAL_RANK: 1
+RNG_SEED: 1
+DS_SEED: 1
+NUM_WORKERS: 1
+CACHE_DIR: output/path/cache
+DEVICE: cpu
+LOG_DEST: output/path/logs
+OUT_DIR: output/path
+VICTIM_MODEL_DIR: output/path/victim_models
+THIEF_MODEL_DIR: output/path/thief_models

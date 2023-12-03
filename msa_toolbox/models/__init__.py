@@ -1,2 +1,4 @@
-import image
-import text
+# # import image
+# # import text
+
+# from . import text
