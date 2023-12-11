@@ -13,9 +13,11 @@ class twitterDataset(CustomDataset):
         self.test_features = None
 
     def _read_hugging(self ,  split = 'train'):
+        print("Downloading dataset..." , split)
         lines = []
         dataset = load_dataset('carblacac/twitter-sentiment-analysis', split = split)
         for row in dataset:
             lines.append([row["text"],  str(row['feeling'])]) # type: ignore
 
         return lines
+ 

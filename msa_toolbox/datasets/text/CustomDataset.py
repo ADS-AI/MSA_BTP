@@ -83,6 +83,7 @@ class CustomDataset:
             file = split + '.csv'
             return self._create_examples(self._read_csv(os.path.join(self.data_directory, file)))
         elif self.data_import_method == 'HuggingFace':
+            print("Loading dataset from HuggingFace...")
             return self._create_examples(self._read_hugging(split = split))
     
     def set_new_labels(self, new_label):

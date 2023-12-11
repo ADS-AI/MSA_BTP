@@ -59,8 +59,8 @@ def load_cfg(path):
     os.makedirs(cfg.LOG_PATH, exist_ok=True)
 
     # Splitting the dataset for Active Learning
-    cfg.ACTIVE.VAL = cfg.ACTIVE.BUDGET // 10
-    cfg.ACTIVE.REST = cfg.ACTIVE.BUDGET - cfg.ACTIVE.VAL
-    cfg.ACTIVE.INITIAL = cfg.ACTIVE.REST // cfg.ACTIVE.CYCLES
-    cfg.ACTIVE.ADDENDUM = cfg.ACTIVE.INITIAL 
+    # cfg.ACTIVE.VAL = cfg.ACTIVE.BUDGET // 10
+    # cfg.ACTIVE.REST = cfg.ACTIVE.BUDGET - cfg.ACTIVE.VAL
+    # cfg.ACTIVE.INITIAL = cfg.ACTIVE.REST // cfg.ACTIVE.CYCLES
+    # cfg.ACTIVE.ADDENDUM = cfg.ACTIVE.INITIAL 
     return cfg

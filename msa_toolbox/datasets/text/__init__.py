@@ -44,11 +44,10 @@ def load_existing_dataset(dataset_name):
     elif dataset_name == 'wiki_medical_terms':
         return wikitextDataset
     
-def load_custom_dataset(path):
+def load_custom_dataset(cfg):
     '''
     Loads a custom dataset from the path
     '''
-    # pass
     return CustomDataset
     
     

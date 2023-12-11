@@ -14,6 +14,7 @@ class pubmedDataset(CustomDataset):
         
     def _read_hugging(self ,  split = 'train'):
         lines = []
+        print("Downloading dataset..." , split)
         dataset = load_dataset('ml4pubmed/pubmed-text-classification-cased', split = split)
             # create label map
         if self.label_map is None:

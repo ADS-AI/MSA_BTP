@@ -69,12 +69,10 @@ def evaluate(cfg, DataLoader, model, tokenizer, config):
     nb_eval_steps += 1
     eval_loss = eval_loss / nb_eval_steps
     preds = np.argmax(preds, axis=1)
-    results = {"acc": simple_accuracy(preds, out_label_ids)}
-    return results, preds
-
-
-
-
+    results['preds'] = preds
+    results['acc'] = simple_accuracy(preds, out_label_ids)
+    results['true_labels'] = out_label_ids
+    return results
 
 def active_train(cfg , train_dataloader , eval_dataloader , model , config , tokenizer):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -158,13 +156,12 @@ def active_train(cfg , train_dataloader , eval_dataloader , model , config , tok
     
 
             
-    acc, preds = evaluate(cfg, eval_dataloader, model, tokenizer, config)
+    acc = evaluate(cfg, eval_dataloader, model, tokenizer, config)
 
         
     eval_results = {}
-    eval_results["acc"] = acc
+    eval_results["acc"] = acc['acc']
     return global_step, tr_loss / global_step , eval_results , model , config , tokenizer 
-
 
 def query_data_in_victim(cfg , theif_dataloader, victim_model, victim_tokenizer, victim_config):
     '''
@@ -214,8 +211,7 @@ def query_data_in_victim(cfg , theif_dataloader, victim_model, victim_tokenizer,
 
     print("--------------- querying done ---------------")
     return index_to_new_label, index_to_entropy , orignal_index
-
-   
+ 
 def get_entropy(cfg , model , tokenizer , config , dataloader):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     n_gpu = torch.cuda.device_count()
@@ -245,6 +241,32 @@ def get_entropy(cfg , model , tokenizer , config , dataloader):
     
     return index_to_entropy
 
+def get_softmax(cfg , model , tokenizer , config , dataloader):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    n_gpu = torch.cuda.device_count()
+    softmax = None
+    orignal_index = None
+    for batch in tqdm(dataloader, desc="Evaluating"):
+        model.eval()
+        batch = tuple(t.to(device) for t in batch)
+        with torch.no_grad():
+            inputs = {"input_ids": batch[1], "attention_mask": batch[2]}
+            outputs = model(**inputs)
+            logits = outputs['logits']
+            # print("logits", logits)
+        if softmax is None:
+            orignal_index = batch[0].detach().cpu().numpy()
+            softmax = torch.nn.functional.softmax(logits, dim=1).detach().cpu().numpy()
+        else:
+            orignal_index = np.append(orignal_index, batch[0].detach().cpu().numpy(), axis=0)
+            tmpsoftmax = torch.nn.functional.softmax(logits, dim=1).detach().cpu().numpy()
+            softmax = np.append(softmax, tmpsoftmax, axis=0)
+    
+    index_to_softmax = {}
+    for i in range(len(orignal_index)):
+        index_to_softmax[orignal_index[i]] = softmax[i]
+    
+    return index_to_softmax
 
 def get_label_probs(cfg , model , tokenizer , config ,  dataloader):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
