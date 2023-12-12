@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Package GUI</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='recents.css') }}">
+</head>
+<body>
+    <!-- <div> -->
+        <!-- <div class="row"> -->
+
+            <!-- Sidebar -->
+            <nav class="col-md-4 col-lg-4 col-xl-4 sidebar">
+                <div class="text-center" style=" background-image: linear-gradient(125deg, #8b075b, #042c60);">
+                    <img src="{{ url_for('static', filename='logo1.jpeg') }}" alt="logo" class="img-fluid">
+                </div>
+                <div>
+                    <ul class="list-unstyled">
+                        <li {% if active == 'home' %}class="active"{% endif %}>
+                            <a href="/config_image" class="d-block text-truncate">Configs</a>
+                        </li>
+                        <li {% if active == 'training' %}class="active"{% endif %}>
+                            <a href="/training" class="d-block ">Training</a>
+                        </li>
+                        <li {% if active == 'recents' %}class="active"{% endif %}>
+                            <a href="/recents" class="d-block text-truncate">Recents</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content Section -->
+            <section class="config-section">
+                <!-- Content Goes Here -->
+                <div class="centered-container">
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Run</th>
+                                <th>Time</th>
+                                <th>Folder</th>
+                                <th>File</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stats-table-body">
+                            <!-- Data will be inserted here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        <!-- </div>/ -->
+    <!-- </div> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        function sendDataToBackend(rowData) {
+            $.ajax({
+                url: '/process_clicked_row',
+                type: 'POST',
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(rowData),
+                success: function(response) {
+                    console.log('Data sent successfully');
+                    console.log(response);
+                    // Redirect to the new page using the response from the backend
+                    window.location.href = response.redirect_url;
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        $('#stats-table-body').on('click', 'tr', function() {
+            var rowData = {
+                run: $(this).find('td:eq(0)').text(),
+                time: $(this).find('td:eq(1)').text(),
+                folder: $(this).find('td:eq(2)').text(),
+                file: $(this).find('td:eq(3)').text()
+            };
+
+            sendDataToBackend(rowData);
+        });
+
+        $.ajax({
+            url: '/get_stats',
+            type: 'GET',
+            success: function(response) {
+                var data = response.data;
+                var tableBody = $('#stats-table-body');
+                $.each(data, function (key, value) {
+                    var row = '<tr>' +
+                        '<td>' + key + '</td>' +
+                        '<td>' + value.time + '</td>' +
+                        '<td>' + value.folder + '</td>' +
+                        '<td>' + value.file + '</td>' +
+                        '</tr>';
+                    tableBody.append(row);
+                });
+            },
+            error: function (error) {
+                console.log('Error:', error);
+            }
+        });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+    "data":{
+    "1": {
+        "time": "2023-12-01 00:00:00",
+        "folder": "C:/Users/sumit/Desktop/MSA_BTP/msa_toolbox/ui_flask/logs/log_metrics.json",
+        "file": "config_file"
+    },
+    "2": {
+        "time": "2019-01-01 00:00:00",
+        "folder": "C:/Users/sumit/Desktop/MSA_BTP/msa_toolbox/ui_flask/logs/logs_metrics_img.json",
+        "file": "config_file"
+    }
+}
+}

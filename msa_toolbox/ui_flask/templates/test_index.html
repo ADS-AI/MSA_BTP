@@ -19,6 +19,7 @@
             <ul>
                 <li {% if active == 'home' %}class="active"{% endif %}><a href="/config_image">Configs</a></li>
                 <li {% if active == 'training' %}class="active"{% endif %}><a href="/training">Training</a></li>
+                <li {% if active == 'recents' %}class="active"{% endif %}><a href="/recents">Recents</a></li>
             </ul>
         </div>
     </nav>
@@ -32,8 +33,8 @@
     <section class="config-section">
         <h1 class="title">New Configuration</h1>
         <div class="btn-group d-flex" role="group" aria-label="Form Type Buttons">
-            <button type="button" class="btn btn-custom flex-fill active" id="imageFormBtn">Image Form</button>
-            <button type="button" class="btn btn-custom flex-fill" id="textFormBtn">Text Form</button>
+            <button type="button" class="btn btn-custom flex-fill active" id="imageFormBtn">Image Configs</button>
+            <button type="button" class="btn btn-custom flex-fill" id="textFormBtn">Text Configs</button>
         </div>
         <form class="config-form row" id="imageForm" method="POST" action="/config_image">
             <div class="form-group col-lg-12" style="margin-top:10px">
@@ -205,7 +206,7 @@
             <div class="form-field col-lg-6">
                 <label>Victim Architecture</label>
                 <select class="input-text js-input" id="V_arch_text" name="V_arch_text" required>
-                    {% for arc in options['archi'] %}
+                    {% for arc in options['text_models'] %}
                     <option value="{{ arc }}">{{ arc }}</option>
                     {% endfor %}
                 </select>
@@ -214,7 +215,7 @@
             <div class="form-field col-lg-6" >
                 <label>Victim Dataset</label>
                 <select class="input-text js-input" id="V_data_text" name="V_data_text" required>
-                    {% for data in options['datasets'] %}
+                    {% for data in options['text_datasets'] %}
                     <option >{{ data }}</option>
                     {% endfor %}
                 </select>
@@ -223,7 +224,7 @@
             <div class="form-field col-lg-4" >
                 <label>Victim Data Mode</label>
                 <select class="input-text js-input" id="V_data_mode_text" name="V_data_mode_text" required>
-                    {% for data in options['datasets'] %}
+                    {% for data in options['text_modes'] %}
                     <option >{{ data }}</option>
                     {% endfor %}
                 </select>
@@ -244,7 +245,7 @@
             <div class="form-field col-lg-6">
                 <label>Thief Architecture</label>
                 <select class="input-text js-input" id="T_arch_text" name="T_arch_text" required>
-                    {% for arc in options['archi'] %}
+                    {% for arc in options['text_models'] %}
                     <option value="{{ arc }}">{{ arc }}</option>
                     {% endfor %}
                 </select>
@@ -253,7 +254,7 @@
             <div class="form-field col-lg-6" >
                 <label>Thief Dataset</label>
                 <select class="input-text js-input" id="T_data_text" name="T_data_text" required>
-                    {% for data in options['datasets'] %}
+                    {% for data in options['text_datasets'] %}
                     <option >{{ data }}</option>
                     {% endfor %}
                 </select>
@@ -262,7 +263,7 @@
             <div class="form-field col-lg-4" >
                 <label>Thief Data Mode</label>
                 <select class="input-text js-input" id="T_data_mode_text" name="T_data_mode_text" required>
-                    {% for data in options['datasets'] %}
+                    {% for data in options['text_modes'] %}
                     <option >{{ data }}</option>
                     {% endfor %}
                 </select>
@@ -385,10 +386,10 @@
                     
                 </select>
             </div>
-            <div class="form-field col-lg-4">
+            <!-- <div class="form-field col-lg-4">
                 <label> Cycles</label>
                 <input type="number" class="input-text js-input" id="Cycles" name="Cycles" min ="1" max = "10" placeholder=" Number of Cycles" required>   
-            </div>
+            </div> -->
             <div class="form-field col-lg-4">
                 <label>Epochs</label>
                 <input type="number" class="input-text js-input" id="Epochs" min ="1" max = "500" name="Epochs" placeholder="Epochs" required>   
@@ -406,11 +407,15 @@
 
             
             <div class="form-field col-lg-4">
-                <label>Rng Seed</label>
-                <input type="number" class="input-text js-input" id="rng-seed-text" name="rng-seed-text" placeholder="RNG Seed" required>   
+                <label>Models</label>
+                <select class="input-text js-input" id="rng-seed-text" name="rng-seed-text[]" placeholder="RNG Seed" required multiple>
+                    {% for models in options['text_models'] %}
+                    <option>{{ models }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="form-field col-lg-4">
-                <label>Epochs</label>
+                <label>Ds Seed</label>
                 <input type="number" class="input-text js-input" id="Ds-seed-text" name="Ds-seed-text" placeholder="DS seed" required>   
             </div>
             <div class="form-field col-lg-4">

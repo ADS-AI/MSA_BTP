@@ -17,19 +17,17 @@
         </div>
         <div>
         <ul>
-          <hr> 
           <li {% if active == 'home' %}class="active"{% endif %}><a href="/config_image">Configs</a></li>
           <li {% if active == 'training' %}class="active"{% endif %}><a href="/training">Training</a></li>
+          <li {% if active == 'recents' %}class="active"{% endif %}><a href="/recents">Recents</a></li>
         </ul>
         </div>
       </nav>
-    <!--{% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div id='popup' class="alert alert-success"> Config file created </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %} -->
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          <div id='popup' class="alert alert-success text-center" style="font-size: 30px;">{{ messages[0] }}</div>
+      {% endif %}
+  {% endwith %}
 
 
     <section class='config-section'>
@@ -39,7 +37,7 @@
             <button type="button" class="btn btn-custom flex-fill" id="textFormBtn">Text Form</button>
         </div>
         
-        <form class="config-form row" id='imageForm' method="POST" action="/update_image">
+        <form class="config-form row" id='imageForm' method="POST" action="/train_image">
             {%if configs[0] %}
             <div class="form-field col-lg-12" >
                 <lable class="lable">Configuration Files</lable>
@@ -60,7 +58,7 @@
         {%endif%}
         </form>
 
-        <form class="config-form row" id='textForm' method="POST" action="/update_text">
+        <form class="config-form row" id='textForm' method="POST" action="/train_text">
             {%if configs[1] %}
             <div class="form-field col-lg-12" >
                 <lable class="lable">Configuration Files</lable>

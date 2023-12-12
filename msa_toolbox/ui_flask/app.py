@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request , flash ,jsonify
+from flask import Flask, render_template, request , flash ,jsonify , redirect , url_for
 # from flask_socketio import SocketIO, emit
 import yaml
 import os
 import json
 from utils_ui import extract_data as extract_data_image
 from utils_ui import extract_data_text
+from threading import Thread
+# from msa_toolbox.main import app as image_app
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
@@ -12,6 +14,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 path_log = os.path.join(current_dir, 'logs/log.txt')
 path_json = os.path.join(current_dir, 'logs/log_metrics.json')
 
+# fg=1
 
 datasets =['cifar10','cifar100','imagenet','mnist','kmnist','fashionmnist','emnist','emnistletters','svhn','tinyimagenet200','tinyimagesubset','cubs200',
              'diabetic5','indoor67','caltech256']
@@ -26,11 +29,34 @@ optimizers = ['adam','sgd','rmsprop','adagrad','adadelta','adamax']
 
 criterias = ['cross_entropy_loss','mse_loss','l1_loss','soft_margin_loss','bce_loss']
 
-options = {'datasets': datasets, 'archi': archi, 'methods': methods, 'optimizers': optimizers, 'criterias': criterias}
+text_models = ["bert-base-uncased","roberta-base","xlnet-base-cased"]
+datasets_text = ['yelp' , 'sst2' , 'pubmed' , 'twitter_finance' , 'twitter' , 'ag_news' , 'wiki_medical_terms', 'imdb' , 'mnli', 'boolq']
+text_modes = ["HuggingFace","csv","tsv"]
+options = {'datasets': datasets, 'archi': archi, 'methods': methods, 'optimizers': optimizers, 'criterias': criterias,'text_models': text_models,"text_datasets": datasets_text,
+           "text_modes": text_modes}
     
-datasets_text = ['dataset1','dataset2']
-archi_text = ['archi1','archi2']
+# archi_text = ['archi1','archi2']
 
+    
+@app.route('/train_image', methods=['POST'])
+def train_image():
+    print(request.form)
+    msg = "Training started"
+    flash(msg)
+    # configs = [os.listdir('msa_toolbox/ui_flask/configs/image'),os.listdir('msa_toolbox/ui_flask/configs/text')]
+
+    return redirect("/training")
+    
+@app.route('/train_text', methods=['POST'])
+def train_text():
+    print(request.form)
+    msg = "Training started"
+    flash(msg)
+    thread = Thread(target = main_text(),args=('msa_toolbox/ui_flask/configs/image'+request.form['config_name'],))
+    thread.start()
+    # configs = [os.listdir('msa_toolbox/ui_flask/configs/image'),os.listdir('msa_toolbox/ui_flask/configs/text')]
+
+    return redirect("/training")
     
 @app.route('/file_content')
 def get_file_progress():
@@ -38,17 +64,31 @@ def get_file_progress():
         content = f.read()
         return content
     
+@app.route('/recents',methods=['GET'])
+def recents():
+    return render_template('recents.html',active = 'recents')
+
+@app.route('/get_stats',methods=['GET'])
+def get_stats():
+    with open("msa_toolbox/ui_flask/image_runs.json", 'r') as file:
+        stats_data = json.load(file)
+    print(stats_data)
+    return jsonify(stats_data)
+
+@app.route('/process_clicked_row', methods=['GET','POST'])
+def process_clicked_row():
+    global path_json
+    data = request.get_json()
+    path_json = data['folder']
+    # Your processing logic here
+    print(data)
+    # Assuming you have a template named 'new_page.html'
+    return jsonify({'redirect_url': url_for('progress')})
 
 
-@app.route('/training', methods=['GET','POST'])
+@app.route('/training', methods=['GET'])
 def tranning():
-    if request.method == 'POST':
-        print(request.form)
-        return render_template('progress.html',configs=[],fg=fg)
-    else:
-        configs = [os.listdir('msa_toolbox/ui_flask/configs/image'),os.listdir('msa_toolbox/ui_flask/configs/text')]
-    if fg==1:
-        return render_template('progress.html',configs=configs,active = 'traning')
+    configs = [os.listdir('msa_toolbox/ui_flask/configs/image'),os.listdir('msa_toolbox/ui_flask/configs/text')]
     return render_template('index.html', configs=configs,active = 'traning')
 
 @app.route('/')
@@ -78,9 +118,11 @@ def extract_data(form):
     return extract_data_image(form)
     
 
-@app.route('/chart')
+@app.route('/chart',methods=['GET','POST'])
 def chart():
     # metric_path = os.path.join(os.getcwd(), 'msa_toolbox/ui_flask/logs/log_metrics.json')
+    # log_path = request.args.get('processed_data', default=None)
+    # print(log_path)
     with open(path_json) as f:
         data = json.load(f)
     labels = data.keys()
@@ -123,7 +165,7 @@ def chart():
 def progress():
     global fg
     if fg==1:
-        return render_template('progress.html',fg=fg)
+        return render_template('progress.html')
     else:
         return render_template('progress.html')
 
