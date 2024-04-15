@@ -12,6 +12,8 @@ from torchvision.datasets.folder import ImageFolder
 from torchvision.datasets import CIFAR10 as Old_CIFAR10
 from torchvision.datasets import CIFAR100 as Old_CIFAR100
 from ... import config as cfg
+from PIL import Image
+from typing import Any, Callable, Optional, Tuple
 
 class CIFAR10(Old_CIFAR10):
     """ 
@@ -66,6 +68,23 @@ class CIFAR10(Old_CIFAR10):
             (numpy.ndarray): The image at the specified index.
         """
         return self.data[index]
+    
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
+        """
+        Args:
+            index (int): Index
+            
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
+        img, target = self.data[index], self.targets[index]
+        # doing this so that it is consistent with all other datasets to return a PIL Image
+        img = Image.fromarray(img)
+        if self.transform is not None:
+            img = self.transform(img)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return img, target, index
 
 
 class CIFAR100(Old_CIFAR100):
@@ -117,6 +136,23 @@ class CIFAR100(Old_CIFAR100):
             (numpy.ndarray): The image at the specified index.
         """
         return self.data[index]
+    
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
+        """
+        Args:
+            index (int): Index
+            
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
+        img, target = self.data[index], self.targets[index]
+        # doing this so that it is consistent with all other datasets to return a PIL Image
+        img = Image.fromarray(img)
+        if self.transform is not None:
+            img = self.transform(img)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return img, target, index
 
 
 class TinyImagesSubset(ImageFolder):
@@ -147,3 +183,20 @@ class TinyImagesSubset(ImageFolder):
 
         print('=> done loading {} ({}) with {} examples'.format(self.__class__.__name__, 'train' if train else 'test',
                                                                 len(self.samples)))
+
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+            
+        Returns:
+            tuple: (sample, target) where target is class_index of the target class.
+        """
+        path, target = self.samples[index]
+        sample = self.loader(path)
+        if self.transform is not None:
+            sample = self.transform(sample)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        print(self.transform, self.target_transform)
+        return sample, target, index

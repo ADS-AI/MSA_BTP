@@ -20,7 +20,7 @@ class ImageNet1k(ImageFolder):
     Attributes:
         test_frac (float): The fraction of data to use for testing.
     """
-    test_frac = 0.2
+    test_frac = 0.1
 
     def __init__(self, root: str, train=True, transform=None, target_transform=None):
         """
@@ -78,3 +78,19 @@ class ImageNet1k(ImageFolder):
 
         np.random.set_state(prev_state)
         return partition_to_idxs
+    
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (sample, target) where target is class_index of the target class.
+        """
+        path, target = self.samples[index]
+        sample = self.loader(path)
+        if self.transform is not None:
+            sample = self.transform(sample)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return sample, target, index

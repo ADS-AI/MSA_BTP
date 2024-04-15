@@ -15,7 +15,6 @@ from . load_data_and_models import load_thief_dataset, load_victim_dataset, get_
 from . load_data_and_models import load_thief_model, load_victim_model
 from . cfg_reader import load_cfg, CfgNode
 from . train_utils import accuracy_f1_precision_recall, agreement
-from ...active_learning.entropy.entropy_method import train_one_epoch
 from . all_logs import log_victim_data, log_weights, log_victim_metrics
 
 
@@ -38,8 +37,8 @@ def load_victim_data_and_model(cfg: CfgNode):
     log_victim_data(cfg.LOG_PATH, victim_data, num_class)
     log_victim_data(cfg.INTERNAL_LOG_PATH, victim_data, num_class)
 
-    # Load Victim Data Loader
-    victim_data_loader = get_data_loader(
+    # Load Victim Test Data Loader
+    victim_test_loader = get_data_loader(
         victim_data, batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
 
     # Load victim model weights if present, else train the victim model (just to measure performance)
@@ -53,16 +52,15 @@ def load_victim_data_and_model(cfg: CfgNode):
                                 lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
         criteria = get_loss_criterion(cfg.TRAIN.LOSS_CRITERION)
         for i in range(min(10, cfg.TRAIN.EPOCH)):
-            train_one_epoch(cfg, victim_model, None, victim_data_loader,0, optimizer, criteria, verbose=False)
+            train_one_epoch(cfg, victim_model, victim_test_loader, optimizer, criteria, verbose=False)
         
     # Measure performance of victim model on victim dataset
-    metrics = accuracy_f1_precision_recall(
-        victim_model, None, victim_data_loader, cfg.DEVICE, is_thief_set=False)
+    metrics = accuracy_f1_precision_recall(cfg, victim_model, victim_test_loader, cfg.DEVICE, is_victim_loader=True)
 
     log_victim_metrics(cfg.LOG_PATH, metrics)
     log_victim_metrics(cfg.INTERNAL_LOG_PATH, metrics)
 
-    return (victim_data, num_class), victim_data_loader, victim_model
+    return (victim_data, num_class), victim_test_loader, victim_model
 
 
 
@@ -82,39 +80,27 @@ def load_victim_data(cfg: CfgNode, victim_model: nn.Module):
         transform = True if victim_model is None else victim_model.transforms
         victim_data = load_victim_dataset(
             cfg.VICTIM.DATASET, cfg, train=False, transform=transform, download=True)
-    num_class = len(victim_data.classes)
+    num_class = cfg.VICTIM.NUM_CLASSES if cfg.VICTIM.NUM_CLASSES is not None else len(victim_data.classes)
     return victim_data, num_class
 
 
-def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Dataset,
-                         labeled_indices: np.ndarray, unlabeled_indices: np.ndarray,
-                         val_indices: np.ndarray):
-    '''
-    Creates the loaders for the thief model
-    '''
-    train_loader = get_data_loader(Subset(
-        thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
-    val_loader = get_data_loader(Subset(
-        thief_data, val_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
-    unlabeled_loader = get_data_loader(Subset(
-        thief_data, unlabeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
-    dataloader = {'train': train_loader,
-                  'val': val_loader, 'unlabeled': unlabeled_loader}
-    return dataloader
 
-
-def change_thief_loader_labels(cfg: CfgNode, data_loader: DataLoader, victim_model: nn.Module):
-    '''
-    Changes the labels of the thief dataset to the labels predicted by the victim model
-    '''
-    victim_model = victim_model.to(cfg.DEVICE)
-    victim_model.eval()
-    with torch.no_grad():
-        new_labels = torch.tensor([])
-        for image, label in data_loader:
-            image, label = image.to(cfg.DEVICE), label.to(cfg.DEVICE)
-            outputs = victim_model(image)
-            _, predicted = torch.max(outputs, 1)
-            new_labels = torch.cat((new_labels, predicted.cpu()), dim=0)        
-    return new_labels
-
+def train_one_epoch(cfg: CfgNode, model: nn.Module, dataloader: DataLoader, optimizer: Optimizer,
+                    criterion: _Loss, verbose: bool = True):
+    train_loss = 0
+    correct = 0
+    total = 0
+    model.train()
+    model = model.to(cfg.DEVICE)
+    for images, labels, index in dataloader:
+        images, labels = images.to(cfg.DEVICE), labels.to(cfg.DEVICE)
+        optimizer.zero_grad()
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+        train_loss += loss.item()
+        predicted = torch.argmax(outputs.data, dim=1)
+        total += labels.size(0)
+        correct += predicted.eq(labels).sum().item()
+    return train_loss / len(dataloader.dataset), 100. * correct / total
