@@ -38,7 +38,7 @@ def accuracy_f1_precision_recall(cfg:CfgNode, thief_model: nn.Module, data_loade
     return metric
 
 
-def data_distribution(cfg:CfgNode, data_loader: DataLoader) -> list:
+def data_distribution(cfg:CfgNode, data_loader: DataLoader):
     """
     Returns the distribution of the data_loader
     """
@@ -74,6 +74,24 @@ def agreement(thief_model: nn.Module, victim_model: nn.Module, data_loader: Data
             victim_output = victim_model(image)
             thief_predicted = torch.argmax(thief_output, dim=1)
             victim_predicted = torch.argmax(victim_output, dim=1)
+            correct += np.sum(thief_predicted.detach().cpu().numpy() == victim_predicted.detach().cpu().numpy())
+            length += len(image)
+    return correct/length
+
+def agreement_api(thief_model: nn.Module, data_loader: DataLoader, device: torch.device) -> float:
+    '''
+    Calculates the agreement between the thief and victim model on the data_loader
+    '''
+    thief_model.eval()
+    thief_model = thief_model.to(device)
+    correct = 0
+    length = 0
+    with torch.no_grad():
+        for image, label, index in data_loader:
+            image, label = image.to(device), label.to(device)
+            thief_output = thief_model(image)
+            thief_predicted = torch.argmax(thief_output, dim=1)
+            victim_predicted = label
             correct += np.sum(thief_predicted.detach().cpu().numpy() == victim_predicted.detach().cpu().numpy())
             length += len(image)
     return correct/length

@@ -41,21 +41,31 @@ def select_samples_active_learning(cfg: CfgNode, theif_model: nn.Module, unlabel
             thief_data:Dataset, labeled_indices:List, unlabeled_indices:List, *args, **kwargs):
     if cfg.ACTIVE.METHOD == "entropy":
         new_training_samples_indices = select_samples_entropy(cfg, theif_model, unlabeled_loader)
-        return unlabeled_indices[new_training_samples_indices]
+        # return unlabeled_indices[new_training_samples_indices]
+        return new_training_samples_indices
+    
     elif cfg.ACTIVE.METHOD == "vaal":
-        return select_samples_vaal(cfg, theif_model, unlabeled_loader)
+        new_training_samples_indices = select_samples_vaal(cfg, theif_model, unlabeled_loader)
+        return new_training_samples_indices
+    
     elif cfg.ACTIVE.METHOD == "kcenter":
         return select_samples_kcenter(cfg, theif_model, thief_data, labeled_indices, unlabeled_indices)
+    
     elif cfg.ACTIVE.METHOD == "montecarlo":
         new_training_samples_indices = select_samples_montecarlo(cfg, theif_model, unlabeled_loader)
-        return unlabeled_indices[new_training_samples_indices]
+        # return unlabeled_indices[new_training_samples_indices]
+        return new_training_samples_indices
+    
     elif cfg.ACTIVE.METHOD == "random":
-        new_training_samples_indices = select_samples_random(cfg, theif_model, unlabeled_loader)
-        return unlabeled_indices[new_training_samples_indices]
+        new_training_samples_indices = select_samples_random(cfg, unlabeled_loader, unlabeled_indices)
+        # return unlabeled_indices[new_training_samples_indices]
+        return new_training_samples_indices
+    
     elif cfg.ACTIVE.METHOD == "dfal":
         unlabeled_loader = get_data_loader(Subset(thief_data, unlabeled_indices), 
                         batch_size=1, shuffle=False, num_workers=cfg.NUM_WORKERS)
         new_training_samples_indices = select_samples_dfal(cfg, theif_model, unlabeled_loader)
-        return unlabeled_indices[new_training_samples_indices]
+        # return unlabeled_indices[new_training_samples_indices]
+        return new_training_samples_indices
     else:
         raise NotImplementedError(f"Active Learning Method {cfg.ACTIVE.METHOD} not implemented")

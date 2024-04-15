@@ -70,6 +70,8 @@ class GrowingDistanceAgent:
 
             dists = self.__reject_outliers(np.asarray(dists), 3)
             # print('Final Distance dictionary: ', len(dists))#, dists)
+            
+            self.attacker_present = False
             if len(dists) > 100:
                 k2_2, p_2 = stats.shapiro(dists)
                 # print(f"Shapiro values: {k2_2}, {p_2}, {self.shapiro_threshold}")

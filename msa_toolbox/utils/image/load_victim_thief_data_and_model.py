@@ -80,7 +80,7 @@ def load_victim_data(cfg: CfgNode, victim_model: nn.Module):
         transform = True if victim_model is None else victim_model.transforms
         victim_data = load_victim_dataset(
             cfg.VICTIM.DATASET, cfg, train=False, transform=transform, download=True)
-    num_class = len(victim_data.classes)
+    num_class = cfg.VICTIM.NUM_CLASSES if cfg.VICTIM.NUM_CLASSES is not None else len(victim_data.classes)
     return victim_data, num_class
 
 

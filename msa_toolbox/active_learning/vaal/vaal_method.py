@@ -14,7 +14,7 @@ from torch.optim.lr_scheduler import MultiStepLR
 import torch.nn.functional as F
 from typing import Any, Dict
 from ...utils.image.cfg_reader import CfgNode
-from ...utils.image.all_logs import log_training, log_finish_training, log_epoch_vaal, log_metrics_intervals
+from ...utils.image.all_logs import log_training, log_finish_training, log_epoch_vaal, log_metrics_intervals, log_metrics_intervals_api
 from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
 from ...utils.image.optimizer import get_optimizer
 from ...utils.image.loss_criterion import get_loss_criterion
@@ -28,37 +28,43 @@ def train_vaal(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer
     '''
     Trains the Thief Model on the Thief Dataset
     '''
-    log_training(cfg.LOG_PATH, cfg.TRAIN.EPOCH)
-    log_training(cfg.INTERNAL_LOG_PATH, cfg.TRAIN.EPOCH)
-    
-    vae = VAE(cfg.ACTIVE.VAE_LATENT_DIM)
+    if vae_model[0] is None:
+        vae_model[0] = VAE(cfg.ACTIVE.LATENT_DIM)
+        discriminator_model[0] = Discriminator(cfg.ACTIVE.LATENT_DIM)
+        
+    # Load the VAE and Discriminator models
+    vae = vae_model[0]
+    discriminator = discriminator_model[0]
     vae = vae.to(cfg.DEVICE)
-    discriminator = Discriminator(cfg.ACTIVE.DISCRIMINATOR_LATENT_DIM)
     discriminator = discriminator.to(cfg.DEVICE)
-    vae_model[0] = vae
-    discriminator_model[0] = discriminator
+    
+    # Load the optimizer and loss criterion
     optimizer_vae = get_optimizer('adam', vae,
-                                  lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
+                                lr=5e-6, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     optimizer_discriminator = get_optimizer('sgd', discriminator,
-                                  lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
+                                lr=5e-6, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     criterion_vae = get_loss_criterion('mse_loss')
     criterion_discriminator = get_loss_criterion('bce_loss')
     
-    TRAIN_ITERATIONS = (cfg.THIEF.NUM_TRAIN * cfg.TRAIN.EPOCH) // cfg.TRAIN.BATCH_SIZE
+    # use cfg.THEIF.SUBSET instead of cfg.THIEF.NUM_TRAIN because we might be using a subset of the thief dataset
+    TRAIN_ITERATIONS = (cfg.THIEF.SUBSET * cfg.TRAIN.EPOCH) // cfg.TRAIN.BATCH_SIZE
     LR_CHANGE = TRAIN_ITERATIONS // 4
     LABELED_DATA = read_data(dataloader['train'])
     UNLABELED_DATA = read_data(dataloader['unlabeled'], labels=False)
     
+    log_training(cfg.LOG_PATH, TRAIN_ITERATIONS)
+    log_training(cfg.INTERNAL_LOG_PATH, TRAIN_ITERATIONS)
+    
     thief_model.train()
     thief_model = thief_model.to(cfg.DEVICE)
-            
+        
     exit = False
     curr_loss = None
     best_acc = None
-    no_improvement = 0
+    no_improvement = 0    
     
     for iter_count in range(TRAIN_ITERATIONS):
-        print(f"iter_count: {iter_count} *************")
+        # print(f"iter_count: {iter_count} *************")
         log_epoch_vaal(cfg.LOG_PATH, iter_count, TRAIN_ITERATIONS)
         log_epoch_vaal(cfg.INTERNAL_LOG_PATH, iter_count, TRAIN_ITERATIONS)
         
@@ -72,10 +78,6 @@ def train_vaal(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer
         unlabeled_imgs = unlabeled_imgs.to(cfg.DEVICE)
         
         # Model Step
-        if cfg.TRAIN.BLACKBOX_TRAINING == False:
-            # _, labels = torch.max(labels.data, 1)
-            labels = torch.argmax(labels, dim=1)
-            
         preds = thief_model(labeled_imgs)
         task_loss = criterion(preds, labels)
         optimizer.zero_grad()
@@ -84,14 +86,13 @@ def train_vaal(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer
 
         # VAE Step
         for count in range(cfg.ACTIVE.NUM_VAE_STEPS):
-            print(labeled_imgs.shape)
+            # print('vae step loading ******************')
             recon, z, mu, logvar = vae(labeled_imgs)
-            print(recon.shape, z.shape, mu.shape, logvar.shape)
             unsup_loss = vae_loss(criterion_vae, labeled_imgs, recon, mu, logvar, cfg.ACTIVE.BETA)
             unlab_recon, unlab_z, unlab_mu, unlab_logvar = vae(unlabeled_imgs)
             transductive_loss = vae_loss(criterion_vae, unlabeled_imgs, 
                     unlab_recon, unlab_mu, unlab_logvar, cfg.ACTIVE.BETA)
-        
+
             labeled_preds = discriminator(mu)
             unlabeled_preds = discriminator(unlab_mu)
             lab_real_preds = torch.ones(labeled_imgs.size(0))
@@ -101,10 +102,12 @@ def train_vaal(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer
             lab_real_preds = lab_real_preds.to(cfg.DEVICE)
             unlab_real_preds = unlab_real_preds.to(cfg.DEVICE)
             
+            # print(min(labeled_preds), min(unlabeled_preds), max(labeled_preds), max(unlabeled_preds))
             dsc_loss = criterion_discriminator(labeled_preds, lab_real_preds) + \
                     criterion_discriminator(unlabeled_preds, unlab_real_preds)
-                    
+            
             total_vae_loss = unsup_loss + transductive_loss + cfg.ACTIVE.ADVERSARY_PARAM * dsc_loss
+            # print('total_vae_loss', total_vae_loss)
             optimizer_vae.zero_grad()
             total_vae_loss.backward()
             optimizer_vae.step()
@@ -119,6 +122,7 @@ def train_vaal(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer
 
         # Discriminator Step
         for count in range(cfg.ACTIVE.NUM_ADV_STEPS):
+            # print('discriminator step loading ******************')
             with torch.no_grad():
                 _, _, mu, _ = vae(labeled_imgs)
                 _, _, unlab_mu, _ = vae(unlabeled_imgs)
@@ -132,8 +136,10 @@ def train_vaal(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer
             lab_real_preds = lab_real_preds.to(cfg.DEVICE)
             unlab_fake_preds = unlab_fake_preds.to(cfg.DEVICE)
             
+            # print(min(labeled_preds), min(unlabeled_preds), max(labeled_preds), max(unlabeled_preds))
             dsc_loss = criterion_discriminator(labeled_preds, lab_real_preds) + \
                     criterion_discriminator(unlabeled_preds, unlab_fake_preds)
+            # print('discriminator loss: ', dsc_loss)
             optimizer_discriminator.zero_grad()
             dsc_loss.backward()
             optimizer_discriminator.step()
@@ -150,9 +156,13 @@ def train_vaal(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer
         if (iter_count + 1) % log_interval == 0:
             metrics_thief_train = accuracy_f1_precision_recall(cfg, thief_model, dataloader['train'], cfg.DEVICE)
             metrics_thief_val = accuracy_f1_precision_recall(cfg, thief_model, dataloader['val'], cfg.DEVICE)
-            metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
-            log_metrics_intervals(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
-            log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
+            if cfg.VICTIM.IS_API:
+                log_metrics_intervals_api(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val)
+                log_metrics_intervals_api(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val)
+            else:
+                metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
+                log_metrics_intervals(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
+                log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
 
             if best_acc is None or metrics_thief_val['accuracy'] > best_acc:
                 if os.path.isdir(cfg.OUT_DIR_MODEL) is False:
@@ -198,18 +208,18 @@ def select_samples_vaal(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: 
     vae.eval()
     discriminator.eval()
     
-    all_preds = torch.tensor([])
-    all_indices = torch.tensor([])
+    all_preds = []
+    all_indices = []
     with torch.no_grad():
-        for i, (images, _, _) in enumerate(unlabeled_loader):
+        for i, (images, _, indices) in enumerate(unlabeled_loader):
             images = images.to(cfg.DEVICE)   
             _, _, mu, _ = vae(images)
             preds = discriminator(mu)
-            preds = preds.cpu().data
-            all_preds = torch.cat((all_preds, torch.tensor(preds)), dim=0)
-            all_indices = torch.cat((all_indices, torch.tensor(
-                np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
-            
+            # all_preds.extend(preds.cpu().data.numpy())
+            # all_indices.extend(indices.numpy())
+            all_preds.extend(preds.cpu().data)
+            all_indices.extend(indices)
+    # print(all_preds)
     all_preds = torch.stack(all_preds)
     all_preds = all_preds.view(-1) 
     all_preds *= -1     # need to multiply by -1 to be able to use torch.topk

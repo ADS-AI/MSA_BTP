@@ -13,7 +13,7 @@ import torch.nn.functional as F
 from typing import Any, Dict, List
 from ...utils.image.cfg_reader import load_cfg, CfgNode
 from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
-from ...utils.image.all_logs import log_training, log_finish_training, log_epoch, log_metrics_intervals
+from ...utils.image.all_logs import log_training, log_finish_training, log_epoch, log_metrics_intervals, log_metrics_intervals_api
 from .kcenter_greedy import KCenterGreedy
 
 
@@ -54,9 +54,13 @@ def train_kcenter(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimi
             break
         if (epoch + 1) % log_interval == 0:
             metrics_thief_train = accuracy_f1_precision_recall(cfg, thief_model, dataloader['train'], cfg.DEVICE)
-            metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
-            log_metrics_intervals(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
-            log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
+            if cfg.VICTIM.IS_API:
+                log_metrics_intervals_api(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val)
+                log_metrics_intervals_api(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val)
+            else:
+                metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
+                log_metrics_intervals(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
+                log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
 
     log_finish_training(cfg.LOG_PATH)
     log_finish_training(cfg.INTERNAL_LOG_PATH)

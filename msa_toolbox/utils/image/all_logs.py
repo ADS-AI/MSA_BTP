@@ -20,6 +20,16 @@ def log_victim_data_model(path: str, victim_data, victim_model, victim_model_nam
         f.write(f"Victim Model: {type(victim_model)}: {victim_model_name}\n")
         f.write(f"Victim Model Defence: {victim_model_defence}\n")
         
+def log_victim_model_api(path: str, platform:str, model_id:str, defence:str):
+    log_dest = os.path.join(path, 'log.txt')
+    with open(log_dest, 'a') as f:
+        f.write(f"\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
+        f.write(f'===========================================> Victim Model API Loaded <==========================================\n')
+        f.write(f"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n")
+        f.write(f"Victim Platform: {platform}\n")
+        f.write(f"Victim Model ID: {model_id}\n")
+        f.write(f"Victim Model Defence: {defence}\n")
+        
 
 def log_start_active_learning(path: str):
     log_dest = os.path.join(path, 'log.txt')
@@ -68,6 +78,23 @@ def log_metrics(path:str, cycle:int, metrics_victim_test:Dict[str, float], agree
         f.write("Agreement on Thief Train Dataset: " + str(agree_thief_train) + "\n")
         f.write("Agreement on Thief Validation Dataset: " + str(agree_thief_val) + "\n")
         f.write("Agreement on Victim Test Dataset: " + str(agree_victim_test) + "\n")
+        
+def log_metrics_api(path:str, cycle:int, metrics_thief_val:Dict[str, float], agree_thief_val:float, 
+                metrics_thief_train:Dict[str, float], agree_thief_train:float):
+    with open(os.path.join(path, 'log_metrics.json'), 'r') as f:
+        old_metrics = json.load(f)
+        old_metrics['Cycle_'+str(cycle+1)] = {
+            'metrics_thief_val': metrics_thief_val, 'agreement_thief_val': agree_thief_val,
+            'metrics_thief_train': metrics_thief_train, 'agreement_thief_train': agree_thief_train
+        }
+    with open(os.path.join(path, 'log_metrics.json'), 'w') as f:
+        json.dump(old_metrics, f)
+        
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("Metrics on Thief Train Dataset: " + str(metrics_thief_train) + "\n")
+        f.write("Metrics on Thief Validation Dataset: " + str(metrics_thief_val) + "\n")
+        f.write("Agreement on Thief Train Dataset: " + str(agree_thief_train) + "\n")
+        f.write("Agreement on Thief Validation Dataset: " + str(agree_thief_val) + "\n")
 
 def log_metrics_intervals(path:str, metrics_thief_train:Dict[str, float], 
                 metrics_thief_val:Dict[str, float], metrics_victim_test:Dict[str, float]):
@@ -76,6 +103,13 @@ def log_metrics_intervals(path:str, metrics_thief_train:Dict[str, float],
         f.write("Metrics on Thief Training Dataset: " + str(metrics_thief_train) + "\n")
         f.write("Metrics on Thief Validation Dataset: " + str(metrics_thief_val) + "\n")
         f.write("Metrics on Victim Test Dataset: " + str(metrics_victim_test) + "\n")
+        
+def log_metrics_intervals_api(path:str, metrics_thief_train:Dict[str, float], 
+                metrics_thief_val:Dict[str, float]):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write("Performance of Thief Model on Datasets: \n")
+        f.write("Metrics on Thief Training Dataset: " + str(metrics_thief_train) + "\n")
+        f.write("Metrics on Thief Validation Dataset: " + str(metrics_thief_val) + "\n")
 
 
 def log_new_cycle(path:str, cycle:int, dataloader:Dict[str, DataLoader]):
@@ -125,6 +159,12 @@ def log_metrics_before_training(path:str, metrics_victim_test:Dict[str, float], 
         f.write("Metrics on Victim Test Dataset: " + str(metrics_victim_test) + "\n")
         f.write("Metrics on Thief Validation Dataset: " + str(metrics_thief_val) + "\n")
         f.write("Agreement on Victim Test Dataset: " + str(agree_victim_test) + "\n")
+        f.write("Agreement on Thief Validation Dataset: " + str(agree_thief_val) + "\n")
+        
+def log_metrics_before_training_api(path:str, metrics_thief_val:Dict[str, float], agree_thief_val:float):
+    with open(os.path.join(path, 'log.txt'), 'a') as f:
+        f.write(f"Metrics of Thief Model before Training \n")
+        f.write("Metrics on Thief Validation Dataset: " + str(metrics_thief_val) + "\n")
         f.write("Agreement on Thief Validation Dataset: " + str(agree_thief_val) + "\n")
 
 

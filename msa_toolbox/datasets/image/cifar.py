@@ -69,7 +69,7 @@ class CIFAR10(Old_CIFAR10):
         """
         return self.data[index]
     
-    def __getitem__(self, index: int) -> Tuple[Any, Any]:
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
         """
         Args:
             index (int): Index
@@ -137,7 +137,7 @@ class CIFAR100(Old_CIFAR100):
         """
         return self.data[index]
     
-    def __getitem__(self, index: int) -> Tuple[Any, Any]:
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
         """
         Args:
             index (int): Index

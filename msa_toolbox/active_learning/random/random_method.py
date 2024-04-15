@@ -11,9 +11,9 @@ from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import MultiStepLR
 import torch.nn.functional as F
-from typing import Any, Dict
+from typing import Any, Dict, List
 from ...utils.image.cfg_reader import CfgNode
-from ...utils.image.all_logs import log_training, log_finish_training, log_epoch, log_metrics_intervals
+from ...utils.image.all_logs import log_training, log_finish_training, log_epoch, log_metrics_intervals, log_metrics_intervals_api
 from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
 
 
@@ -54,9 +54,13 @@ def train_random(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimiz
             break
         if (epoch + 1) % log_interval == 0:
             metrics_thief_train = accuracy_f1_precision_recall(cfg, thief_model, dataloader['train'], cfg.DEVICE)
-            metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
-            log_metrics_intervals(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
-            log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
+            if cfg.VICTIM.IS_API:
+                log_metrics_intervals_api(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val)
+                log_metrics_intervals_api(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val)
+            else:
+                metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
+                log_metrics_intervals(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
+                log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
 
     log_finish_training(cfg.LOG_PATH)
     log_finish_training(cfg.INTERNAL_LOG_PATH)
@@ -100,7 +104,10 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, dataloader: DataLoader
 
 
 
-def select_samples_random(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader, *args, **kwargs):
-    all_indices = np.arange(len(unlabeled_loader.dataset))
-    selected_index_list = np.random.choice(all_indices, cfg.ACTIVE.ADDENDUM, replace=False)
+def select_samples_random(cfg: CfgNode, unlabeled_loader: DataLoader, unlabeled_indices:List, *args, **kwargs):
+    # all_indices = []
+    # for i, (images, labels, index) in enumerate(unlabeled_loader):
+        # all_indices.extend(index.numpy())
+    # selected_index_list = np.random.choice(all_indices, cfg.ACTIVE.ADDENDUM, replace=False)
+    selected_index_list = np.random.choice(unlabeled_indices, cfg.ACTIVE.ADDENDUM, replace=False)
     return selected_index_list

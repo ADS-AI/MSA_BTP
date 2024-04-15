@@ -13,7 +13,7 @@ import torch.nn.functional as F
 from typing import Any, Dict
 from ...utils.image.cfg_reader import load_cfg, CfgNode
 from ...utils.image.train_utils import accuracy_f1_precision_recall, agreement
-from ...utils.image.all_logs import log_training, log_finish_training, log_epoch, log_metrics_intervals
+from ...utils.image.all_logs import log_training, log_finish_training, log_epoch, log_metrics_intervals, log_metrics_intervals_api
 
 
 def train_entropy(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimizer: Optimizer,
@@ -53,9 +53,13 @@ def train_entropy(cfg: CfgNode, thief_model: nn.Module, criterion: _Loss, optimi
             break
         if (epoch + 1) % log_interval == 0:
             metrics_thief_train = accuracy_f1_precision_recall(cfg, thief_model, dataloader['train'], cfg.DEVICE)
-            metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
-            log_metrics_intervals(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
-            log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
+            if cfg.VICTIM.IS_API:
+                log_metrics_intervals_api(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val)
+                log_metrics_intervals_api(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val)
+            else:
+                metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
+                log_metrics_intervals(cfg.LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
+                log_metrics_intervals(cfg.INTERNAL_LOG_PATH, metrics_thief_train, metrics_thief_val, metrics_victim_test)
 
     log_finish_training(cfg.LOG_PATH)
     log_finish_training(cfg.INTERNAL_LOG_PATH)
@@ -99,27 +103,45 @@ def train_one_epoch(cfg: CfgNode, thief_model: nn.Module, dataloader: DataLoader
 
 
 
+# def select_samples_entropy(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader, *args, **kwargs):
+#     theif_model.eval()
+#     theif_model = theif_model.to(cfg.DEVICE)
+#     uncertainty = torch.tensor([])
+#     indices = torch.tensor([])
+#     with torch.no_grad():
+#         for i, (images, _, _) in enumerate(unlabeled_loader):
+#             images = images.to(cfg.DEVICE)
+#             outputs = theif_model(images)
+#             prob = F.softmax(outputs, dim=1)
+#             entropy = -torch.sum(prob * torch.log(prob), dim=1)
+#             uncertainty = torch.cat(
+#                 (uncertainty, entropy.clone().detach().cpu()), dim=0)
+#             indices = torch.cat((indices, torch.tensor(
+#                 np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
+
+#     arg = np.argsort(uncertainty)
+#     selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
+#     return selected_index_list
+
+#    # indices = [0, 1, 2, 3, 4]
+#    # uncertainty = [6.6, 5.6, 9.9, 2.2, 8.3]
+#    # arg = [3, 1, 0, 4, 2]
+#    # indices[arg] = [3, 1, 0, 4, 2]
+    
 def select_samples_entropy(cfg: CfgNode, theif_model: nn.Module, unlabeled_loader: DataLoader, *args, **kwargs):
     theif_model.eval()
     theif_model = theif_model.to(cfg.DEVICE)
-    uncertainty = torch.tensor([])
-    indices = torch.tensor([])
+    uncertainty = []
+    indices = []
     with torch.no_grad():
-        for i, (images, _, _) in enumerate(unlabeled_loader):
+        for i, (images, _, index) in enumerate(unlabeled_loader):
             images = images.to(cfg.DEVICE)
             outputs = theif_model(images)
             prob = F.softmax(outputs, dim=1)
             entropy = -torch.sum(prob * torch.log(prob), dim=1)
-            uncertainty = torch.cat(
-                (uncertainty, entropy.clone().detach().cpu()), dim=0)
-            indices = torch.cat((indices, torch.tensor(
-                np.arange(i*cfg.TRAIN.BATCH_SIZE, i*cfg.TRAIN.BATCH_SIZE + images.shape[0]))), dim=0)
+            uncertainty.extend(entropy.clone().detach().cpu().numpy())
+            indices.extend(index.numpy())
 
     arg = np.argsort(uncertainty)
-    selected_index_list = indices[arg][-(cfg.ACTIVE.ADDENDUM):].numpy().astype('int')
+    selected_index_list = np.array(indices)[arg][-(cfg.ACTIVE.ADDENDUM):].astype('int')
     return selected_index_list
-
-    # indices = [0, 1, 2, 3, 4]
-    # uncertainty = [6.6, 5.6, 9.9, 2.2, 8.3]
-    # arg = [3, 1, 0, 4, 2]
-    # indices[arg] = [3, 1, 0, 4, 2]

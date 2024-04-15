@@ -6,6 +6,7 @@ utils_train/
 Test/
 flagged/
 **/__pycache__/
+.vscode/
 msa_toolbox/cfgs/
 msa_toolbox.egg-info/
 msa_toolbox/data/

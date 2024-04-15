@@ -35,7 +35,7 @@ class MNIST(Old_MNIST):
         root = os.path.join(cfg.DATASET_ROOT, 'mnist')
         super().__init__(root, train, transform, target_transform, download)
     
-    def __getitem__(self, index: int) -> Tuple[Any, Any]:
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
         """
         Args:
             index (int): Index
@@ -70,7 +70,7 @@ class KMNIST(Old_KMNIST):
         root = os.path.join(cfg.DATASET_ROOT, 'kmnist')
         super().__init__(root, train, transform, target_transform, download)
         
-    def __getitem__(self, index: int) -> Tuple[Any, Any]:
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
         """
         Args:
             index (int): Index
@@ -105,7 +105,7 @@ class EMNIST(Old_EMNIST):
         super().__init__(root, split='balanced', download=True, **kwargs)
         self.data = self.data.permute(0, 2, 1)
     
-    def __getitem__(self, index: int) -> Tuple[Any, Any]:
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
         """
         Args:
             index (int): Index
@@ -140,7 +140,7 @@ class EMNISTLetters(Old_EMNIST):
         super().__init__(root, split='letters', download=True, **kwargs)
         self.data = self.data.permute(0, 2, 1)
         
-    def __getitem__(self, index: int) -> Tuple[Any, Any]:
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
         """
         Args:
             index (int): Index
@@ -174,7 +174,7 @@ class FashionMNIST(Old_FashionMNIST):
         root = os.path.join(cfg.DATASET_ROOT, 'mnist_fashion')
         super().__init__(root, train, transform, target_transform, download)
         
-    def __getitem__(self, index: int) -> Tuple[Any, Any]:
+    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
         """
         Args:
             index (int): Index

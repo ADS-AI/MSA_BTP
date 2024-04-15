@@ -13,19 +13,18 @@ from typing import Any, Dict
 from torchvision import transforms
 from ..utils.image.loss_criterion import get_loss_criterion
 from ..utils.image.optimizer import get_optimizer
-from ..utils.image.load_data_and_models import load_thief_dataset, load_victim_dataset, get_data_loader, load_custom_dataset
-from ..utils.image.load_data_and_models import load_thief_model, load_victim_model
+from ..utils.image.load_data_and_models import load_thief_dataset, get_data_loader, load_custom_dataset
+from ..utils.image.load_data_and_models import load_thief_model
 from ..utils.image.cfg_reader import load_cfg, CfgNode
-from ..utils.image.train_utils import accuracy_f1_precision_recall, agreement, data_distribution
+from ..utils.image.train_utils import accuracy_f1_precision_recall, agreement_api, data_distribution
 from .active_learning_methods import train_active_learning, select_samples_active_learning
-from ..utils.image.load_victim_thief_data_and_model import load_victim_data_and_model
-from ..utils.image.all_logs import log_thief_data_model, log_new_cycle, log_metrics, log_calculating_metrics, log_active_learning_trail_start, log_data_distribution, log_metrics_before_training
-from ..defence.defence_main import query_victim_for_new_labels
-from ..defence.no_defence.no_defence import label_samples_with_no_defence
+from ..utils.image.all_logs import log_thief_data_model, log_new_cycle, log_metrics_api, log_calculating_metrics, log_active_learning_trail_start, log_data_distribution, log_metrics_before_training_api
+from ..defence.defence_main_api import query_victim_for_new_labels_api
+from ..defence.no_defence.no_defence_clarifai_api import label_samples_with_no_defence_clarafai
+from ..defence.no_defence.no_defence_huggingface_api import label_samples_with_no_defence_huggingface
 
 
-def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: DataLoader,
-              victim_model: nn.Module, thief_data: Dataset):
+def one_trial(cfg: CfgNode, trial_num: int, thief_data: Dataset):
     indices = np.arange(min(len(thief_data), cfg.THIEF.NUM_TRAIN))
     random.shuffle(indices)
 
@@ -34,33 +33,25 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
     labeled_indices = indices[cfg.ACTIVE.VAL:cfg.ACTIVE.VAL+cfg.ACTIVE.INITIAL]
     unlabeled_indices = indices[cfg.ACTIVE.VAL+cfg.ACTIVE.INITIAL:]
 
-    dataloader = create_thief_loaders(
-        cfg, victim_model, thief_data, labeled_indices, unlabeled_indices, val_indices)
-    dataloader['victim'] = victim_data_loader
+    dataloader = create_thief_loaders(cfg, thief_data, labeled_indices, unlabeled_indices, val_indices)
 
     for cycle in range(cfg.ACTIVE.CYCLES):
         log_new_cycle(cfg.LOG_PATH, cycle, dataloader)
-        log_new_cycle(cfg.INTERNAL_LOG_PATH, cycle, dataloader)
         
         # LOG THE DATA DISTRIBUTION OF THE DATASETS 
         dist_val = data_distribution(cfg, dataloader['val'])
         dist_train = data_distribution(cfg, dataloader['train'])
         log_data_distribution(cfg.LOG_PATH, dist_train, 'train')
         log_data_distribution(cfg.LOG_PATH, dist_val, 'validation')
-        log_data_distribution(cfg.INTERNAL_LOG_PATH, dist_train, 'train')
-        log_data_distribution(cfg.INTERNAL_LOG_PATH, dist_val, 'validation')
 
         # LOAD THIEF MODEL
         thief_model = load_thief_model(
-            cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
+            cfg.THIEF.ARCHITECTURE, num_classes=cfg.THIEF.NUM_CLASS, weights=cfg.THIEF.WEIGHTS, progress=False)
         
         # CALCULATE METRICS BEFORE TRAINING
-        metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
         metrics_thief_val = accuracy_f1_precision_recall(cfg, thief_model, dataloader['val'], cfg.DEVICE)
-        agree_victim_test = agreement(thief_model, victim_model, dataloader['victim'], cfg.DEVICE)
-        agree_thief_val = agreement(thief_model, victim_model, dataloader['val'], cfg.DEVICE)
-        log_metrics_before_training(cfg.LOG_PATH, metrics_victim_test, agree_victim_test, metrics_thief_val, agree_thief_val)
-        log_metrics_before_training(cfg.INTERNAL_LOG_PATH, metrics_victim_test, agree_victim_test, metrics_thief_val, agree_thief_val)
+        agree_thief_val = agreement_api(thief_model, dataloader['val'], cfg.DEVICE)
+        log_metrics_before_training_api(cfg.LOG_PATH, metrics_thief_val, agree_thief_val)
         
         # CREATE OPTIMIZER, SCHEDULER AND CRITERIA
         optimizer = get_optimizer(cfg.TRAIN.OPTIMIZER, thief_model,
@@ -82,19 +73,13 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
 
         # CALCULATE METRICS AFTER TRAINING
         log_calculating_metrics(cfg.LOG_PATH, best_model_cycle, best_model_epoch)
-        log_calculating_metrics(cfg.INTERNAL_LOG_PATH, best_model_cycle, best_model_epoch)
         
-        metrics_victim_test = accuracy_f1_precision_recall(cfg, thief_model, dataloader['victim'], cfg.DEVICE, is_victim_loader=True)
         metrics_thief_val = accuracy_f1_precision_recall(cfg, thief_model, dataloader['val'], cfg.DEVICE)
         metrics_thief_train = accuracy_f1_precision_recall(cfg, thief_model, dataloader['train'], cfg.DEVICE)
-        agree_victim_test = agreement(thief_model, victim_model, dataloader['victim'], cfg.DEVICE)
-        agree_thief_val = agreement(thief_model, victim_model, dataloader['val'], cfg.DEVICE)
-        agree_thief_train = agreement(thief_model, victim_model, dataloader['train'], cfg.DEVICE)
+        agree_thief_val = agreement_api(thief_model, dataloader['val'], cfg.DEVICE)
+        agree_thief_train = agreement_api(thief_model, dataloader['train'], cfg.DEVICE)
     
-        log_metrics(cfg.LOG_PATH, cycle, metrics_victim_test, agree_victim_test, 
-                    metrics_thief_val, agree_thief_val, metrics_thief_train, agree_thief_train)
-        log_metrics(cfg.INTERNAL_LOG_PATH, cycle, metrics_victim_test, agree_victim_test, 
-                    metrics_thief_val, agree_thief_val, metrics_thief_train, agree_thief_train)
+        log_metrics_api(cfg.LOG_PATH, cycle, metrics_thief_val, agree_thief_val, metrics_thief_train, agree_thief_train)
 
         # SELECT NEW TRAINING SAMPLES USING THE ACTIVE LEARNING METHOD
         if cycle != cfg.ACTIVE.CYCLES-1:
@@ -109,13 +94,12 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
                 list(set(unlabeled_indices) - set(new_training_samples_indices)))
             
             # replace addendum labels with victim labels
-            query_victim_for_new_labels(cfg, victim_model, thief_data, new_training_samples_indices, take_action=True)
+            query_victim_for_new_labels_api(cfg, thief_data, new_training_samples_indices, take_action=True)
             
             addendum_loader = get_data_loader(Subset(thief_data, new_training_samples_indices), 
                         batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
             dist = data_distribution(cfg, addendum_loader)
             log_data_distribution(cfg.LOG_PATH, dist, 'addendum')
-            log_data_distribution(cfg.INTERNAL_LOG_PATH, dist, 'addendum')
 
             dataloader['train'] = get_data_loader(Subset(thief_data, labeled_indices), 
                         batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
@@ -124,17 +108,24 @@ def one_trial(cfg: CfgNode, trial_num: int, num_class: int, victim_data_loader: 
 
 
 
-def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Dataset,
+def create_thief_loaders(cfg: CfgNode, thief_data: Dataset,
                          labeled_indices: np.ndarray, unlabeled_indices: np.ndarray,
                          val_indices: np.ndarray):
     '''
     Creates the loaders for the thief model
     '''
+    print('Creating loaders for the thief model')
     # replace train labels with victim labels
-    query_victim_for_new_labels(cfg, victim_model, thief_data, labeled_indices, take_action=False)
+    query_victim_for_new_labels_api(cfg, thief_data, labeled_indices, take_action=False)
     
     # replace val labels with victim labels
-    label_samples_with_no_defence(cfg, victim_model, thief_data, val_indices)
+    if cfg.VICTIM.PLATFORM.lower() == 'clarifai':
+        label_samples_with_no_defence_clarafai(cfg, thief_data, val_indices)
+    elif cfg.VICTIM.PLATFORM.lower() == 'hugging-face':
+        label_samples_with_no_defence_huggingface(cfg, thief_data, val_indices)
+    else:
+        raise NotImplementedError('Victim API platform not supported')
+        
                 
     train_loader = get_data_loader(Subset(
         thief_data, labeled_indices), batch_size=cfg.TRAIN.BATCH_SIZE, shuffle=False, num_workers=cfg.NUM_WORKERS)
@@ -147,17 +138,15 @@ def create_thief_loaders(cfg: CfgNode, victim_model: nn.Module, thief_data: Data
 
 
 
-def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int, victim_model: nn.Module):
+def active_learning_api(cfg: CfgNode):
     '''
     Performs Active Learning on the Victim according to the user configuration
     '''
-    cfg.VICTIM.NUM_CLASSES = num_class
-    model = load_thief_model(cfg.THIEF.ARCHITECTURE, num_classes=num_class, weights=cfg.THIEF.WEIGHTS, progress=False)
+    model = load_thief_model(cfg.THIEF.ARCHITECTURE, num_classes=cfg.THIEF.NUM_CLASS, weights=cfg.THIEF.WEIGHTS, progress=False)
 
     for trial in range(cfg.TRIALS):
         training_type = 'Black-box Training' if cfg.TRAIN.BLACKBOX_TRAINING else 'White-box Training'
         log_active_learning_trail_start(cfg.LOG_PATH, trial + 1, cfg.ACTIVE.METHOD, training_type)
-        log_active_learning_trail_start(cfg.INTERNAL_LOG_PATH, trial + 1, cfg.ACTIVE.METHOD, training_type)
         
         if cfg.THIEF.DATASET.lower() == 'custom_dataset':
             thief_data = load_custom_dataset(
@@ -167,6 +156,5 @@ def active_learning(cfg: CfgNode, victim_data_loader: DataLoader, num_class: int
                 cfg.THIEF.DATASET, cfg, train=True, transform=model.transforms, download=True)    
 
         log_thief_data_model(cfg.LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE, cfg.ACTIVE.BUDGET)
-        log_thief_data_model(cfg.INTERNAL_LOG_PATH, thief_data, model, cfg.THIEF.ARCHITECTURE, cfg.ACTIVE.BUDGET)
     
-        one_trial(cfg, trial, num_class, victim_data_loader, victim_model, thief_data)
+        one_trial(cfg, trial, thief_data)
