@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = "\n" + fh.read()
 
-VERSION = '0.0.15'
+VERSION = '2.0.0'
 DESCRIPTION = 'MSA Toolbox'
 LONG_DESCRIPTION = 'Model Stealing attack'
 
@@ -17,9 +17,19 @@ install_requires = [
     "six",
     "setuptools",
     "tqdm",
+    'Flask',
     "scipy>=1.7.3",
     "matplotlib>=3.5.1",
     'yacs',
+    'gradio',
+    'gradio_client',
+    'huggingface-hub',
+    'ipykernel',
+    'pylint',
+    'PyYAML',
+    'torch',
+    'torchvision',
+       
 ]
 
 
@@ -27,7 +37,7 @@ install_requires = [
 setup(
     name="msa_toolbox",
     version=VERSION,
-    author="Akshit, Sumit, Khushdev",
+    author="Akshit, Khushdev, Sumit",
     author_email="sumit20249@iiitd.ac.in",
     description=DESCRIPTION,
     long_description_content_type="text/markdown",
@@ -35,7 +45,7 @@ setup(
     install_requires=install_requires,
     keywords=['msa'],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
         "Operating System :: Unix",
