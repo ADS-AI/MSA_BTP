@@ -1,0 +1,42 @@
+VICTIM:
+  ARCHITECTURE: "resnet34"
+  DATASET: "caltech256"
+  DATASET_ROOT: "/mnt/disk1/sumdev/MSA_BTP/utils_train/data"
+  WEIGHTS: "/mnt/disk1/sumdev/MSA_BTP/utils_train/Stealing_Task_1/caltech256-resnet34/checkpoint_new.pth"
+  DEFENCE: "adaptive-misinformation" # none, prada, adaptive-misinformation
+  SHAPIRO_THRESHOLD: 0.994
+  NUM_CLASSES: 256
+  MSP_THRESHOLD: 0.5
+  IS_API: False
+THIEF:
+  ARCHITECTURE: "resnet18"
+  DATASET: "imagenet"
+  DATASET_ROOT: "/mnt/disk1/sumdev/MSA_BTP/utils_train/data/Imagenet_full/Imagenet_2010_train/full_data"
+  SUBSET: 1281167 
+  NUM_TRAIN: 1281167
+  WEIGHTS: "default"
+ACTIVE:
+  BUDGET: 30000
+  METHOD: "vaal"
+  CYCLES: 10
+  LATENT_DIM: 32
+  NUM_VAE_STEPS: 2
+  NUM_ADV_STEPS: 2
+  ADVERSARY_PARAM: 1
+  BETA: 1
+TRAIN:
+  OPTIMIZER: "sgd"
+  LOSS_CRITERION: "cross_entropy_loss"
+  BATCH_SIZE: 256
+  WEIGHT_DECAY: 0.0001
+  EPOCH: 100
+  PATIENCE: 2
+  LR: 0.01
+  LOG_INTERVAL: 1000
+  BLACKBOX_TRAINING: True
+  MILESTONES: [1000,10000,20000]
+TRIALS: 1
+DS_SEED: 123
+NUM_WORKERS: 2
+DEVICE: "cuda:0"
+OUT_DIR: "/mnt/disk1/sumdev/MSA_BTP/utils_train/Results/Stealing_Caltech256/resnet34_resnet18_vaal_nodef_bb_30k"
