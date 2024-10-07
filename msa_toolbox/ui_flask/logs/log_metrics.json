@@ -1,1 +1,233 @@
+{
+    "Cycle_1": {
+      "metrics_victim": {
+        "accuracy": 0.3990625,
+        "f1": 0.3578809215749309,
+        "precision": 0.4127847376957611,
+        "recall": 0.3990625
+      },
+      "agreement_victim": 0.39625,
+      "metrics_thief": {
+        "accuracy": 0.35433333333333333,
+        "f1": 0.2245841759023072,
+        "precision": 0.2516913220950626,
+        "recall": 0.23851992577253098
+      },
+      "agreement_thief": 0.35433333333333333,
+      "metrics_thief_train": {
+        "accuracy": 1.0,
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "agreement_thief_train": 1.0
+    },
+    "Cycle_2": {
+      "metrics_victim": {
+        "accuracy": 0.52125,
+        "f1": 0.4960676878934382,
+        "precision": 0.5522586829657803,
+        "recall": 0.52125
+      },
+      "agreement_victim": 0.5134375,
+      "metrics_thief": {
+        "accuracy": 0.38866666666666666,
+        "f1": 0.2768427658460553,
+        "precision": 0.30143511649868926,
+        "recall": 0.29145902022367776
+      },
+      "agreement_thief": 0.38866666666666666,
+      "metrics_thief_train": {
+        "accuracy": 0.9996296296296296,
+        "f1": 0.9997479654322545,
+        "precision": 0.9996512438967682,
+        "recall": 0.9998540126433086
+      },
+      "agreement_thief_train": 0.9996296296296296
+    },
+    "Cycle_3": {
+      "metrics_victim": {
+        "accuracy": 0.57859375,
+        "f1": 0.5675218370315447,
+        "precision": 0.6202153165286151,
+        "recall": 0.57859375
+      },
+      "agreement_victim": 0.57734375,
+      "metrics_thief": {
+        "accuracy": 0.39966666666666667,
+        "f1": 0.3094640006155231,
+        "precision": 0.33640067758068304,
+        "recall": 0.32500147935417983
+      },
+      "agreement_thief": 0.39966666666666667,
+      "metrics_thief_train": {
+        "accuracy": 0.9996296296296296,
+        "f1": 0.9994369029663147,
+        "precision": 0.9995098039215686,
+        "recall": 0.9994397759103641
+      },
+      "agreement_thief_train": 0.9996296296296296
+    },
+    "Cycle_4": {
+      "metrics_victim": {
+        "accuracy": 0.58796875,
+        "f1": 0.5791156218970676,
+        "precision": 0.6221649970899044,
+        "recall": 0.58796875
+      },
+      "agreement_victim": 0.59359375,
+      "metrics_thief": {
+        "accuracy": 0.422,
+        "f1": 0.3236181861743689,
+        "precision": 0.352960290926074,
+        "recall": 0.3383000174705151
+      },
+      "agreement_thief": 0.422,
+      "metrics_thief_train": {
+        "accuracy": 1.0,
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "agreement_thief_train": 1.0
+    },
+    "Cycle_5": {
+      "metrics_victim": {
+        "accuracy": 0.604375,
+        "f1": 0.6016240896720417,
+        "precision": 0.6410358227491069,
+        "recall": 0.604375
+      },
+      "agreement_victim": 0.6140625,
+      "metrics_thief": {
+        "accuracy": 0.4206666666666667,
+        "f1": 0.32252294145845595,
+        "precision": 0.3502741823122752,
+        "recall": 0.3343044892734876
+      },
+      "agreement_thief": 0.4206666666666667,
+      "metrics_thief_train": {
+        "accuracy": 1.0,
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "agreement_thief_train": 1.0
+    },
+    "Cycle_6": {
+      "metrics_victim": {
+        "accuracy": 0.618125,
+        "f1": 0.6146246801319533,
+        "precision": 0.6522752425305824,
+        "recall": 0.618125
+      },
+      "agreement_victim": 0.6328125,
+      "metrics_thief": {
+        "accuracy": 0.417,
+        "f1": 0.33845306784019047,
+        "precision": 0.37056271702776855,
+        "recall": 0.35538424532762175
+      },
+      "agreement_thief": 0.417,
+      "metrics_thief_train": {
+        "accuracy": 0.9998765432098765,
+        "f1": 0.9999133665770248,
+        "precision": 0.9998906144568152,
+        "recall": 0.9999372578892668
+      },
+      "agreement_thief_train": 0.9998765432098765
+    },
+    "Cycle_7": {
+      "metrics_victim": {
+        "accuracy": 0.6075,
+        "f1": 0.604617699924375,
+        "precision": 0.6462169042617879,
+        "recall": 0.6074999999999999
+      },
+      "agreement_victim": 0.6259375,
+      "metrics_thief": {
+        "accuracy": 0.40066666666666667,
+        "f1": 0.320450983073686,
+        "precision": 0.3474649305543578,
+        "recall": 0.33422529071292606
+      },
+      "agreement_thief": 0.40066666666666667,
+      "metrics_thief_train": {
+        "accuracy": 0.9997354497354497,
+        "f1": 0.9997210853051262,
+        "precision": 0.9997252467688885,
+        "recall": 0.999721420940701
+      },
+      "agreement_thief_train": 0.9997354497354497
+    },
+    "Cycle_8": {
+      "metrics_victim": {
+        "accuracy": 0.59875,
+        "f1": 0.5968938994002007,
+        "precision": 0.6405633059682008,
+        "recall": 0.5987500000000001
+      },
+      "agreement_victim": 0.615625,
+      "metrics_thief": {
+        "accuracy": 0.42333333333333334,
+        "f1": 0.3342556437636371,
+        "precision": 0.35970782628005266,
+        "recall": 0.3502132308255147
+      },
+      "agreement_thief": 0.42333333333333334,
+      "metrics_thief_train": {
+        "accuracy": 0.9988425925925926,
+        "f1": 0.9987907279147143,
+        "precision": 0.9989666042639586,
+        "recall": 0.9986390201642235
+      },
+      "agreement_thief_train": 0.9988425925925926
+    },
+    "Cycle_9": {
+      "metrics_victim": {
+        "accuracy": 0.6115625,
+        "f1": 0.6098349210454446,
+        "precision": 0.6479086206170149,
+        "recall": 0.6115625
+      },
+      "agreement_victim": 0.6303125,
+      "metrics_thief": {
+        "accuracy": 0.4226666666666667,
+        "f1": 0.3310793625167937,
+        "precision": 0.35039598767724356,
+        "recall": 0.34766915800004217
+      },
+      "agreement_thief": 0.4226666666666667,
+      "metrics_thief_train": {
+        "accuracy": 0.9993004115226337,
+        "f1": 0.9980466143784468,
+        "precision": 0.9992248399206376,
+        "recall": 0.9975295271331526
+      },
+      "agreement_thief_train": 0.9993004115226337
+    },
+    "Cycle_10": {
+      "metrics_victim": {
+        "accuracy": 0.61453125,
+        "f1": 0.6126370420856737,
+        "precision": 0.6451831172461471,
+        "recall": 0.61453125
+      },
+      "agreement_victim": 0.63265625,
+      "metrics_thief": {
+        "accuracy": 0.41333333333333333,
+        "f1": 0.32913788141658157,
+        "precision": 0.36167509059330705,
+        "recall": 0.34357578684429185
+      },
+      "agreement_thief": 0.41333333333333333,
+      "metrics_thief_train": {
+        "accuracy": 0.9990740740740741,
+        "f1": 0.9990223723998108,
+        "precision": 0.9990679074376398,
+        "recall": 0.9989889813421379
+      },
+      "agreement_thief_train": 0.9990740740740741
+    }
+  }
 {"Cycle_2": {"metrics_victim_test": {"accuracy": 0.65234375, "f1": 0.6419204105749382, "precision": 0.7029273895899029, "recall": 0.65234375}, "agreement_victim_test": 0.655, "metrics_thief_val": {"accuracy": 0.473, "f1": 0.35721643903079225, "precision": 0.3959872521446437, "recall": 0.3597223430002782}, "agreement_thief_val": 0.473, "metrics_thief_train": {"accuracy": 0.8640740740740741, "f1": 0.8443186774407483, "precision": 0.8563110903026597, "recall": 0.8478341965248959}, "agreement_thief_train": 0.8640740740740741}, "Cycle_1": {"metrics_victim_test": {"accuracy": 0.57859375, "f1": 0.5569825545152803, "precision": 0.6284222708349531, "recall": 0.57859375}, "agreement_victim_test": 0.57765625, "metrics_thief_val": {"accuracy": 0.43433333333333335, "f1": 0.29204148269504165, "precision": 0.3310189094985092, "recall": 0.29603377153053134}, "agreement_thief_val": 0.43433333333333335, "metrics_thief_train": {"accuracy": 0.9511111111111111, "f1": 0.9412626858641312, "precision": 0.9417054836802241, "recall": 0.9511440913296201}, "agreement_thief_train": 0.9511111111111111}, "Cycle_3": {"metrics_victim_test": {"accuracy": 0.69015625, "f1": 0.6873729933368103, "precision": 0.7321792157783168, "recall": 0.69015625}, "agreement_victim_test": 0.69390625, "metrics_thief_val": {"accuracy": 0.49566666666666664, "f1": 0.3703343738884332, "precision": 0.4020856679106255, "recall": 0.3783768730133046}, "agreement_thief_val": 0.49566666666666664, "metrics_thief_train": {"accuracy": 0.8609876543209877, "f1": 0.8354558292714296, "precision": 0.8410208370994086, "recall": 0.843836681536912}, "agreement_thief_train": 0.8609876543209877}, "Cycle_5": {"metrics_victim_test": {"accuracy": 0.72140625, "f1": 0.7210731379702162, "precision": 0.7553925102022845, "recall": 0.72140625}, "agreement_victim_test": 0.73375, "metrics_thief_val": {"accuracy": 0.5266666666666666, "f1": 0.4121475086550469, "precision": 0.4510236942908548, "recall": 0.4193195876208327}, "agreement_thief_val": 0.5266666666666666, "metrics_thief_train": {"accuracy": 0.8478518518518519, "f1": 0.8244389731465702, "precision": 0.8272401548688612, "recall": 0.8328745775410674}, "agreement_thief_train": 0.8478518518518519}, "Cycle_4": {"metrics_victim_test": {"accuracy": 0.71125, "f1": 0.7097686470422171, "precision": 0.7475404569035305, "recall": 0.7112499999999999}, "agreement_victim_test": 0.719375, "metrics_thief_val": {"accuracy": 0.5146666666666667, "f1": 0.40117889500868753, "precision": 0.4403003301874132, "recall": 0.4073323925070706}, "agreement_thief_val": 0.5146666666666667, "metrics_thief_train": {"accuracy": 0.8562037037037037, "f1": 0.828964547457675, "precision": 0.8332323256527494, "recall": 0.8368092030296134}, "agreement_thief_train": 0.8562037037037037}, "Cycle_6": {"metrics_victim_test": {"accuracy": 0.7334375, "f1": 0.7340120000590202, "precision": 0.7657256619525921, "recall": 0.7334375}, "agreement_victim_test": 0.75078125, "metrics_thief_val": {"accuracy": 0.539, "f1": 0.4218729660576016, "precision": 0.46056895216645893, "recall": 0.43076366865504806}, "agreement_thief_val": 0.539, "metrics_thief_train": {"accuracy": 0.8531481481481481, "f1": 0.8301340622949414, "precision": 0.8315141338773941, "recall": 0.8398761994824717}, "agreement_thief_train": 0.8531481481481481}, "Cycle_7": {"metrics_victim_test": {"accuracy": 0.7415625, "f1": 0.7422213810981861, "precision": 0.7737533032644499, "recall": 0.7415625}, "agreement_victim_test": 0.75875, "metrics_thief_val": {"accuracy": 0.547, "f1": 0.4338164119371337, "precision": 0.46587239703552136, "recall": 0.4487622056934591}, "agreement_thief_val": 0.547, "metrics_thief_train": {"accuracy": 0.8568253968253968, "f1": 0.8355938009848354, "precision": 0.8348193093900161, "recall": 0.8470858800171721}, "agreement_thief_train": 0.8568253968253968}, "Cycle_8": {"metrics_victim_test": {"accuracy": 0.71140625, "f1": 0.7106711597886413, "precision": 0.7478674725774527, "recall": 0.71140625}, "agreement_victim_test": 0.723125, "metrics_thief_val": {"accuracy": 0.49466666666666664, "f1": 0.38546648992012833, "precision": 0.4222284351462443, "recall": 0.3960979935671522}, "agreement_thief_val": 0.49466666666666664, "metrics_thief_train": {"accuracy": 0.7218518518518519, "f1": 0.7146493019610525, "precision": 0.7320591289671008, "recall": 0.7163046565770952}, "agreement_thief_train": 0.7218518518518519}, "Cycle_9": {"metrics_victim_test": {"accuracy": 0.56765625, "f1": 0.5557440841144656, "precision": 0.6038502079665755, "recall": 0.56765625}, "agreement_victim_test": 0.5784375, "metrics_thief_val": {"accuracy": 0.42866666666666664, "f1": 0.30159657202221857, "precision": 0.3362468080977527, "recall": 0.3069838067923504}, "agreement_thief_val": 0.42866666666666664, "metrics_thief_train": {"accuracy": 0.9990946502057613, "f1": 0.9990709843124417, "precision": 0.9991377432141675, "recall": 0.9990207869503693}, "agreement_thief_train": 0.9990946502057613}, "Cycle_10": {"metrics_victim_test": {"accuracy": 0.56609375, "f1": 0.5560356489180769, "precision": 0.5999993308638355, "recall": 0.5660937500000001}, "agreement_victim_test": 0.5771875, "metrics_thief_val": {"accuracy": 0.426, "f1": 0.30801312483647203, "precision": 0.3484558906944473, "recall": 0.31201905388895684}, "agreement_thief_val": 0.426, "metrics_thief_train": {"accuracy": 0.9992592592592593, "f1": 0.9993079722873952, "precision": 0.9993005186600938, "recall": 0.9993263767510674}, "agreement_thief_train": 0.9992592592592593}, "Cycle_11": {"metrics_victim_test": {"accuracy": 0.53546875, "f1": 0.5242829820101181, "precision": 0.5754967738050571, "recall": 0.5354687499999999}, "agreement_victim_test": 0.544375, "metrics_thief_val": {"accuracy": 0.42133333333333334, "f1": 0.3042788582158122, "precision": 0.33652763873501695, "recall": 0.31010956352463315}, "agreement_thief_val": 0.42133333333333334, "metrics_thief_train": {"accuracy": 1.0, "f1": 1.0, "precision": 1.0, "recall": 1.0}, "agreement_thief_train": 1.0}, "Cycle_12": {"metrics_victim_test": {"accuracy": 0.7845, "f1": 0.754928497355664, "precision": 0.8280143378761833, "recall": 0.7770517939623337}, "agreement_victim_test": 0.7845, "metrics_thief_val": {"accuracy": 0.735, "f1": 0.41402523818536463, "precision": 0.474076466424761, "recall": 0.40869479952444365}, "agreement_thief_val": 0.735, "metrics_thief_train": {"accuracy": 0.9899382716049383, "f1": 0.9843284574209534, "precision": 0.9822123770975608, "recall": 0.9865906232102051}, "agreement_thief_train": 0.9899382716049383}, "Cycle_13": {"metrics_victim_test": {"accuracy": 0.6933, "f1": 0.6630722831337913, "precision": 0.7921191958407506, "recall": 0.6855875919201737}, "agreement_victim_test": 0.6933, "metrics_thief_val": {"accuracy": 0.7086666666666667, "f1": 0.36040633386735593, "precision": 0.3958241760412208, "recall": 0.3718464400796753}, "agreement_thief_val": 0.7086666666666667, "metrics_thief_train": {"accuracy": 0.9396011396011396, "f1": 0.9149235348055951, "precision": 0.929046861282065, "recall": 0.906010250362906}, "agreement_thief_train": 0.9396011396011396}}

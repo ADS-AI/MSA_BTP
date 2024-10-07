@@ -19,6 +19,7 @@
             <ul>
                 <li {% if active == 'home' %}class="active"{% endif %}><a href="/config_image">Configs</a></li>
                 <li {% if active == 'training' %}class="active"{% endif %}><a href="/training">Training</a></li>
+                <li {% if active == 'recents' %}class="active"{% endif %}><a href="/recents">Recents</a></li>
             </ul>
         </div>
     </nav>
@@ -29,13 +30,13 @@
         {% endif %}
     {% endwith %}
 
-    <section class="get-in-touch">
+    <section class="config-section">
         <h1 class="title">New Configuration</h1>
         <div class="btn-group d-flex" role="group" aria-label="Form Type Buttons">
             <button type="button" class="btn btn-custom flex-fill active" id="imageFormBtn">Image Form</button>
             <button type="button" class="btn btn-custom flex-fill" id="textFormBtn">Text Form</button>
         </div>
-        <form class="contact-form row" id="imageForm" method="POST" action="/config_image">
+        <form class="config-form row" id="imageForm" method="POST" action="/config_image">
             <div class="form-field col-lg-12">
                 <lable class="lable" >Configuration File Name</lable>
                 <input type="text" class="input-text js-input" id="config_name" name="config_name" placeholder="Enter name of the configuration file" required>   
@@ -166,7 +167,7 @@
             <button type="submit" class="col-lg-12 submit-btn">Submit</button>
             </div>
         </form>
-        <form class="contact-form row" id="textForm" method="POST" action="/config_text">
+        <form class="config-form row" id="textForm" method="POST" action="/config_text">
             <!-- Modify this form to include fields for text input -->
             <div class="form-field col-lg-12">
                 <lable class="lable" >Configuration File Name</lable>

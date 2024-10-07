@@ -1,0 +1,52 @@
+VICTIM:
+  DATASET: cifar10
+  ARCHITECTURE: resnet18
+  DATA_ROOT: ''
+  DATA_MODE: cifar10
+  NUM_LABELS: 3
+THIEF:
+  DATASET: cifar10
+  ARCHITECTURE: resnet18
+  DATA_ROOT: ''
+  DATA_MODE: cifar10
+  NUM_LABELS: 3
+ACTIVE:
+  USE_PRETRAINED: false
+  PRETRAINED_PATH: null
+  BUDGET: 13000
+  METHOD: random
+  AUGMENTATION:
+  - None
+  CUTMIX_PROB: 0.0
+  BETA: 0.0
+  VAL: 0
+  INITIAL: 0
+  CYCLES: 5
+  ADDENUM: 0
+  ALPHA: 0.0
+THIEF_HYPERPARAMETERS:
+  BATCH: 1000
+  OPTIMIZER: adam
+  LR: 0.004
+  MOMEMTUM: 1.0
+  WDECAY: 0.5
+  EPOCH: 10
+  MILESTONES:
+  - 5
+  GAMMA: 0.0
+  ADAM_EPS: 0.01
+  WARMUP_STEPS: 0
+  LR_MARGIN: 0.0
+  LR_WEIGHT: 0.0
+  LR_EPOCHL: 5
+TRIALS: 6
+LOCAL_RANK: 0
+RNG_SEED: 1
+DS_SEED: 123
+NUM_WORKERS: 4
+CACHE_DIR: output/path/cache
+DEVICE: cpu
+LOG_DEST: output/path/logs
+OUT_DIR: output/path
+VICTIM_MODEL_DIR: output/path/victim_models
+THIEF_MODEL_DIR: output/path/thief_models

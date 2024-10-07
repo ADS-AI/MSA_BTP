@@ -1,0 +1,52 @@
+# VICTIM:
+  # DATASET: "yelp"
+  # ARCHITECTURE: "bert-base-uncased"
+  # DATA_ROOT: ""
+  # DATA_MODE: "tsv/csv/huggingface"
+  # NUM_LABELS: 10
+# THIEF:
+  # DATASET: "yelp"
+  # ARCHITECTURE: "bert-base-uncased"
+  # DATA_ROOT: ""
+  # DATA_MODE: "tsv/csv/huggingface"
+  # NUM_LABELS: 10
+ACTIVE:
+  # USE_PRETRAINED: true
+  # PRETRAINED_PATH: None
+  # BUDGET: 10000
+  # METHOD: "entropy"
+  AUGMENTATION: [None]
+  # CUTMIX_PROB: 0.
+  # BETA: 1.0
+  # VAL: 0
+  # INITIAL: 0
+  # CYCLES: 5
+  # ADDENUM: 0
+  TEMP: 1:0
+  # ALPHA: 0.
+THIEF_HYPERPARAMETERS:
+  # BATCH: 256
+  # OPTIMIZER: "adam"
+  # LR: 5e-5
+  
+  # MOMEMTUM: 0.9
+  # WDECAY: 0.0
+  # EPOCH: 4
+  # MILESTONES: [120] #do the listing on backend
+  # GAMMA: 0.1
+  # ADAM_EPS: 1e-8
+  # WARMUP_STEPS: 0
+  # LR_MARGIN: 1.0
+  # LR_WEIGHT : 1.0
+  # LR_EPOCHL: 120
+# TRIALS: 1
+# LOCAL_RANK: 0
+# RNG_SEED: 1
+# DS_SEED: 123
+# NUM_WORKERS: 2
+CACHE_DIR: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/cache"
+# DEVICE: "cuda"
+LOG_DEST: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/Logs2"
+# OUT_DIR: "/home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/SavedModels2"
+VICTIM_MODEL_DIR : OUT_DIR + "/victim_models"
+THIEF_MODEL_DIR : OUT_DIR + "/thief_models"

@@ -1,7 +1,9 @@
 
 body{
   /* background-color: rgb(38, 42, 104); */
-  background-image: url("https://wallpaper-house.com/data/out/7/wallpaper2you_176924.jpg")
+  background-image: url("https://wallpaper-house.com/data/out/7/wallpaper2you_176924.jpg");
+  min-height: 100vh; /* Set a minimum height of 100% of the viewport height */
+
   /* background-attachment: scroll; */
 }
 
@@ -26,7 +28,7 @@ border-radius: 10px;
 background-color: #555;
 }
 
-.get-in-touch {
+.config-section {
   max-width: 800px;
   margin: 50px auto;
   position: relative;
@@ -35,7 +37,7 @@ background-color: #555;
   background-color: #fff;
 
 }
-.get-in-touch .title {
+.config-section .title {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 3px;
@@ -51,11 +53,11 @@ background-color: #555;
     -webkit-text-fill-color: transparent !important;
 }
 
-.contact-form .form-field {
+.config-form .form-field {
   position: relative;
   margin: 15px 0;
 }
-.contact-form .input-text {
+.config-form .input-text {
   display: block;
   width: 100%;
   height: 36px;
@@ -65,15 +67,15 @@ background-color: #555;
   line-height: 26px;
   font-weight: 400;
 }
-.contact-form .input-text:focus {
+.config-form .input-text:focus {
   outline: none;
 }
-.contact-form .input-text:focus + .label,
-.contact-form .input-text.not-empty + .label {
+.config-form .input-text:focus + .label,
+.config-form .input-text.not-empty + .label {
   -webkit-transform: translateY(-24px);
           transform: translateY(-24px);
 }
-.contact-form .label {
+.config-form .label {
   position: absolute;
   left: 20px;
   bottom: 11px;
@@ -87,7 +89,7 @@ background-color: #555;
   transition: transform .2s ease-in-out, 
   -webkit-transform .2s ease-in-out;
 }
-.contact-form .submit-btn {
+.config-form .submit-btn {
   display: inline-block;
   background-color: #000;
   background-image: linear-gradient(125deg,#8b075b,#042c60);
@@ -98,12 +100,21 @@ background-color: #555;
   padding: 8px 16px;
   border: none;
   margin-top: 40px;
-  /* width:; */
   height: 50px;
   border-radius: 4px;
   cursor: pointer;
   align-self: stretch;
 }
+/* Adjust the checkbox style */
+.input-checkbox {
+    transform: scale(1.25); /* Increase the size of the checkbox */
+}
+
+/* Move the label after the checkbox */
+.form-field input[type="checkbox"] + label {
+    margin-left: 10px; /* Adjust the margin to your preference */
+}
+
 
 .sidebar {
   background-color: #fff;
@@ -116,32 +127,43 @@ background-color: #555;
   z-index: 1;
 }
 
+.sidebar {
+  background-color: #fff;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 12%;
+  z-index: 1;
+  padding: 0;
+  /* box-shadow: 3px 0px 3px #888888; */
+  overflow-y: auto; /* Add scrollbar if content exceeds the sidebar height */
+}
+
 .sidebar ul {
   list-style-type: none;
-  margin-top: 0px;
+  margin: 0;
   padding: 0;
 }
 
 .sidebar li {
-  /* border-top: 1px solid #555; */
-  /* border-bottom: 1px solid #555; */
   box-shadow: 0px 3px 3px #888888;
-  /* display: block; */
-  margin-bottom: 5px;
-  width: relative;
+  margin-bottom: 0;
+  width: 100%;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 3px;
-  font-size: 1.5em;
+  font-size: 1.0em;
   line-height: 10px;
+  font-weight: bold;
   padding-bottom: 10px;
-     color: #5543ca;
-    background: #5543ca;
-    background: -moz-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
-    background: -webkit-linear-gradient(left,#f4524d  0%,#5543ca 100%) !important;
-    background: linear-gradient(to right,#f4524d  0%,#5543ca  100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
+  color: #5543ca;
+  background: #5543ca;
+  background: -moz-linear-gradient(left, #f4524d 0%, #5543ca 100%) !important;
+  background: -webkit-linear-gradient(left, #f4524d 0%, #5543ca 100%) !important;
+  background: linear-gradient(to right, #f4524d 0%, #5543ca 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
 .sidebar li a {
@@ -158,6 +180,7 @@ background-color: #555;
 .sidebar li:hover:not(.active) {
   background-color: #555;
 }
+
 .btn-custom {
   color: white; /* Text color */
   background-color: lightgray; /* Default background color */
