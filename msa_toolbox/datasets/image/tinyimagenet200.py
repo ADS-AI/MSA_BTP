@@ -3,7 +3,7 @@ This module provides a PyTorch dataset class for the TinyImageNet200 dataset.
 """
 import os
 from torchvision.datasets import ImageFolder
-from .. import config as cfg
+from ... import config as cfg
 
 class TinyImageNet200(ImageFolder):
     '''A Dataset class for the TinyImageNet200 dataset.'''
@@ -22,7 +22,7 @@ class TinyImageNet200(ImageFolder):
             raise ValueError(f"Dataset not found at {root}. Please download it from http://cs231n.stanford.edu/tiny-imagenet-200.zip")
 
         # Initialize ImageFolder
-        _root = os.path.join(root, 'train' if train else 'val')
+        _root = os.path.join(root, 'train' if train else 'test')
         super().__init__(root=_root, transform=transform,
                          target_transform=target_transform)
         self.root = root
@@ -46,3 +46,19 @@ class TinyImageNet200(ImageFolder):
         for i in range(len(self.classes)):
             self.classes[i] = synset_to_desc[self.classes[i]]
         self.class_to_idx = {self.classes[i]: i for i in range(len(self.classes))}
+        
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (sample, target) where target is class_index of the target class.
+        """
+        path, target = self.samples[index]
+        sample = self.loader(path)
+        if self.transform is not None:
+            sample = self.transform(sample)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return sample, target, index
