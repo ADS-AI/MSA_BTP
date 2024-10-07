@@ -92,12 +92,16 @@
             </div>
 
 
-            <div class="form-field col-lg-12">
+            <div class="form-field col-lg-3">
                 <label>Victim Model API</label>
-                <input type="text" class="input-text js-input" id="V_api" name="V_api" placeholder="Victim Model API(If Hosted!!)">   
+                <select class="input-text js-input" id="is_api" name="is_api" required>
+                    <option >No</option>
+                    <option >Yes</option>
+                    
+                </select>
             </div>
 
-            <div class="form-field col-lg-6">
+            <div class="form-field col-lg-4">
                 <label>Thief Architecture</label>
                 <select class="input-text js-input" id="T_arch" name="T_arch" required>
                     <option value="" disabled selected>Select Thief Architecture</option>
@@ -107,7 +111,7 @@
                 </select>
             </div>
 
-            <div class="form-field col-lg-6" >
+            <div class="form-field col-lg-5" >
                 <label>Thief Dataset</label>
                 <select class="input-text js-input" id="T_data" name="T_data" required>
                     {% for data in options['datasets'] %}
@@ -121,12 +125,12 @@
                 <input type="text" class="input-text js-input" id="t_data_root" name="t_data_root" placeholder="Thief Data Directory ( If Avaialabel!!! )">   
             </div>
 
-            <div class="form-field col-lg-6">
+            <div class="form-field col-lg-4">
                 <label> Batch Size</label>
                 <input type="number" class="input-text js-input" id="batch_size" name="batch_size" placeholder=" Batch size" required>   
             </div>
 
-            <div class="form-field col-lg-6">
+            <div class="form-field col-lg-4">
                 <label>Budget</label>
                 <input type="number" class="input-text js-input" id="budget" name="budget" placeholder="Enter budget" required>   
             </div>
@@ -139,6 +143,61 @@
                     {% endfor %}
                 </select>
             </div>
+            <!-- Fields according to the methods-->
+             <!-- for kcenter -->
+            <div class="form-field col-lg-6" >
+                <label>Feature</label>
+                <select class="input-text js-input" id="feature" name="feature" required>
+                    {% for feature in options['features'] %}
+                    <option >{{ feature }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-field col-lg-6" >
+                <label>Metric</label>
+                <select class="input-text js-input" id="metric" name="metric" required>
+                    {% for metric in options['metrics'] %}
+                    <option >{{ metric }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- DFAL -->
+            <div class="form-field col-lg-12">
+                <label>DFAL MAX ITER</label>
+                <input type="number" class="input-text js-input" id="DFAL_MAX_ITER" name="DFAL_MAX_ITER" min ="1" max = "10" placeholder="1" value="1">   
+            </div>
+            <!-- for monte carlo -->
+            <div class="form-field col-lg-12">
+                <label>K</label>
+                <input type="number" class="input-text js-input" id="K" name="K" placeholder="1" value="1">   
+            </div>
+            <!-- for vaal -->
+            <div class="form-field col-lg-3">
+                <label>NUM VAE STEPS</label>
+                <input type="number" class="input-text js-input" id="NUM_VAE_STEPS" name="NUM_VAE_STEPS"  placeholder="1" value="1">   
+            </div>
+            <div class="form-field col-lg-3">
+                <label>NUM ADV STEPS</label>
+                <input type="number" class="input-text js-input" id="NUM_ADV_STEPS" name="NUM_ADV_STEPS" placeholder="1" value="1">   
+            </div>
+            <div class="form-field col-lg-3">
+                <label>ADVERSARY PARAM</label>
+                <input type="number" class="input-text js-input" id="ADVERSARY_PARAM" name="ADVERSARY_PARAM" placeholder="1" value="1">   
+            </div>
+            <div class="form-field col-lg-3">
+                <label>BETA</label>
+                <input type="number" class="input-text js-input" id="beta_img" name="beta_img" placeholder="1" value="1">   
+            </div>
+            <!-- Extra fields end here -->
+            <div class="form-field col-lg-4" >
+                <label>Defences</label>
+                <select class="input-text js-input" id="defence" name="defence" required>
+                    {% for defence in options['defences'] %}
+                    <option >{{ defence }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
 
             <div class="form-field col-lg-4" >
                 <label>Optimizer</label>
@@ -180,6 +239,19 @@
                 <label>Log Directory</label>
                 <input type="text" class="input-text js-input" id="log_dir" name="log_dir" placeholder="Logs directory path" required>   
             </div> -->
+            <div class="form-field col-lg-6">
+                <label>BlackBox Training</label>
+                <select class="input-text js-input" id="bbt" name="bbt" required>
+                    <option >Yes</option>
+                    <option >No</option>
+                </select>
+            </div>
+            <div class="form-field col-lg-6">
+                <label>Learning Rate</label>
+                <input type="number" class="input-text js-input" id="LR" name="LR" min ="0.001" placeholder="" value='0.001'>   
+            </div>
+
+
 
             <div class="form-field col-lg-12">
                 <label>Output Directory</label>
@@ -567,6 +639,29 @@
                             document.getElementById("V_data_root").value = data.config_data['VICTIM']['DATA_ROOT']; 
                             document.getElementById("t_data_root").value = data.config_data['THIEF']['DATA_ROOT'];
                             document.getElementById("config_name").value = selectedOption;
+                            document.getElementById("out_label").value = data.config_data['VICTIM']['NUM_CLASSES'];
+                            document.getElementById("NUM_VAE_STEPS").value = data.config_data['ACTIVE']['NUM_VAE_STEPS'];
+                            document.getElementById("NUM_ADV_STEPS").value = data.config_data['ACTIVE']['NUM_ADV_STEPS'];
+                            document.getElementById("ADVERSARY_PARAM").value = data.config_data['ACTIVE']['ADVERSARY_PARAM'];
+                            document.getElementById("beta_img").value = data.config_data['ACTIVE']['BETA'];
+                            document.getElementById("DFAL_MAX_ITER").value = data.config_data['ACTIVE']['DFAL_MAX_ITER'];
+                            document.getElementById("K").value = data.config_data['ACTIVE']['K'];
+                            document.getElementById("defence").value = data.config_data['VICTIM']['DEFENCE'];
+                            // document.getElementById("bbt").value = data.config_data['TRAIN']['BLACKBOX_TRAINING'];
+                            let blackboxTrainingValue = data.config_data['TRAIN']['BLACKBOX_TRAINING'];
+                            if (blackboxTrainingValue) {
+                                document.getElementById("bbt").value = 'Yes';
+                            } else {
+                                document.getElementById("bbt").value = 'No';
+                            }
+                            let is_api = data.config_data['VICTIM']['IS_API'];
+                            if(is_api) {
+                                document.getElementById("is_api").value = 'Yes';
+                            }
+                            else {
+                                document.getElementById("is_api").value = 'No';
+                            }
+                            document.getElementById('LR').value = data.config_data['TRAIN']['LR']
                         }
                     });
                 }
@@ -642,8 +737,8 @@
             });
         });
             //form hiding javascript for tabs
-            // $('#textForm').hide();
-            $('#imageForm').hide();
+            $('#textForm').hide();
+            // $('#imageForm').hide();
             $('#imageFormBtn').click(function() {
                 $('#textForm').hide();
                 $('#imageForm').show();
@@ -662,6 +757,54 @@
             setTimeout(function() {
                 $('#popup').remove();
             }, 5000);
+
+
+            // for dynamic fields
+            // Get the method dropdown
+            const methodDropdown = document.getElementById('method');
+
+            // Add event listener to detect changes
+            methodDropdown.addEventListener('change', function() {
+                // Get the selected value
+                const selectedMethod = methodDropdown.value;
+
+                // Initially hide all fields and remove required attributes
+                hideAllFields();
+
+                // Conditionally show fields based on the selected method and make them required
+                if (selectedMethod === 'kcenter') {
+                    showField('feature', 'metric');
+                } else if (selectedMethod === 'dfal') {
+                    showField('DFAL_MAX_ITER');
+                } else if (selectedMethod === 'montecarlo') {
+                    showField('K');
+                } else if (selectedMethod === 'vaal') {
+                    showField('NUM_VAE_STEPS', 'NUM_ADV_STEPS', 'ADVERSARY_PARAM', 'beta_img');
+                }
+            });
+
+            // Function to hide all method-specific fields and remove 'required' attributes
+            function hideAllFields() {
+                const allFields = ['feature', 'metric', 'DFAL_MAX_ITER', 'K', 'NUM_VAE_STEPS', 'NUM_ADV_STEPS', 'ADVERSARY_PARAM', 'beta_img'];
+
+                allFields.forEach(function(fieldId) {
+                    const field = document.getElementById(fieldId).closest('.form-field');
+                    field.style.display = 'none'; // Hide field
+                    document.getElementById(fieldId).removeAttribute('required'); // Remove 'required' attribute
+                });
+            }
+
+            // Function to show specified fields and add 'required' attributes
+            function showField(...fieldIds) {
+                fieldIds.forEach(function(fieldId) {
+                    const field = document.getElementById(fieldId).closest('.form-field');
+                    field.style.display = 'block'; // Show field
+                    document.getElementById(fieldId).setAttribute('required', 'required'); // Add 'required' attribute
+                });
+            }
+
+            // Initially hide all fields on page load
+            document.addEventListener('DOMContentLoaded', hideAllFields);
     </script>
     
 </body>

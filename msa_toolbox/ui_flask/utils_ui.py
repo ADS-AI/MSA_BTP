@@ -9,7 +9,7 @@ def extract_data(form):
     
     v_dataset = form['V_data']
     v_model = form['V_arch']
-    v_api = form['V_api']
+    # v_api = form['V_api']
     t_dataset = form['T_data']
     t_model = form['T_arch']
     # subset = form['subset']
@@ -24,15 +24,29 @@ def extract_data(form):
     # to be added
     Cycles = float(form['Cycles'])
     # Patience = form['Patience']
-    log_dir = form['log_dir']
+    # log_dir = form['log_dir']
     out_dir = form['out_dir']
-    v_data_root = form['v_data_root']
+    v_data_root = form['V_data_root']
     t_data_root = form['t_data_root']
+    feature = form['feature']
+    metric = form['metric']
+    DFAL_MAX_ITER = int(form['DFAL_MAX_ITER'])
+    K = int(form['K'])
+    NUM_VAE_STEPS = int(form['NUM_VAE_STEPS'])
+    NUM_ADV_STEPS = int(form['NUM_ADV_STEPS'])
+    ADVERSARY_PARAM = int(form['ADVERSARY_PARAM'])
+    BETA = int(form['beta_img']) 
     
     victim={'DATASET':v_dataset,
             'ARCHITECTURE':v_model,
             'DATA_ROOT':v_data_root,
-            'WEIGHTS':'default'}
+            'WEIGHTS':'default',
+            'DEFENCE':form['defence'],
+            'SHAPIRO_THRESHOLD':0.994,
+            'NUM_CLASSES':int(form['out_label']),
+            'MSP_THRESHOLD':0.5,
+            'IS_API': bool(form['is_api']),
+            }
     
     thief={'DATASET':t_dataset,
            'ARCHITECTURE':t_model,
@@ -43,7 +57,15 @@ def extract_data(form):
   
     active={'BUDGET':Budget,
             'METHOD':Method,
-            'CYCLES':Cycles}    
+            'CYCLES':Cycles,
+            'FEATURE':feature,
+            'METRIC':metric,
+            'DFAL_MAX_ITER':DFAL_MAX_ITER,
+            'K':K,
+            'NUM_VAE_STEPS':NUM_VAE_STEPS,
+            'NUM_ADV_STEPS':NUM_ADV_STEPS,
+            'ADVERSARY_PARAM':ADVERSARY_PARAM,
+            'BETA':BETA,}    
     
     train={'OPTIMIZER':Optimizer,
            'LOSS_CRITERION':Criteria,
@@ -51,7 +73,10 @@ def extract_data(form):
            'WEIGHT_DECAY':0.0001,
            'EPOCH':Epochs,
            'PATIENCE':5,
-           'LR':0.001,
+           'LR':float(form['LR']),
+           'BLACKBOX_TRAINING':bool(form['bbt']),
+           'LOG_INTERVAL':10,
+           'MILESTONES':[30,80],
            }
     
     cfg ={'VICTIM':victim,
@@ -61,8 +86,7 @@ def extract_data(form):
           'TRIALS':1,
           'DS_SEED':123,
           'NUM_WORKERS':2, 
-          'DEVICE':Device,
-          'LOG_DEST':log_dir,
+          'DEVICE':Device+":0",
           'OUT_DIR':out_dir,
           }
     # print(cfg)

@@ -1,0 +1,38 @@
+VICTIM:
+  DATASET: svhn
+  ARCHITECTURE: resnet50
+  DATA_ROOT: /home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img
+  WEIGHTS: default
+THIEF:
+  DATASET: svhn
+  ARCHITECTURE: resnet50
+  DATA_ROOT: /home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/msa_toolbox/data/img
+  SUBSET: 20000
+  NUM_TRAIN: 100000
+  WEIGHTS: default
+ACTIVE:
+  BUDGET: 10000.0
+  METHOD: kcenter
+  CYCLES: 5.0
+  FEATURE: avg_pool
+  METRIC: euclidean
+  DFAL_MAX_ITER: ''
+  K: ''
+  NUM_VAE_STEPS: ''
+  NUM_ADV_STEPS: ''
+  ADVERSARY_PARAM: ''
+  BETA: ''
+TRAIN:
+  OPTIMIZER: adam
+  LOSS_CRITERION: cross_entropy_loss
+  BATCH_SIZE: '128'
+  WEIGHT_DECAY: 0.0001
+  EPOCH: 4.0
+  PATIENCE: 5
+  LR: ''
+  BLACKBOX_TRAINING: 'Yes'
+TRIALS: 1
+DS_SEED: 123
+NUM_WORKERS: 2
+DEVICE: cuda
+OUT_DIR: /home/vikram/akshitj/toolbox_btp/main_toolbox/MSA_BTP/Utils/SavedModels2

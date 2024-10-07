@@ -23,7 +23,7 @@ archi = ['resnet18','resnet50','vgg11','vgg13','vgg16','vgg19','vgg11_bn','vgg13
              'efficientnet_b2','efficientnet_b3','efficientnet_b4','efficientnet_b5','efficientnet_b6','efficientnet_b7','efficientnet_v2_s','efficientnet_v2_m','efficientnet_v2_l',
              'mobilenet_v2','mobilenet_v3_large','mobilenet_v3_small']
 
-methods = ['random','entropy']
+methods = ['random','entropy','vaal','kcenter','montecarlo','dfal']
 
 optimizers = ['adam','sgd','rmsprop','adagrad','adadelta','adamax']
 
@@ -32,8 +32,12 @@ criterias = ['cross_entropy_loss','mse_loss','l1_loss','soft_margin_loss','bce_l
 text_models = ["bert-base-uncased","roberta-base","xlnet-base-cased"]
 datasets_text = ['yelp' , 'sst2' , 'pubmed' , 'twitter_finance' , 'twitter' , 'ag_news' , 'wiki_medical_terms', 'imdb' , 'mnli', 'boolq']
 text_modes = ["HuggingFace","csv","tsv"]
+
+defences  = ['None', 'prada','Adaptive-misinformation']
+feature = ['avg_pool','fc']
+metric = ['euclidean','cosine']
 options = {'datasets': datasets, 'archi': archi, 'methods': methods, 'optimizers': optimizers, 'criterias': criterias,'text_models': text_models,"text_datasets": datasets_text,
-           "text_modes": text_modes}
+           "text_modes": text_modes,'defences':defences,'features':feature,'metrics':metric}
     
 # archi_text = ['archi1','archi2']
 
@@ -224,4 +228,6 @@ def get_config_data_text():
         print(selected_config_file)
         return jsonify({'config_data': dict(selected_config_file_data), 'config_file_name': selected_config_file})
 
-app.run(host='127.0.0.1', port=8085, debug=True)
+# app.run(host='127.0.0.1', port=8085, debug=True)
+
+app.run(host='0.0.0.0', port=8080, debug=True)
